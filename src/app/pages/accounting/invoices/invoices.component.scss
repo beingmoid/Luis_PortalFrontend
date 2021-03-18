@@ -1,0 +1,102 @@
+@import 'src/app/components/mixins.scss';
+
+.invoice-detail-div {
+  .invoice-detail {
+    & i {
+      width: 15%;
+      display: inline-table;
+    }
+
+    & span {
+      width: 60%;
+    }
+  }
+}
+
+.invoiceRowTitle .titleData,
+.invoiceRowDescp .descpData {
+  display: inline-block;
+  width: 18%;
+}
+.row2 .invoiceRowTitle .titleData,
+.row2 .invoiceRowDescp .descpData {
+  display: inline-block;
+  width: 12.8%;
+}
+.row2 .invoiceRowTitle .titleData:last-child,
+.row2 .invoiceRowDescp .descpData:last-child {
+  width: 9%;
+}
+.invoiceRowDescp .descpData {
+  font-weight: 500;
+}
+
+.invoiceRowDescp .descpData:last-child,
+.invoiceRowTitle .titleData:last-child {
+  width: 10%;
+}
+::ng-deep .period-control__button:not(.period-control__button--disabled):focus:after{
+  bottom:-5.5px !important;
+  height:2.5px !important;
+}
+
+// *********************************** Responsiveness Starts ****************************************** 
+// Responsive utils
+// $xxl-min-width: 1600px;
+// $xxl-max-width: 1599px;
+// $xl-min-width: 1200px;
+// $xl-max-width: 1199px;
+// $lg-min-width: 992px;
+// $lg-max-width: 991px;
+// $md-min-width: 768px;
+// $md-max-width: 767px;
+// $sm-min-width: 576px;
+// $sm-max-width: 575px;
+
+@media (max-width: $xxl-max-width) {}
+
+// (max-width: 1599px) ends 
+
+@media (max-width: $xl-max-width) {
+ ::ng-deep .ant-modal{
+    width: 95% !important;
+  }
+}
+
+// $xl-max-width: 1199px ends 
+
+@media (max-width: $lg-max-width) {
+.mobilePadding{
+  padding: 0;
+  padding-top: 15px;
+}
+}
+
+// $lg-max-width: 991px;
+
+@media (max-width: $md-max-width) {}
+
+// $lg-max-width: 767px;
+
+@media (max-width: $sm-max-width) {
+//  ::ng-deep .ant-modal-body .mat-form-field{
+//     padding: 0 !important;
+// }
+::ng-deep .ant-modal-header{
+  padding-bottom: 0 !important;
+}
+.d-flex.mobilePadding {
+  display: block !important;
+}
+.totalNumber{
+  padding: 10px!important;
+}
+.savePreviewBtn{
+  margin-top: 0 !important;
+  margin-bottom: 30px;
+}
+}
+
+// $sm-max-width: 575px;
+
+// **************************************** Responsiveness Ends ***************************************** 

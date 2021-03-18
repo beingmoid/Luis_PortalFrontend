@@ -1,0 +1,136 @@
+@import 'src/app/components/mixins.scss';
+
+
+// Responsive utils
+// $xxl-min-width: 1600px;
+// $xxl-max-width: 1599px;
+// $xl-min-width: 1200px;
+// $xl-max-width: 1199px;
+// $lg-min-width: 992px;
+// $lg-max-width: 991px;
+// $md-min-width: 768px;
+// $md-max-width: 767px;
+// $sm-min-width: 576px;
+// $sm-max-width: 575px;
+.title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    font-weight: 500;
+}
+
+.desc {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+}
+.card-header {
+    border-width: 3px;
+  }
+
+.home-top-cards .card-header, .home-top-cards .card-body {
+    padding: 1.2rem;
+    border-radius: 6px;
+    box-shadow: 0 4px 8px #ddd;
+}
+.profile-complition-info.alert.alert-warning {
+        background: #eceef1;
+        border-radius: 8px;
+        padding-top: 15px;
+        padding-right: 25px;
+
+        .btn.btn-success{
+            background-color: #43ce5a;
+            border-color: #43ce5a;
+            opacity: 1;
+            font-size: 10px;
+            letter-spacing: -.3px;
+            min-width: 125px;
+            padding: 8px;
+            box-shadow: 0px 2px 6px #43CE5A;
+            transition: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            -webkit-transition: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            -moz-transition: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            -ms-transition: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            -o-transition: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+            &:hover {
+                background-color: #3ab44e !important;
+                border-color: #3ab44e !important;
+                transition: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                -webkit-transition: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                -moz-transition: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                -ms-transition: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                -o-transition: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            }
+        }
+    }
+    .home-page-cards{
+
+        .firstLastName{
+            color: #525a64;
+            width: 54%;
+        }
+        .added-by{
+            width: 45%;
+        }
+    .min-h-250{
+        min-height: 250px;
+    }
+    .max-h-310{
+        max-height: 310px;
+    }
+    .ant-list-item {
+        padding: 0 0 15px 0;
+        border: 0 !important;
+        word-break: break-word;
+        align-items: flex-start;
+    }
+  
+}
+
+nz-date-picker {
+    margin: 0 8px 12px 0;
+  }
+  
+  // *********************************** Responsiveness Starts ****************************************** 
+  @media (max-width: $xxl-max-width) {
+
+  }
+  
+  // (max-width: 1599px) ends 
+  
+  @media (max-width: $xl-max-width) {
+    .profile-complition-info.alert.alert-warning{
+        padding-right: 15px;
+
+        .btn.btn-success{
+            min-width: 100px;
+            padding: 4px;
+        }
+    }
+  }
+  
+  // $xl-max-width: 1199px ends 
+  
+  @media (max-width: $lg-max-width){
+  
+  }
+  // $lg-max-width: 991px;
+  
+  @media (max-width: $sm-max-width){
+    .ant-dropdown  .cui__utils__shadow.width-350 {
+    width: 21.5rem;
+    margin-left: 9px;
+}
+
+  }
+  // $sm-max-width: 575px;
+  
+  // **************************************** Responsiveness Ends ***************************************** 
+
+  

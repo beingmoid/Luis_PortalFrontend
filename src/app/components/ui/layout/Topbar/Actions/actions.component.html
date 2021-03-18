@@ -1,0 +1,117 @@
+<div nzTooltipTitle="Notifications" nzTooltipPlacement="left" nz-tooltip>
+  <div nz-dropdown nzTrigger="click" [nzDropdownMenu]="menu">
+    <a>
+      <nz-badge [nzDot]="count > 0">
+        <a class="head-example"><i class="icon fe fe-bell"></i></a>
+      </nz-badge>
+    </a>
+  </div>
+  <nz-dropdown-menu #menu="nzDropdownMenu">
+    <div class="card cui__utils__shadow width-350">
+      <div class="card-body p-0">
+        <div>
+          <nz-tabset class="tabs" [nzSelectedIndex]="0">
+            <!-- Alerts -->
+            <nz-tab [nzTitle]="alertTemp" *ngIf="role == 'CompanyAdmin'">
+              <ng-template #alertTemp>
+                <nz-badge [nzDot]="alerts && alerts.length > 0">
+                  Alerts
+                </nz-badge>
+              </ng-template>
+              <ng-container *ngIf="alerts && alerts.length > 0; else noAlerts">
+                <ng-container *ngFor="let item of alerts">
+                  <div class="text-gray-6">
+                    <ul class="list-unstyled">
+                      <li class="mb-3">
+                        <div class="head">
+                          <p class="title">
+                            <!-- Event Update: -->
+                            <span class="text-primary">{{item.text.includes('Invoice') ? 'Accounting' : 'Alert'}}</span>
+                          </p>
+                          <time class="time">{{item.timeSent | amFromUtc | amLocal | amTimeAgo}}</time>
+                        </div>
+                        <p [innerHTML]="item.text"></p>
+                      </li>
+
+                    </ul>
+                  </div>
+                </ng-container>
+              </ng-container>
+              <ng-template #noAlerts>
+                <div class="text-center mb-3 py-4 bg-light rounded">No Alerts</div>
+              </ng-template>
+            </nz-tab>
+            <!-- End Alerts -->
+
+            <!-- Events -->
+            <nz-tab [nzTitle]="eventTemp" *ngIf="role !== 'Client'">
+              <ng-template #eventTemp>
+                <nz-badge [nzDot]="events && events.length > 0">
+                  Events
+                </nz-badge>
+              </ng-template>
+              <ng-container *ngIf="events && events.length > 0; else noEvents">
+                <ng-container *ngFor="let item of events">
+                  <div class="text-gray-6">
+                    <ul class="list-unstyled">
+                      <li class="mb-3">
+                        <div class="head">
+                          <p class="title">
+                            <!-- Event Update: -->
+                            <span class="text-primary">Event</span>
+                          </p>
+                          <time class="time">{{item.timeSent | amFromUtc | amLocal | amTimeAgo}}</time>
+                        </div>
+                        <p [innerHTML]="item.text"></p>
+                      </li>
+
+                    </ul>
+                  </div>
+                </ng-container>
+              </ng-container>
+              <ng-template #noEvents>
+                <div class="text-center mb-3 py-4 bg-light rounded">No Events</div>
+              </ng-template>
+            </nz-tab>
+            <!-- End Events -->
+
+            <!-- Actions -->
+            <nz-tab [nzTitle]="actionTemp">
+              <ng-template #actionTemp>
+                <nz-badge [nzDot]="actions && actions.length > 0">
+                  Actions
+                </nz-badge>
+              </ng-template>
+              <ng-container *ngIf="actions && actions.length > 0; else noActions">
+                <ng-container *ngFor="let item of actions">
+                  <div class="text-gray-6">
+                    <ul class="list-unstyled">
+                      <li class="mb-3">
+                        <div class="head">
+                          <p class="title">
+                            <!-- Event Update: -->
+                            <span class="text-primary">
+                              {{(item.text).includes('Contact') ? 'Contact' : 'Case'}}
+                            </span>
+                          </p>
+                          <time class="time">{{item.timeSent | amFromUtc | amLocal | amTimeAgo}}</time>
+                        </div>
+                        <p [innerHTML]="item.text"></p>
+                      </li>
+
+                    </ul>
+                  </div>
+                </ng-container>
+              </ng-container>
+              <ng-template #noActions>
+                <div class="text-center mb-3 py-4 bg-light rounded">No Actions</div>
+              </ng-template>
+            </nz-tab>
+            <!-- End Actions -->
+
+          </nz-tabset>
+        </div>
+      </div>
+    </div>
+  </nz-dropdown-menu>
+</div>

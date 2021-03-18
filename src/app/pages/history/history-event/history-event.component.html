@@ -1,0 +1,29 @@
+<div class="row">
+    <div class="col-xl-12 ">
+        <nz-table class="card" #rowSelectionTable [nzData]="listData" [nzNoResult]="noData" [nzLoading]="loading" (nzQueryParams)="getData($event)" #sortTable [nzShowPagination]="false">
+            <thead>
+                <tr>
+                    <th [nzSortFn]="true" nzColumnKey="Name">Event Name</th>
+                    <th [nzSortFn]="true" nzColumnKey="AuditedBy">Created/Updated By</th>
+                    <th [nzSortFn]="true" nzColumnKey="AuditDate">Date & Time</th>
+                    <th [nzSortFn]="true" nzColumnKey="AuditType">Description</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr *ngFor="let data of listData; let i = index;">
+                    <td title="{{ data.name }}">{{ data.name }}</td>
+                    <td title="{{ data.auditedBy }}">{{ data.auditedBy }}</td>
+                    <td title="{{data.auditDate | appDateFormat: true}}">{{ data.auditDate | appDateFormat: true}}</td>
+                    <td title="{{data.description}}">{{ data.description }}</td>
+                </tr>
+            </tbody>
+        </nz-table>
+        <nz-pagination nzShowSizeChanger [nzPageSize]="pageSize" [nzPageIndex]="pageIndex" [nzTotal]="pageTotal" (nzPageIndexChange)="onPageIndexChange($event)" (nzPageSizeChange)="onPageSizeChange($event)"></nz-pagination>
+    </div>
+</div>
+
+<ng-template #noData>
+    <nz-empty class="m-5" [nzNotFoundImage]="'assets/images/no-data/no-account.svg'">
+    </nz-empty>
+</ng-template>

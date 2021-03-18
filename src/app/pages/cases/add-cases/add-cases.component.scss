@@ -1,0 +1,11 @@
+.bb mat-expansion-panel-header {
+    padding-left: 0 !important;
+}
+
+.kit__utils__avatar--size64 {
+    width: 9rem !important;
+    height: 9rem !important;
+}
+::ng-deep .mat-select-panel{
+    max-width: 250px !important;
+}

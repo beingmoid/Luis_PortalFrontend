@@ -1,0 +1,163 @@
+<div class="breadcrumbs mb-3">
+  <strong>Commission</strong>
+</div>
+<div>
+  <div class="row mb-4">
+    <div class="col-xl-10">
+      <div class="w-25 searchBarWidth">
+        <nz-input-group nzSize="large" [nzPrefix]="suffixIconSearch">
+          <input type="text" nz-input [(ngModel)]="search" (ngModelChange)="filter()"
+            placeholder="Search for Commission" />
+        </nz-input-group>
+        <ng-template #suffixIconSearch>
+          <i nz-icon nzType="search"></i>
+        </ng-template>
+      </div>
+    </div>
+    <div class="col-xl-2 ">
+      <a nz-button class="float-right" nzType="primary" (click)="showModal()">Add Commission</a>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xl-12 ">
+      <nz-table class="card" #rowSelectionTable [nzData]="listData" [nzNoResult]="noData" nzShowSizeChanger
+        [nzPageSize]="pageSize">
+        <thead>
+          <tr>
+            <th class="ant-table-selection-column" [nzSortFn]="sortNumbersFn" (click)="sortOn('index')">#
+            </th>
+            <th [nzSortFn]="sortNamesFn" (click)="sortOn('agentName')" class="ant-table-selection-column">Person/Agent Name</th>
+            <th [nzSortFn]="sortNamesFn" (click)="sortOn('companyName')">Company Name</th>
+            <th [nzSortFn]="sortNamesFn" (click)="sortOn('case')">Case No.</th>
+            <th [nzSortFn]="sortNamesFn" (click)="sortOn('caseTypeName')">Case Type</th>
+            <th [nzSortFn]="sortNumbersFn" (click)="sortOn('totalCommission')">Total Commission</th>
+            <th [nzSortFn]="sortNumbersFn" (click)="sortOn('paid')">Paid</th>
+            <th [nzSortFn]="sortNumbersFn" (click)="sortOn('balance')">Balance</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let data of rowSelectionTable.data; let i = index;" (click)="showSingleCommission(data)" nz-tooltip
+          nzTooltipTitle="Click to View Commission" style="cursor: pointer;">
+            <td>{{data.index}}</td>
+            <td>{{ data.agentName }}</td>
+            <td>{{ data.companyName}}</td>
+            <td>{{ data.case }}</td>
+            <td>{{ data.caseTypeName }}</td>
+            <td> {{ data.totalCommission | currency }}</td>
+            <td> {{ data.paid | currency}}</td>
+            <td> {{ data.balance| currency }}</td>
+            <td>
+              <i nz-icon nzType="edit" nz-tooltip nzTooltipTitle="Edit Commission" nzTheme="fill"
+                (click)="$event.stopPropagation(handleEdit(data))" class="text-success"></i>
+              <nz-divider nzType="vertical"></nz-divider>
+              <i nz-icon nzType="delete" nz-tooltip nzTooltipTitle="Delete Commission" nzTheme="fill"
+                (click)="$event.stopPropagation(DeleteCommission(data))" class="text-danger"></i>
+            </td>
+          </tr>
+        </tbody>
+      </nz-table>
+    </div>
+  </div>
+</div>
+
+<ng-template #noData>
+  <nz-empty class="m-5" [nzNotFoundImage]="'assets/images/no-data/no-commission.svg'"
+    [nzNotFoundContent]="noDataDescrp">
+  </nz-empty>
+</ng-template>
+
+<ng-template #noDataDescrp>
+  <div class="m-4">
+    No Data Available.
+    <a (click)="showModal()" class="kit__utils__link">
+      Create New Commission
+    </a>
+  </div>
+</ng-template>
+
+<div>
+  <nz-modal nzFooter="null" nzWidth="700" [(nzVisible)]="isVisible" [nzTitle]="modalTitle" (nzOnCancel)="handleCancel()"
+    nzMaskClosable="false">
+    <app-add-commission [commissionDataSub]="commissionObserverSubject"></app-add-commission>
+  </nz-modal>
+</div>
+
+<!-- View Modal -->
+<div>
+  <nz-modal nzFooter="null" nzWidth="500" [(nzVisible)]="showCommission" [nzTitle]="'Commission Details'"
+    nzMaskClosable="false" (nzOnCancel)="showCommission = false">
+
+    <div>
+      <div class="row">
+        <div class="popup-action-btns">
+          <i nz-icon nzType="edit" nz-tooltip nzTooltipTitle="Edit Commission"
+            (click)="$event.stopPropagation(handleEdit(commission))" nzTheme="fill" class="text-success mr-3"></i>
+
+          <i nz-icon nzType="delete" nz-tooltip nzTooltipTitle="Delete Commission"
+            (click)="$event.stopPropagation(DeleteCommission(commission))" nzTheme="fill" class="text-danger"></i>
+        </div>
+
+
+        <div class="col-xl-12 pl-4">
+          <div class="">
+            <div class="row mb-3">
+              <div class="col-xl-5 mb-4">
+                <div class="t-10 text-gray-5">Person / Agent Name</div>
+                <div>{{commission.agentName}}</div>
+              </div>
+
+              <div class="col-xl-5 mb-4">
+                <div class="t-10 text-gray-5">Company Name</div>
+                <div>{{commission.companyName}}</div>
+              </div>
+
+              <div class="col-xl-5 mb-4">
+                <div class="t-10 text-gray-5">Case NO</div>
+                <div>{{commission.case}}</div>
+              </div>
+
+              <div class="col-xl-5 mb-4">
+                <div class="t-10 text-gray-5">Case Type</div>
+                <div>{{commission.caseTypeName}}</div>
+              </div>
+
+              <div class="col-xl-5 mb-4">
+                <div class="t-10 text-gray-5">Client Name </div>
+                <div>{{commission.clientName}}</div>
+              </div>
+
+              <div class="col-xl-5 mb-4">
+                <div class="t-10 text-gray-5">Referred on Date</div>
+                <div>{{commission.referredOnDate | appDateFormat: false}}</div>
+              </div>
+
+              <div class="col-xl-5 mb-4">
+                <div class="t-10 text-gray-5">Total Commission</div>
+                <div>{{commission.totalCommission}}</div>
+              </div>
+
+              <div class="col-xl-5 mb-4">
+                <div class="t-10 text-gray-5">Paid</div>
+                <div>{{commission.paid}}</div>
+              </div>
+
+              <div class="col-xl-5 mb-4">
+                <div class="t-10 text-gray-5">Balance</div>
+                <div>{{commission.balance}}</div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+
+
+
+      </div>
+    </div>
+
+  </nz-modal>
+</div>
+

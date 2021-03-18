@@ -1,0 +1,337 @@
+<div class="plans-div" *ngIf="!userDetail?.isValidPlan && userDetail?.isPaidPlan">
+    <ngb-alert [dismissible]="false" class="trial-expiry-danger f-13 w-100 mb-4 m-0">
+        <i nz-icon nzType="warning" nzTheme="outline" class="font-weight-bold f-18 mr-2"></i> {{userDetail?.subscriptionMessage}}
+    </ngb-alert>
+</div>
+
+<div class="plans-div" *ngIf="userDetail?.isFreePlan && userDetail?.daysLeft <= 0">
+    <ngb-alert [dismissible]="false" class="trial-expiry-danger f-13 w-100 mb-4 m-0">
+        <i nz-icon nzType="warning" nzTheme="outline" class="font-weight-bold f-18 mr-2"></i> Free Trial Expired, please upgrade plan to continue managing your business.
+    </ngb-alert>
+</div>
+
+
+<div class="plans-div px-3">
+
+
+    <div *ngIf="userDetail?.isValidPlan || userDetail?.isFreePlan || userDetail?.isPaidPlan; then currentPlanDiv else previousPlanDiv">
+    </div>
+
+
+    <!-- <div class="current-plan-div text-dark font-weight-bold font-size-24 mb-4 text-center">
+    Current Subscribed Plan <span class="text-primary" *ngIf="userDetail?.subscriptionPlanName"> (
+      {{userDetail?.subscriptionPlanName}} ) </span>
+    <span class="text-primary" *ngIf="!userDetail?.subscriptionPlanName"> ( N/A ) </span>
+  </div> -->
+
+
+    <div class="free-trail-expire-div text-center row align-items-center">
+        <div class="col-sm-12">
+
+            <div *ngIf="userDetail?.isFreePlan; then freeTrialDaysMessage else paidDaysLeftMessage"></div>
+
+            <a href="javascript:void(0);" *ngIf="!isOtherPlan && (userDetail?.isFreePlan || userDetail?.daysLeft <= 0)" class="btn btn-success upgrade-plan-btn" (click)="upgradePlan(subscribedPlan)">
+        Upgrade </a>
+
+            <a href="javascript:void(0);" *ngIf="userDetail?.isPaidPlan && userDetail?.daysLeft > 0" class="upgrade-billing-btn cancelSubscriptionBtn ant-btn ant-btn-primary float-right ml-2" (click)="cancelSubscription(subscribedPlan)">
+        Cancel Subscription </a>
+
+            <a href="javascript:void(0);" *ngIf="userDetail?.isPaidPlan" class="upgrade-billing-btn ant-btn ant-btn-primary float-right" (click)="updateBillingDetails()">
+        Update Billing Detail </a>
+        </div>
+    </div>
+
+    <div class="row m-5 text-center justify-content-center ">
+        <nz-radio-group class="radio" [(ngModel)]="planType" nzButtonStyle="solid" nzSize="large">
+            <label nz-radio-button nzValue="monthly" (click)="changePlane('monthly')"><span>Monthly</span></label>
+            <label nz-radio-button nzValue="annually" (click)="changePlane('annually')"><span>Annually</span></label>
+        </nz-radio-group>
+    </div>
+
+    <div class="pricing-plan-div">
+        <section>
+            <div class="pricing pricing-palden" *ngIf="planType == 'monthly'">
+                <div class="pricing-item features-item ja-animate" *ngFor="let item of monthlyPlans" [ngClass]="{currentSubscribedPlan: subscribedPlan.id == item.id}" data-animation="move-from-bottom" data-delay="item-0" style="min-height: 497px;">
+                    <div class="pricing-deco">
+                        <!-- bubbles svg  -->
+                        <svg class="pricing-deco-img" enable-background="new 0 0 200 50" height="100px" id="Layer_1" preserveAspectRatio="none" version="1.1" viewBox="0 0 200 50" width="300px" x="0px" xml:space="preserve" y="0px">
+              <path class="deco-layer deco-layer--1"
+                d="M30.913,43.944c0,0,42.911-34.464,87.51-14.191c77.31,35.14,113.304-1.952,146.638-4.729c48.654-4.056,69.94,16.218,69.94,16.218v54.396H30.913V43.944z"
+                fill="#FFFFFF" opacity="0.6"></path>
+              <path class="deco-layer deco-layer--2"
+                d="M-35.667,44.628c0,0,42.91-34.463,87.51-14.191c77.31,35.141,113.304-1.952,146.639-4.729c48.653-4.055,69.939,16.218,69.939,16.218v54.396H-35.667V44.628z"
+                fill="#FFFFFF" opacity="0.6"></path>
+              <path class="deco-layer deco-layer--3"
+                d="M43.415,98.342c0,0,48.283-68.927,109.133-68.927c65.886,0,97.983,67.914,97.983,67.914v3.716H42.401L43.415,98.342z"
+                fill="#FFFFFF" opacity="0.7"></path>
+              <path class="deco-layer deco-layer--4"
+                d="M-34.667,62.998c0,0,56-45.667,120.316-27.839C167.484,57.842,197,41.332,232.286,30.428c53.07-16.399,104.047,36.903,104.047,36.903l1.333,36.667l-372-2.954L-34.667,62.998z"
+                fill="#FFFFFF"></path>
+            </svg>
+                        <div class="pricing-price"><span class="pricing-currency"> $ <span class="pricing-currency-type">
+                  ({{item.currency | uppercase}}) </span> </span> {{item.pricePerUser}}
+                            <span class="pricing-period"> / User</span>
+                        </div>
+                        <h3 class="pricing-title"> {{item.name}} </h3>
+                    </div>
+                    <div class="plan-description f-13 text-muted">
+
+                        <ul class="pricing-feature-list">
+                            <li class="pricing-feature per-month f-13 py-2">{{item.storage}} GB Storage Allowed </li>
+                            <li class="pricing-feature" [innerHTML]="item.description"></li>
+                        </ul>
+                    </div>
+                    <div class="get-plan-btn">
+
+                        <button [disabled]="item['purchasedPlan'] || !item.isEnabled" (click)="upgradePlan(item)" class="btn btn-info custom text-center pricing-action currentPlanBtn currentPlanBtn01 ">
+              <span *ngIf="item['selectedFreePlan']" class="f-13 font-weight-bold">Upgrade
+                Plan</span>
+              <span *ngIf="item['otherPlan']" class="f-13 font-weight-bold">Get This
+                Plan</span>
+              <span *ngIf="item['purchasedPlan']" class="f-13 font-weight-bold">Purchased</span>
+            </button>
+
+                        <button *ngIf="item['purchasedPlan'] && !item.isEnabled" (click)="updateSubscription(item)" class="btn btn-info custom text-center pricing-action currentPlanBtn currentPlanBtn02">
+              <span *ngIf="item['purchasedPlan']" class="f-13 font-weight-bold">Upgrade</span>
+            </button>
+
+
+                    </div>
+                    <div class="mt-2 text-danger" *ngIf="!item.isEnabled">
+                        <label>Current plan disabled by admin</label>
+                    </div>
+                </div>
+
+                <div class="text-center  no-data mt-5 pt-5" *ngIf="monthlyPlans.length == 0">
+                    <img class="mb-3" height="250" src="assets/images/no-data/no-case.svg" alt="No Cases">
+                    <div class="mt-2">
+                        No Plans Available
+                    </div>
+                </div>
+
+            </div>
+            <!-- monthly ends  -->
+            <div class="pricing pricing-palden" *ngIf="planType == 'annually'">
+                <div class="pricing-item features-item ja-animate" *ngFor="let item of yearlyPlans" [ngClass]="{currentSubscribedPlan: subscribedPlan.id == item.id}" data-animation="move-from-bottom" data-delay="item-0" style="min-height: 497px;">
+                    <div class="pricing-deco">
+                        <!-- bubbles svg  -->
+                        <svg class="pricing-deco-img" enable-background="new 0 0 200 50" height="100px" id="Layer_1" preserveAspectRatio="none" version="1.1" viewBox="0 0 200 50" width="300px" x="0px" xml:space="preserve" y="0px">
+              <path class="deco-layer deco-layer--1"
+                d="M30.913,43.944c0,0,42.911-34.464,87.51-14.191c77.31,35.14,113.304-1.952,146.638-4.729c48.654-4.056,69.94,16.218,69.94,16.218v54.396H30.913V43.944z"
+                fill="#FFFFFF" opacity="0.6"></path>
+              <path class="deco-layer deco-layer--2"
+                d="M-35.667,44.628c0,0,42.91-34.463,87.51-14.191c77.31,35.141,113.304-1.952,146.639-4.729c48.653-4.055,69.939,16.218,69.939,16.218v54.396H-35.667V44.628z"
+                fill="#FFFFFF" opacity="0.6"></path>
+              <path class="deco-layer deco-layer--3"
+                d="M43.415,98.342c0,0,48.283-68.927,109.133-68.927c65.886,0,97.983,67.914,97.983,67.914v3.716H42.401L43.415,98.342z"
+                fill="#FFFFFF" opacity="0.7"></path>
+              <path class="deco-layer deco-layer--4"
+                d="M-34.667,62.998c0,0,56-45.667,120.316-27.839C167.484,57.842,197,41.332,232.286,30.428c53.07-16.399,104.047,36.903,104.047,36.903l1.333,36.667l-372-2.954L-34.667,62.998z"
+                fill="#FFFFFF"></path>
+            </svg>
+                        <div class="pricing-price"><span class="pricing-currency"> $ <span class="pricing-currency-type">
+                  ({{item.currency | uppercase}}) </span> </span> {{item.pricePerUser}}
+                            <span class="pricing-period"> / User</span>
+                        </div>
+                        <h3 class="pricing-title"> {{item.name}} </h3>
+                    </div>
+                    <div class="plan-description f-13 text-muted">
+
+                        <ul class="pricing-feature-list">
+                            <li class="pricing-feature per-month f-13 py-2">{{item.storage}} GB Storage Allowed </li>
+                            <li class="pricing-feature" [innerHTML]="item.description"></li>
+                        </ul>
+                    </div>
+                    <div class="get-plan-btn">
+                        <button [disabled]="item['purchasedPlan'] || !item.isEnabled" (click)="upgradePlan(item)" class="btn btn-info custom text-center pricing-action">
+              <span *ngIf="item['selectedFreePlan']" class="f-13 font-weight-bold">Upgrade
+                Plan</span>
+              <span *ngIf="item['otherPlan']" class="f-13 font-weight-bold">Get This
+                Plan</span>
+              <span *ngIf="item['purchasedPlan']" class="f-13 font-weight-bold">Purchased</span>
+            </button>
+
+                        <button *ngIf="item['purchasedPlan'] || !item.isEnabled" (click)="updateSubscription(item)" class="btn btn-info custom text-center pricing-action currentPlanBtn currentPlanBtn02">
+              <span *ngIf="item['purchasedPlan']" class="f-13 font-weight-bold">Upgrade</span>
+            </button>
+
+                        <div class="mt-2 text-danger">
+                            <label *ngIf="!item.isEnabled">Current plan disabled by admin</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center  no-data mt-5 pt-5" *ngIf="yearlyPlans.length == 0">
+                    <img class="mb-3" height="250" src="assets/images/no-data/no-case.svg" alt="No Cases">
+                    <div class="mt-2">
+                        No Plans Available
+                    </div>
+                </div>
+
+            </div>
+            <!-- Annually Ends  -->
+        </section>
+    </div>
+</div>
+
+
+<!-- Modals -->
+
+<div>
+    <nz-modal nzFooter="null" nzWidth="700" [(nzVisible)]="isVisible" [nzTitle]="'Upgrade Plan'" (nzOnCancel)="handleCancel()" nzMaskClosable="false">
+
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="col-xl-12 mb-2 f-18">
+                    <label>Selected Plan: <strong class="text-primary">{{planToUpgrade.name | uppercase}}</strong></label>
+                </div>
+
+                <mat-form-field class="col-xl-12 mb-2 f-18">
+                    <mat-label>No. of Users</mat-label>
+                    <input matInput placeholder="Enter number of Users" [(ngModel)]="usersToRegister" maxlength="8" autocomplete="off" (ngModelChange)="onNumberOfUsersChange($event)" [min]="planToUpgrade.freeUsersAllowed" onlyNumbers>
+                    <mat-hint class="text-warning" *ngIf="usersToRegister < minUserAllowed">
+                        You can have {{minUserAllowed}} free users as per your selected plan.
+                    </mat-hint>
+                </mat-form-field>
+
+                <div class="col-xl-12 mb-2 f-18">
+                    <label>
+            Amount Payable:
+            <strong class="pl-2">{{amountPayable | currency}} ({{planToUpgrade.currency |
+              uppercase}})</strong>
+          </label>
+                </div>
+
+                <div [hidden]="cardDetails">
+                    <div class="form-group card f-18 m-3">
+                        <div class="card-body">
+                            <div #cardElement id="cardElement"></div>
+                            <p *ngIf="cardErrors" class="font-danger"> {{ cardErrors }} </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div [hidden]="!cardDetails" class="col-xl-12 mb-2 f-16">
+                    <label>
+            Current Card:
+            <strong> XXXX-XXXX-XXXX-{{cardDetails?.last4}}</strong>
+          </label>
+                    <br>
+                    <label>
+            Card Type:
+            <strong>{{cardDetails?.brand}}</strong>
+          </label>
+                </div>
+
+                <div class="form-group text-center mt-3">
+                    <button (click)="handleSubmit()" [nzLoading]="loading" nz-button nzType="primary">Proceed</button>
+                </div>
+            </div>
+        </div>
+    </nz-modal>
+</div>
+
+<div>
+    <nz-modal nzFooter="null" nzWidth="700" [(nzVisible)]="updateBilliniSVisible" [nzTitle]="'Update Billing Details'" (nzOnCancel)="handleCancel()" nzMaskClosable="false">
+
+        <div class="col-xl-12 mb-2 f-16">
+            <label>
+        Current Card:
+        <strong> XXXX-XXXX-XXXX-{{cardDetails?.last4}}</strong>
+      </label>
+            <br>
+            <label>
+        Card Type:
+        <strong>{{cardDetails?.brand}}</strong>
+      </label>
+        </div>
+
+        <div class="form-group card f-18 m-3">
+            <div class="card-body">
+                <div #cardElementToUpdate id="cardElementToUpdate"></div>
+                <p *ngIf="cardErrorsToUpdate" class="font-danger"> {{ cardErrorsToUpdate }} </p>
+            </div>
+        </div>
+        <div class="form-group text-center mt-3">
+            <button (click)="handleUpdateBillingSubmit()" [nzLoading]="loading" nz-button nzType="primary">Save</button>
+        </div>
+    </nz-modal>
+</div>
+
+
+<div>
+    <nz-modal nzFooter="null" nzWidth="700" [(nzVisible)]="isVisibleUpdateSubscription" [nzTitle]="'Update Subscription'" (nzOnCancel)="handleCancel()" nzMaskClosable="false">
+
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="col-xl-12 mb-2 f-18">
+                    <label>Selected Plan: <strong class="text-primary">{{planToUpgrade.name | uppercase}}</strong></label>
+                </div>
+
+                <mat-form-field class="col-xl-12 mb-2 f-18">
+                    <mat-label>No. of Users</mat-label>
+                    <input matInput placeholder="Enter number of Users" [(ngModel)]="usersToRegister" maxlength="8" autocomplete="off" (ngModelChange)="onNumberOfUsersChange($event)" [min]="planToUpgrade.freeUsersAllowed" onlyNumbers>
+                    <mat-hint class="text-warning" *ngIf="usersToRegister < minUserAllowed">
+                        You can have {{minUserAllowed}} free users as per your selected plan.
+                    </mat-hint>
+                </mat-form-field>
+
+                <div class="col-xl-12 mb-2 f-18">
+                    <label>
+            Amount Payable:
+            <strong class="pl-2">{{amountPayable | currency}} ({{planToUpgrade.currency |
+              uppercase}})</strong>
+            <small *ngIf="planToUpgrade.isRecurring"> will be billed from next recurring date.</small>
+          </label>
+                </div>
+
+                <div class="form-group text-center mt-3">
+                    <button (click)="handleupdateSubscription()" [nzLoading]="loading" nz-button nzType="primary">Save</button>
+                </div>
+            </div>
+        </div>
+    </nz-modal>
+</div>
+
+
+<!-- templates -->
+
+<ng-template #freeTrialDaysMessage>
+    <div class="plans-remaining-days-info d-inline-flex pt-1 pull-left f-13">
+        <span class="text-danger pr-2" *ngIf="userDetail?.daysLeft > 0">
+      <strong> Note: </strong> Your Free Trial has ({{userDetail?.daysLeft}}) Days left
+    </span>
+        <span class="text-danger pr-2" *ngIf="userDetail?.daysLeft <= 0">
+      <strong> Note: </strong> Your Free Trial has expired!
+    </span>
+    </div>
+</ng-template>
+
+<ng-template #paidDaysLeftMessage>
+    <div class="plans-remaining-days-info d-inline-flex pt-1 pull-left f-13">
+        <span class="text-danger pr-2" *ngIf="userDetail?.daysLeft <= 0"><strong> Note: </strong> Your plan has been
+      expired! please upgrade.</span>
+        <span class="text-danger pr-2" *ngIf="userDetail?.daysLeft > 0"><strong>Note: </strong> ({{userDetail?.daysLeft -
+      1}}) Days left in your
+      plan</span>
+    </div>
+</ng-template>
+
+<ng-template #currentPlanDiv>
+    <div class="current-plan-div text-dark font-weight-bold font-size-24 mb-4 text-center">
+        Current Subscribed Plan <span class="text-primary" *ngIf="userDetail?.subscriptionPlanName">
+      {{userDetail?.subscriptionPlanName}} </span>
+        <br>
+        <span class="numberOfUsersText"> Number of Users </span> <span class="text-primary" *ngIf="userDetail?.subscriptionPlanName">
+      {{userDetail?.numberOfUsersPurchased}} </span>
+        <span class="text-primary" *ngIf="!userDetail?.subscriptionPlanName"> N/A </span>
+    </div>
+</ng-template>
+
+<ng-template #previousPlanDiv>
+    <div class="current-plan-div text-dark font-weight-bold font-size-24 mb-4 text-center">
+        Previously Subscribed Plan <span class="text-primary" *ngIf="userDetail?.subscriptionPlanName">
+      {{userDetail?.subscriptionPlanName}} </span>
+        <span class="text-primary" *ngIf="!userDetail?.subscriptionPlanName"> N/A </span>
+    </div>
+</ng-template>

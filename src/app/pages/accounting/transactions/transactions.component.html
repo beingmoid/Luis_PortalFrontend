@@ -1,0 +1,221 @@
+<div>
+    <div class="row mb-4">
+        <div class="col-xl-10">
+            <div class="w-25 searchBarWidth">
+                <nz-input-group nzSize="large" [nzPrefix]="suffixIconSearch">
+                    <input type="text" nz-input [(ngModel)]="search" (ngModelChange)="filter()"
+                        placeholder="Search for Transactions" />
+                </nz-input-group>
+                <ng-template #suffixIconSearch>
+                    <i nz-icon nzType="search"></i>
+                </ng-template>
+            </div>
+        </div>
+        <div class="col-xl-2 ">
+            <a nz-button class="float-right" *ngIf="_permissionService.canCreate" nzType="primary"
+                (click)="showModal()">Add
+                Transaction</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xl-12 ">
+            <nz-table class="card" #rowSelectionTable [nzData]="listData" [nzNoResult]="noData" nzShowSizeChanger
+                [nzPageSize]="pageSize">
+                <thead>
+                    <tr>
+                        <!-- <th class="ant-table-selection-column" [nzSortFn]="sortNumbersFn" (click)="sortOn('index')">#
+                        </th> -->
+                        <th [nzSortFn]="sortNamesFn" (click)="sortOn('invoiceNo')" class="ant-table-selection-column">Invoice #</th>
+                        <th [nzSortFn]="sortNamesFn" (click)="sortOn('invoiceDate')">Invoice Date</th>
+                        <th [nzSortFn]="sortNamesFn" (click)="sortOn('requested')">Requested</th>
+                        <th [nzSortFn]="sortNamesFn" (click)="sortOn('paid')">Paid</th>
+                        <th [nzSortFn]="sortNamesFn" (click)="sortOn('paymentReceivedDate')">Payment R.Date</th>
+                        <th [nzSortFn]="sortNamesFn" (click)="sortOn('paymentMethodName')">Payment Method</th>
+                        <th [nzSortFn]="sortNamesFn" (click)="sortOn('notes')">Notes</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr *ngFor="let data of rowSelectionTable.data; let i = index;" (click)="showSingleTransaction(data)" nz-tooltip
+                    nzTooltipTitle="Click to View Transaction" style="cursor: pointer;">
+                        <!-- <td>{{data.index}}</td> -->
+                        <td class="text-left ant-table-selection-column">{{ data.invoiceNo }}</td>
+                        <td>{{ data.invoiceDate | appDateFormat: false }}</td>
+                        <td>{{ data.requested }}</td>
+                        <td>${{ data.paid }}</td>
+                        <td>{{ data.paymentReceivedDate | appDateFormat: false }}</td>
+                        <td>{{ data.paymentMethodName }}</td>
+                        <td>{{ data.notes }}</td>
+                        <td>
+                            <i nz-icon nzType="edit" *ngIf="_permissionService.canEdit" nz-tooltip
+                                nzTooltipTitle="Edit Transaction" (click)="$event.stopPropagation(editTransaction(data))" nzTheme="fill"
+                                class="text-success"></i>
+                            <nz-divider nzType="vertical"></nz-divider>
+                            <i nz-icon nzType="delete" *ngIf="_permissionService.canDelete" nz-tooltip
+                                nzTooltipTitle="Delete Transaction" (click)="$event.stopPropagation(deleteTransaction(data))" nzTheme="fill"
+                                class="text-danger"></i> 
+                        </td>
+                    </tr>
+                </tbody>
+            </nz-table>
+        </div>
+    </div>
+</div>
+<!-- No Data for Transactions -->
+<ng-template #noData>
+    <nz-empty class="m-5" [nzNotFoundImage]="'assets/images/no-data/no-transaction.svg'"
+        [nzNotFoundContent]="noDataDescrp">
+    </nz-empty>
+</ng-template>
+<ng-template #noDataDescrp>
+    <div class="m-4">
+        No Data Available.
+        <a *ngIf="_permissionService.canCreate" (click)="isVisible = true" class="kit__utils__link">
+            Create New Transaction
+        </a>
+    </div>
+</ng-template>
+
+<div>
+    <nz-modal nzFooter="null" nzWidth="700" [(nzVisible)]="isVisible" nzMaskClosable="false"
+        [nzTitle]="isEditMode ? 'Update Transaction':'Add Transaction'" (nzOnCancel)="handleCancel()">
+        <div class="row">
+            <form [formGroup]="transactionForm" #formDirective="ngForm" (ngSubmit)="onSubmit(formDirective)" novalidate>
+                <mat-form-field class="form-group col-xl-6">
+                    <mat-label>Invoice</mat-label>
+                    <mat-select formControlName="invoiceId">
+                        <mat-option *ngFor="let item of invoices" [value]="item.id">{{item.invoiceNo}}</mat-option>
+                        <mat-option *ngIf="invoices && invoices.length < 1" disabled>No record found
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="f.invoiceId.hasError('required')">Invoice is required</mat-error>
+                </mat-form-field>
+                <mat-form-field class="form-group col-xl-6">
+                    <input matInput formControlName="invoiceDate" autocomplete="off" (focus)="invoiceDate.open()"
+                        placeholder="Invoice Date" [matDatepicker]="invoiceDate" (keydown)="$event.preventDefault();">
+                    <mat-datepicker-toggle matSuffix [for]="invoiceDate"></mat-datepicker-toggle>
+                    <mat-datepicker #invoiceDate></mat-datepicker>
+                    <mat-error *ngIf="f.invoiceDate.hasError('required')">Invoice Date is required</mat-error>
+                </mat-form-field>
+                <mat-form-field class="form-group col-xl-6">
+                    <input matInput placeholder="Requested" formControlName="requested">
+                </mat-form-field>
+                <mat-form-field class="form-group col-xl-6">
+                    <span matPrefix>$</span>
+                    <input matInput onlyNumbers placeholder="Paid" formControlName="paid">
+                    <mat-error *ngIf="f.paid.hasError('required')">Paid Amount is required</mat-error>
+                </mat-form-field>
+                <mat-form-field class="form-group col-xl-6">
+                    <input matInput formControlName="paymentReceivedDate" autocomplete="off"
+                        (focus)="paymentReceivedDate.open()" placeholder="Payment Received Date"
+                        [matDatepicker]="paymentReceivedDate" (keydown)="$event.preventDefault();">
+                    <mat-datepicker-toggle matSuffix [for]="paymentReceivedDate"></mat-datepicker-toggle>
+                    <mat-datepicker #paymentReceivedDate></mat-datepicker>
+                    <mat-error *ngIf="f.paymentReceivedDate.hasError('required')">Payment Received Date is required
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="form-group col-xl-6">
+                    <mat-label>Payment Method</mat-label>
+                    <mat-select formControlName="paymentMethodId">
+                        <mat-option *ngFor="let item of paymentMethods" [value]="item.key">{{item.value}}</mat-option>
+                        <mat-option *ngIf="paymentMethods && paymentMethods.length < 1" disabled>No record found
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="f.paymentMethodId.hasError('required')">Payment Method is required</mat-error>
+                </mat-form-field>
+                <mat-form-field class="form-group col-xl-6">
+                    <input matInput placeholder="Account Number" formControlName="accountNumber">
+                    <mat-error *ngIf="f.accountNumber.hasError('required')">Account Number is required</mat-error>
+                    <mat-error *ngIf="f.accountNumber.hasError('maxlength')">Maximum 18 digits allowed</mat-error>
+                </mat-form-field>
+                <div class="form-group col-xl-12">
+                    <mat-checkbox formControlName="accountTransfer" class="text-primary">Account Transfer
+                    </mat-checkbox>
+                </div>
+                <mat-form-field class="form-group col-xl-6" *ngIf="f.accountTransfer.value">
+                    <input matInput onlyNumbers placeholder="Transfered From" formControlName="transferedFrom">
+                    <mat-error *ngIf="f.transferedFrom.hasError('maxlength')">Maximum 18 digits allowed</mat-error>
+                </mat-form-field>
+                <mat-form-field class="form-group col-xl-6" *ngIf="f.accountTransfer.value">
+                    <input matInput onlyNumbers placeholder="Transfered To" formControlName="transferedTo">
+                    <mat-error *ngIf="f.transferedTo.hasError('maxlength')">Maximum 18 digits allowed</mat-error>
+                </mat-form-field>
+                <mat-form-field class="form-group col-xl-6">
+                    <input matInput placeholder="Notes" formControlName="notes">
+                </mat-form-field>
+
+                <div class="form-group text-center mt-3">
+                    <button type="submit" nz-button nzType="primary">{{isEditMode ? 'Update Transaction' : 'Add
+                        Transaction'}}</button>
+                </div>
+            </form>
+        </div>
+    </nz-modal>
+</div>
+
+<!-- View Modal -->
+<div>
+    <nz-modal nzFooter="null" nzWidth="600" [(nzVisible)]="showTransaction" [nzTitle]="'Transaction Info'"
+      nzMaskClosable="false" (nzOnCancel)="showTransaction = false">
+  
+      <div>
+        <div class="row">
+          <div class="popup-action-btns">
+            <i nz-icon nzType="edit" nz-tooltip nzTooltipTitle="Edit Transaction"
+              (click)="$event.stopPropagation(editTransaction(transaction))" nzTheme="fill" class="text-success mr-3"></i>
+  
+            <i nz-icon nzType="delete" nz-tooltip nzTooltipTitle="Delete Transaction"
+              (click)="$event.stopPropagation(deleteTransaction(transaction))" nzTheme="fill" class="text-danger"></i>
+          </div>
+  
+          <div class="col-xl-12 pl-4">
+              <div class="row mb-3">
+                <div class="col-xl-5 offset-xl-1 mb-4">
+                  <div class="t-10 text-gray-5">Invoice #</div>
+                  <div>{{transaction.id}}</div>
+                </div>
+                <!-- Invoice #  -->
+                <div class="col-xl-5 offset-xl-1 mb-4">
+                  <div class="t-10 text-gray-5">Invoice Date</div>
+                  <div>{{transaction.invoiceDate | appDateFormat: false}}</div>
+                </div>
+                <!-- Invoice Date  -->
+                <div class="col-xl-12 offset-xl-1 mb-4">
+                  <div class="t-10 text-gray-5">Requested</div>
+                  <div>{{transaction.requested}}</div>
+                </div>
+                <!-- Requested  -->
+                <div class="col-xl-5 offset-xl-1 mb-4">
+                  <div class="t-10 text-gray-5">Payment Recevived date </div>
+                  <div>{{transaction.paymentReceivedDate | appDateFormat: false}}</div>
+                </div>
+                <!-- Payment Recevived date   -->
+                <div class="col-xl-5 offset-xl-1 mb-4">
+                  <div class="t-10 text-gray-5">Payment Method </div>
+                  <div>{{transaction.paymentMethodName}}</div>
+                </div>
+                <!-- Payment Method  -->
+                <div class="col-xl-5 offset-xl-1 mb-4">
+                  <div class="t-10 text-gray-5">Account Number</div>
+                  <div>{{transaction.accountNumber}}</div>
+                </div>
+                <!-- Account Number  -->
+                <div class="col-xl-5 offset-xl-1 mb-4">
+                  <div class="t-10 text-gray-5">Notes</div>
+                  <div>{{transaction.notes}}</div>
+                </div>
+                <!-- Notes  -->
+  
+              </div>
+          </div>
+  
+  
+  
+  
+        </div>
+      </div>
+  
+    </nz-modal>
+  </div>
+  

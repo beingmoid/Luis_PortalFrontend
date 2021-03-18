@@ -1,0 +1,27 @@
+<div class="row">
+    <div class="col-xl-12">
+        <div class="col-xl-12 card">
+            <nz-tabset class="" nzSize="large">
+                <nz-tab nzTitle="Retainer Schedule">
+                    <ng-container *ngTemplateOutlet="retainerSchedule"></ng-container>
+                </nz-tab>
+                <nz-tab nzTitle="Invoices">
+                    <ng-container *ngTemplateOutlet="invoices"></ng-container>
+                </nz-tab>
+                <nz-tab nzTitle="Transactions">
+                    <ng-container *ngTemplateOutlet="transactions"></ng-container>
+                </nz-tab>
+            </nz-tabset>
+        </div>
+    </div>
+</div>
+
+<ng-template #retainerSchedule>
+    <app-retainer-schedule></app-retainer-schedule>
+</ng-template>
+<ng-template #invoices>
+    <app-invoices></app-invoices>
+</ng-template>
+<ng-template #transactions>
+    <app-transactions></app-transactions>
+</ng-template>

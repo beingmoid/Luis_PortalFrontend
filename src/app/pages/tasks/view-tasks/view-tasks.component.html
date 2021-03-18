@@ -1,0 +1,228 @@
+<div class="breadcrumbs mb-3">
+  <strong>Tasks</strong>
+</div>
+<div>
+  <div class="row mb-4">
+    <div class="col-xl-10">
+      <div class="w-25 searchBarWidth">
+        <nz-input-group nzSize="large" [nzPrefix]="suffixIconSearch">
+          <input type="text" nz-input [(ngModel)]="search" (ngModelChange)="filter()" placeholder="Search for Task" />
+        </nz-input-group>
+        <ng-template #suffixIconSearch>
+          <i nz-icon nzType="search"></i>
+        </ng-template>
+      </div>
+    </div>
+    <div class="col-xl-2 ">
+      <a nz-button class="float-right" *ngIf="_permissionService.canCreate" nzType="primary" (click)="showModal()">Add
+        Task</a>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xl-12 ">
+      <nz-table class="card" #rowSelectionTable [nzData]="listData" [nzNoResult]="noData" nzShowSizeChanger
+        [nzPageSize]="pageSize">
+        <thead>
+          <tr>
+            <th [nzSortFn]="sortNamesFn" (click)="sortOn('taskName')" class="ant-table-selection-column">Task Name</th>
+            <th [nzSortFn]="sortNamesFn" (click)="sortOn('priorityName')">Priority</th>
+            <th [nzSortFn]="sortNamesFn" (click)="sortOn('dueDate')">Due Date</th>
+            <th [nzSortFn]="sortNamesFn" (click)="sortOn('assignedToName')">Assigned To</th>
+            <th [nzSortFn]="sortNamesFn" (click)="sortOn('assignedByName')">Assigned By</th>
+            <th [nzSortFn]="sortNamesFn" (click)="sortOn('statusName')">Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of rowSelectionTable.data; let i = index;" (click)="showSingleTask(data)" nz-tooltip
+            nzTooltipTitle="Click to View Task" style="cursor: pointer;">
+            <td>{{ data.taskName }}</td>
+
+            <td>
+              <div *ngIf="checkClass(data.priorityName,  'low')">
+                <span class="badge badge-success">
+                  {{data.priorityName}}
+                </span>
+              </div>
+              <div *ngIf="checkClass(data.priorityName,  'medium')">
+                <span class="badge badge-warning">
+                  {{data.priorityName}}
+                </span>
+              </div>
+              <div *ngIf="checkClass(data.priorityName,  'high')">
+                <span class="badge badge-danger">
+                  {{data.priorityName}}
+                </span>
+              </div>
+            </td>
+            <td>{{ data.dueDate | appDateFormat: false }}</td>
+            <td>{{ data.assignedToName }}</td>
+            <td>{{ data.assignedByName }}</td>
+            <td>
+              <div *ngIf="data.statusName.toLowerCase() === 'completed'">
+                <span class="badge badge-success">
+                  {{data.statusName}}
+                </span>
+              </div>
+              <div *ngIf="data.statusName.toLowerCase() === 'inprocess'">
+                <span class="badge badge-warning">
+                  {{data.statusName}}
+                </span>
+              </div>
+              <div *ngIf="data.statusName.toLowerCase() === 'pending'">
+                <span class="badge badge-danger">
+                  {{data.statusName}}
+                </span>
+              </div>
+              <div *ngIf="(data.statusName.toLowerCase() != 'completed') && (data.statusName.toLowerCase() != 'inprocess') && (data.statusName.toLowerCase() != 'pending')">
+                <span class="badge badge-warning">
+                  {{data.statusName}}
+                </span>
+              </div>
+            </td>
+            <td>
+              <i nz-icon nzType="edit" nz-tooltip nzTooltipTitle="Edit Task" nzTheme="fill"
+                (click)="$event.stopPropagation(editCaseTask(data))" *ngIf="_permissionService.canEdit"
+                class="text-success"></i>
+              <nz-divider nzType="vertical"></nz-divider>
+              <i nz-icon nzType="delete" nz-tooltip nzTooltipTitle="Delete Task"
+                (click)="$event.stopPropagation(deleteCaseTask(data))" *ngIf="_permissionService.canDelete"
+                nzTheme="fill" class="text-danger"></i>
+            </td>
+          </tr>
+        </tbody>
+      </nz-table>
+    </div>
+  </div>
+</div>
+
+<ng-template #noData>
+  <nz-empty class="m-5" [nzNotFoundImage]="'assets/images/no-data/no-task.svg'" [nzNotFoundContent]="noDataDescrp">
+  </nz-empty>
+</ng-template>
+
+<ng-template #noDataDescrp>
+  <div class="m-4">
+    No Data Available.
+    <a *ngIf="_permissionService.canCreate" (click)="isVisible = true" class="kit__utils__link">
+      Create New Task
+    </a>
+  </div>
+</ng-template>
+
+<!-- Notes Modal -->
+<div>
+  <nz-modal nzFooter="null" nzWidth="700" [(nzVisible)]="isVisible" nzMaskClosable="false"
+    [nzTitle]="isEditMode ? 'Update Task' : 'Add Task'" (nzOnCancel)="handleCancel()">
+    <app-add-tasks [caseTaskSubject]="caseTaskObserverSubject" (doneSubmission)="submissionDone($event)">
+    </app-add-tasks>
+  </nz-modal>
+</div>
+
+
+<!-- View Modal -->
+
+
+<div>
+  <nz-modal nzFooter="null" nzWidth="500" [(nzVisible)]="showtask" [nzTitle]="'Task Details'" nzMaskClosable="false"
+    (nzOnCancel)="showtask = false">
+
+    <div>
+      <div class="row">
+        <div class="popup-action-btns">
+          <i nz-icon nzType="edit" nz-tooltip nzTooltipTitle="Edit Task"
+            (click)="$event.stopPropagation(editCaseTask(taskdata))" nzTheme="fill" class="text-success mr-3"></i>
+
+          <i nz-icon nzType="delete" nz-tooltip nzTooltipTitle="Delete Task"
+            (click)="$event.stopPropagation(deleteCaseTask(taskdata))" nzTheme="fill" class="text-danger"></i>
+        </div>
+
+        <div class="col-xl-12 pl-4">
+          <div class="">
+            <div class="row mb-3">
+              <div class="col-xl-5 mb-4">
+                <div class="t-10 text-gray-5">Task Name</div>
+                <div>{{taskdata.taskName}}</div>
+              </div>
+
+              <div class="col-xl-5 mb-4">
+                <div class="t-10 text-gray-5">Assigned To</div>
+                <div>{{taskdata.assignedToName}}</div>
+              </div>
+
+              <div class="col-xl-5 mb-4">
+                <div class="t-10 text-gray-5">Assigned By</div>
+                <div>{{taskdata.assignedByName}}</div>
+              </div>
+
+              <div class="col-xl-5 mb-4">
+                <div class="t-10 text-gray-5">Due Date</div>
+                <div>{{taskdata.dueDate | appDateFormat: false}}</div>
+              </div>
+
+              <div class="col-xl-5 mb-4">
+                <div class="t-10 text-gray-5">Time</div>
+                <div>{{taskdata.time}}</div>
+              </div>
+
+              <div class="col-xl-5 mb-4">
+                <div class="t-10 text-gray-5">Priority</div>
+                <div *ngIf="checkClass(taskdata.priorityName,  'low')">
+                  <span class="badge badge-success">
+                    {{taskdata.priorityName}}
+                  </span>
+                </div>
+                <div *ngIf="checkClass(taskdata.priorityName,  'medium')">
+                  <span class="badge badge-warning">
+                    {{taskdata.priorityName}}
+                  </span>
+                </div>
+                <div *ngIf="checkClass(taskdata.priorityName,  'high')">
+                  <span class="badge badge-danger">
+                    {{taskdata.priorityName}}
+                  </span>
+                </div>
+
+
+              </div>
+
+              <div class="col-xl-5 mb-4">
+                <div class="t-10 text-gray-5">status</div>
+                <div *ngIf="taskdata.statusName?.toLowerCase() === 'pending'">
+                  <span class="badge badge-danger">
+                    {{taskdata.statusName}}
+                  </span>
+                </div>
+
+                <div *ngIf="taskdata.statusName?.toLowerCase() === 'inprocess'">
+                  <span class="badge badge-warning">
+                    {{taskdata.statusName}}
+                  </span>
+                </div>
+
+                <div *ngIf="taskdata.statusName?.toLowerCase() === 'completed'">
+                  <span class="badge badge-success">
+                    {{taskdata.statusName}}
+                  </span>
+                </div>
+
+                <div *ngIf="(taskdata.statusName?.toLowerCase() != 'completed') && (taskdata.statusName?.toLowerCase() != 'inprocess') && (taskdata.statusName?.toLowerCase() != 'pending')">
+                  <span class="badge badge-warning">
+                    {{taskdata.statusName}}
+                  </span>
+                </div>
+              </div>
+
+              <div class="col-xl-12 mb-4">
+                <div class="t-10 text-gray-5">Notes</div>
+                <div>{{taskdata.notes}}</div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </nz-modal>
+</div>

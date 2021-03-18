@@ -1,0 +1,27 @@
+<div class="immigration-news">
+    <div class="breadcrumbs">
+        <strong>Immigration News</strong>
+    </div>
+    <div class="row">
+        <ng-container *ngFor="let item of immigrations">
+            <div class="col-3">
+                <div class="card mt-4">
+                    <div class="p-3 news-img-div">
+                        <img src="{{(item.immigrationImageBlobURI) || defaultImage}}" class="card-img-top" alt="...">
+                    </div>
+                    <div class="card-body pt-0 mb-4">
+                        <h5 class="card-title text-truncate f-16 mb-2" title="{{item.title}}">{{item.title}}</h5>
+                        <p class="card-text f-12 overflow-auto mh-100">{{item.description}}</p>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+</div>
+
+<div class="text-center no-data"  *ngIf="immigrations && immigrations.length === 0">
+    <img class="no-data-img mb-3" src="assets/images/no-data/no-contact.svg" alt="No Immigration News">
+    <div class="mt-2 f-13">
+        No Immigration News Available.
+    </div>
+</div>

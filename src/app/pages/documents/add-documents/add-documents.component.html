@@ -1,0 +1,52 @@
+<div class="row">
+    <form [formGroup]="docForm" #formDirective="ngForm" (ngSubmit)="onSubmit(formDirective)" novalidate class="w-100">
+        <mat-form-field class="form-group col-xl-6">
+            <input matInput placeholder="Document Name" formControlName="documentName">
+            <mat-error *ngIf="f.documentName?.errors?.required">Document Name is required</mat-error>
+
+        </mat-form-field>
+        <mat-form-field class="form-group col-xl-6">
+            <mat-label>Document Type</mat-label>
+            <mat-select formControlName="documentTypeId">
+                <mat-option *ngFor="let item of documentTypes" [value]="item.key">{{item.value}}
+                </mat-option>
+            </mat-select>
+            <mat-error *ngIf="f.documentTypeId?.errors?.required">Document Type is required</mat-error>
+        </mat-form-field>
+        <mat-form-field class="form-group col-xl-6" [hidden]="!isHidden">
+            <input matInput readonly placeholder="Use for the Case" formControlName="useForCase">
+            <mat-error *ngIf="f.useForCase?.errors?.required">Case is required</mat-error>
+
+        </mat-form-field>
+        <mat-form-field class="form-group col-xl-6" [hidden]="isHidden">
+            <mat-label>Case</mat-label>
+            <mat-select formControlName="caseId">
+                <mat-option *ngFor="let item of cases" [value]="item.id">{{item.caseNumber}}
+                </mat-option>
+            </mat-select>
+
+        </mat-form-field>
+        <div class="form-group col-xl-12">
+            <nz-upload
+                [nzFileType]="'image/png,image/jpeg,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, text/csv'"
+                [nzAccept]="'image/png,image/jpeg,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv'"
+                nzType="drag" [(nzFileList)]="fileList" [nzMultiple]="false" [nzBeforeUpload]="beforeUpload">
+                <p class="ant-upload-drag-icon">
+                    <i nz-icon nzType="upload" nzTheme="outline"></i>
+                </p>
+                <p class="ant-upload-text">Drag and Drop your file here, or <span class="text-primary">Browse</span></p>
+            </nz-upload>
+            <div class="text-danger f-12 mt-2" *ngIf="noFilesError">No Files uploaded</div>
+        </div>
+        <div class="form-group col-xl-12  d-none">
+            <mat-checkbox [hidden]="!isHidden" class="text-primary">Send Update to customer
+            </mat-checkbox>
+        </div>
+        <div class="form-group text-center mt-3">
+            <button type="submit" nz-button nzType="primary" *ngIf="!isEditMode">Upload Document</button>
+            <!-- [disabled]="(!docForm.valid) || (fileList.length == 0)" -->
+            <button type="submit" nz-button nzType="primary" *ngIf="isEditMode">Update Document</button>
+            <!-- [disabled]="(!docForm.valid) || (fileList.length == 0)" -->
+        </div>
+    </form>
+</div>

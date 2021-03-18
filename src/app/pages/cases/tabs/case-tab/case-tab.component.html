@@ -1,0 +1,745 @@
+<div class="col-xl-12 mb-4 px-0" [hidden]="_permissionService.getRole() == 'Client'">
+    <span class=" bg-white col-xl-3 p-2 mr-3 assignee-card" *ngIf="selectAssigneeName">
+        Assignee:
+        <span class="fw-500">{{selectAssigneeName}}</span>
+    </span>
+
+    <button nz-button nzType="primary" (click)="isVisible = true">{{selectAssigneeName ? 'Edit Assignee' : 'Add
+        Assignee'}}</button>
+
+    <div class="float-right">
+        <button nz-button nzType="primary" (click)="editCase()" class="mr-3">Edit Case</button>
+        <button nz-button nzType="primary" (click)="deleteCase()" nzDanger>Delete Case</button>
+    </div>
+</div>
+
+<div>
+    <div class="row">
+        <div class="card col-xl-12 bg-white p-4">
+            <div class="card-body bb">
+                <div class="row mb-3">
+                    <div class="col-xl-3">
+                        <div class="t-10 text-gray-5">Case No</div>
+                        <div>{{case?.caseNumber}}</div>
+                    </div>
+                    <div class="col-xl-3">
+                        <div class="t-10 text-gray-5">Client</div>
+                        <div>{{case?.contactClientName}}</div>
+                    </div>
+                    <div class="col-xl-3">
+                        <div class="t-10 text-gray-5">Case Type</div>
+                        <div>{{case?.caseTypeName}}</div>
+                    </div>
+                    <div class="col-xl-3">
+                        <div class="t-10 text-gray-5">Country to Immigrate</div>
+                        <div>{{case?.countryToImmigrateName}}</div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-xl-3">
+                        <div class="t-10 text-gray-5">Responsible Team member</div>
+                        <div>{{case?.teamMemberName}}</div>
+                    </div>
+                    <div class="col-xl-3">
+                        <div class="t-10 text-gray-5">Case Referred by</div>
+                        <div>{{case?.caseReferredBy}}</div>
+                    </div>
+                    <div class="col-xl-3">
+                        <div class="t-10 text-gray-5">Case Started by</div>
+                        <div>{{case?.caseStartedBy}}</div>
+                    </div>
+                    <div class="col-xl-3">
+                        <div class="t-10 text-gray-5">Current Location</div>
+                        <div>{{case?.countryCurrentName}}</div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-xl-3">
+                        <div class="t-10 text-gray-5">Status</div>
+                        <div>{{case?.caseStatusName}}</div>
+                    </div>
+                    <div class="col-xl-3">
+                        <div class="t-10 text-gray-5">Case Deadline Date</div>
+                        <div>{{case?.caseDeadLineDate === null ? '' : case?.caseDeadLineDate | appDateFormat: false}}</div>
+                    </div>
+                    <div class="col-xl-3">
+                        <div class="t-10 text-gray-5">Open Date</div>
+                        <div>{{case?.caseOpenDate === null ? '' : case?.caseOpenDate | appDateFormat: false}}</div>
+                    </div>
+                    <div class="col-xl-3">
+                        <div class="t-10 text-gray-5">Case Description</div>
+                        <div>{{case?.description}}</div>
+                    </div>
+                </div>
+                <div class="row mb-3" [hidden]="_permissionService.getRole() == 'Client'">
+                    <div class="col-xl-3">
+                        <button nz-button nzType="primary">Agreement</button>
+                    </div>
+                </div>
+                <mat-accordion>
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <h5>Additional Information</h5>
+                            </mat-panel-title>
+                            <mat-panel-description>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <div>
+                            <div class="row mb-3">
+                                <div class="col-xl-3">
+                                    <div class="t-10 text-gray-5">Contact Info</div>
+                                    <div>{{case?.caseAdditionalInformation.contactInfo}}</div>
+                                </div>
+                                <div class="col-xl-3">
+                                    <div class="t-10 text-gray-5">Location</div>
+                                    <div>{{case?.caseAdditionalInformation.cityLocationName}}</div>
+                                </div>
+                                <div class="col-xl-3">
+                                    <div class="t-10 text-gray-5">Provice/State</div>
+                                    <div>{{case?.caseAdditionalInformation.provinceName}}</div>
+                                </div>
+                                <div class="col-xl-3">
+                                    <div class="t-10 text-gray-5">Country of Residence</div>
+                                    <div>{{case?.caseAdditionalInformation.countryOfResidenceName}}</div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-xl-3">
+                                    <div class="t-10 text-gray-5">Date of Birth</div>
+                                    <div>{{case?.caseAdditionalInformation.dateOfBirth === null ? '' : case?.caseAdditionalInformation.dateOfBirth | appDateFormat: false}}</div>
+                                </div>
+                                <div class="col-xl-3">
+                                    <div class="t-10 text-gray-5">Country of Citizenship</div>
+                                    <div>{{case?.caseAdditionalInformation.countryOfCitizenshipName}}</div>
+                                </div>
+                                <div class="col-xl-3">
+                                    <div class="t-10 text-gray-5">Marital Status</div>
+                                    <div>{{case?.caseAdditionalInformation.maritalStatusName}}</div>
+                                </div>
+                                <div class="col-xl-3">
+                                    <div class="t-10 text-gray-5">Spouse/Common-Law accompanying Canada?</div>
+                                    <div>{{case?.caseAdditionalInformation.isSpouseAccompanyingCanada ? 'Yes': 'No'}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-xl-3">
+                                    <div class="t-10 text-gray-5">Spouse/Common-Law Canadian PR/Citizen</div>
+                                    <div>{{case?.caseAdditionalInformation.isSpouseCanadianPR ? 'Yes': 'No'}}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </mat-expansion-panel>
+                </mat-accordion>
+
+                <mat-accordion>
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <h5>Immigration History</h5>
+                            </mat-panel-title>
+                            <mat-panel-description>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <div class="row mb-3">
+                            <div class="col-xl-6">
+                                <div class="t-10 text-gray-5">Have you or your spouse ever refused for any of application for any country or any province?</div>
+                                <div>{{case?.caseImmigrationHistory.isRefusedApplication ? 'Yes' : 'No'}}</div>
+                            </div>
+                            <div class="col-xl-6">
+                                <div class="t-10 text-gray-5">Have you or your spouse ever been arrested, detained, charged or conviced in any country in past?</div>
+                                <div>{{case?.caseImmigrationHistory.isArrested ? 'Yes' : 'No'}}</div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-xl-6">
+                                <div class="t-10 text-gray-5">Have you or your spouse previously applied for immigration or visa ito Canada?</div>
+                                <div>{{case?.caseImmigrationHistory.isAppliedForCanad ? 'Yes' : 'No'}}</div>
+                            </div>
+                            <div class="col-xl-6">
+                                <div class="t-10 text-gray-5">Any further information?</div>
+                                <div>{{case?.caseImmigrationHistory.anyFurtherInfo}}</div>
+                            </div>
+                        </div>
+                    </mat-expansion-panel>
+                </mat-accordion>
+
+                <mat-accordion>
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <h5>School Details</h5>
+                            </mat-panel-title>
+                            <mat-panel-description>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <div class="row mb-3">
+                            <div class="col-xl-3">
+                                <div class="t-10 text-gray-5">Name of School/Institution?</div>
+                                <div>{{case?.caseSchoolDetails.nameOfSchool}}</div>
+                            </div>
+                            <div class="col-xl-3">
+                                <div class="t-10 text-gray-5">Preferred Program/Course?</div>
+                                <div>{{case?.caseSchoolDetails.preferredCourseName}}</div>
+                            </div>
+                            <div class="col-xl-3">
+                                <div class="t-10 text-gray-5">Preferred Province?</div>
+                                <div>{{case?.caseSchoolDetails.preferredProvinceName}}</div>
+                            </div>
+                            <div class="col-xl-3">
+                                <div class="t-10 text-gray-5">Target Start Date?</div>
+                                <div>{{case?.caseSchoolDetails.targetStartDate === null ? '' : case?.caseSchoolDetails.targetStartDate | appDateFormat: false}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-xl-3">
+                                <div class="t-10 text-gray-5">Maximum Tuition Budget (Canadian Dollars)</div>
+                                <div> ${{case?.caseSchoolDetails.maxTutionBudget}}</div>
+                            </div>
+                        </div>
+                    </mat-expansion-panel>
+                </mat-accordion>
+
+                <mat-accordion>
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header class="pl-0">
+                            <mat-panel-title>
+                                <h5>Educational History</h5>
+                            </mat-panel-title>
+                            <mat-panel-description>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <div class="row mb-2">
+                            <div class="col-xl-3">
+                                <div class="text-gray-5">Name of School/Institution</div>
+                            </div>
+                            <div class="col-xl-3">
+                                <div class="text-gray-5">Course Name</div>
+                            </div>
+                            <div class="col-xl-3">
+                                <div class="text-gray-5">Start Date</div>
+                            </div>
+                            <div class="col-xl-3">
+                                <div class="text-gray-5">End Date</div>
+                            </div>
+                        </div>
+                        <hr>
+                        <ng-container *ngFor="let item of case?.caseEducationalHistories">
+                            <div class="row mb-2">
+                                <div class="col-xl-3">
+                                    <div>{{item.nameOfSchool}}</div>
+                                </div>
+                                <div class="col-xl-3">
+                                    <div>{{item.courseName}}</div>
+                                </div>
+                                <div class="col-xl-3">
+                                    <div>{{item.startDate === null ? '' : item.startDate | appDateFormat: false}}</div>
+                                </div>
+                                <div class="col-xl-3">
+                                    <div>{{item.endDate === null ? '' : item.endDate | appDateFormat: false}}</div>
+                                </div>
+                            </div>
+                            <hr>
+                        </ng-container>
+
+                    </mat-expansion-panel>
+                </mat-accordion>
+
+                <mat-accordion>
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <h5>Language Exam</h5>
+                            </mat-panel-title>
+                            <mat-panel-description>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+
+                        <ng-container *ngFor="let item of case?.caseLanguageExams">
+                            <div class="row mb-3">
+                                <div class="col-xl-3">
+                                    <div class="t-10 text-gray-5">Have you taken a Language Exam, in either English or French within the last two(2) years?</div>
+                                    <div>{{item?.isTakenExam ? 'Yes' : 'No'}}</div>
+                                </div>
+                                <div class="col-xl-3">
+                                    <div class="t-10 text-gray-5">Which langauge test did you take?</div>
+                                    <div>{{item?.languageName}}</div>
+                                </div>
+                                <div class="col-xl-3">
+                                    <div class="t-10 text-gray-5">Issue Date</div>
+                                    <div>{{item?.issueDate === null ? '' : case?.caseDeadLineDate | appDateFormat: false}}</div>
+                                </div>
+                                <div class="col-xl-3">
+                                    <div class="t-10 text-gray-5">Which IELTS Exam did you take?</div>
+                                    <div>{{item?.ieltsExamName}}</div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-xl-3">
+                                    <div class="t-10 text-gray-5">Score of Speaking Test</div>
+                                    <div>{{item?.speakingScore}}</div>
+                                </div>
+                                <div class="col-xl-3">
+                                    <div class="t-10 text-gray-5">Score of Listening Test</div>
+                                    <div>{{item?.listeningScore}}</div>
+                                </div>
+                                <div class="col-xl-3">
+                                    <div class="t-10 text-gray-5">Score of Reading Test</div>
+                                    <div>{{item?.readingScore}}</div>
+                                </div>
+                                <div class="col-xl-3">
+                                    <div class="t-10 text-gray-5">Score of Writing Test</div>
+                                    <div>{{item?.writingScore}}</div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-xl-3">
+                                    <div class="t-10 text-gray-5">Do you have other language results?</div>
+                                    <div>{{item?.isOtherLanguageResult ? 'Yes' : 'No'}}</div>
+                                </div>
+                            </div>
+                        </ng-container>
+
+                    </mat-expansion-panel>
+                </mat-accordion>
+
+                <mat-accordion>
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <h5>Employment History</h5>
+                            </mat-panel-title>
+                            <mat-panel-description>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <div class="row mb-2">
+                            <div class="col-xl-3">
+                                <div class="text-gray-5">Employer Name</div>
+                            </div>
+                            <div class="col-xl-3">
+                                <div class="text-gray-5">Job Title</div>
+                            </div>
+                            <div class="col-xl-3">
+                                <div class="text-gray-5">Start Date</div>
+                            </div>
+                            <div class="col-xl-3">
+                                <div class="text-gray-5">End Date</div>
+                            </div>
+                        </div>
+                        <hr>
+                        <ng-container *ngFor="let item of case?.caseEmploymentHistories">
+                            <div class="row mb-2">
+                                <div class="col-xl-3">
+                                    <div>{{item.employerName}}</div>
+                                </div>
+                                <div class="col-xl-3">
+                                    <div>{{item.jobTitle}}</div>
+                                </div>
+                                <div class="col-xl-3">
+                                    <div>{{item.startDate === null ? '' : item?.startDate | appDateFormat: false}}</div>
+                                </div>
+                                <div class="col-xl-3">
+                                    <div>{{item.endDate === null ? '' : item?.endDate | appDateFormat: false}}</div>
+                                </div>
+                            </div>
+                            <hr>
+                        </ng-container>
+
+                    </mat-expansion-panel>
+                </mat-accordion>
+
+                <mat-accordion>
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <h5>Passport Details</h5>
+                            </mat-panel-title>
+                            <mat-panel-description>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <ng-container>
+                            <div class="row mb-3">
+                                <div class="col-xl-3">
+                                    <div class="t-10 text-gray-5">Passport No.</div>
+                                    <div>{{case?.casePassportDetail.passportNumber}}</div>
+                                </div>
+                                <div class="col-xl-3">
+                                    <div class="t-10 text-gray-5">Country of Issue</div>
+                                    <div>{{case?.casePassportDetail.countryOfIssueName}}</div>
+                                </div>
+                                <div class="col-xl-3">
+                                    <div class="t-10 text-gray-5">Issue Date</div>
+                                    <div>{{case?.casePassportDetail.issueDate === null ? '' : case?.casePassportDetail.issueDate | appDateFormat: false}}</div>
+                                </div>
+                                <div class="col-xl-3">
+                                    <div class="t-10 text-gray-5">Expiry Date</div>
+                                    <div>{{case?.casePassportDetail.expiryDate === null ? '' : case?.casePassportDetail.expiryDate | appDateFormat: false}}</div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-xl-3">
+                                    <div class="t-10 text-gray-5">Indentity Card Number, if applicable</div>
+                                    <div>{{case?.casePassportDetail.identityCardNo}}</div>
+                                </div>
+                                <div class="col-xl-3">
+                                    <div class="t-10 text-gray-5">Do you or spouse have a US Green Card?</div>
+                                    <div>{{case?.casePassportDetail.isUSGreenCard ? 'Yes' : 'No'}}</div>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </mat-expansion-panel>
+                </mat-accordion>
+
+                <mat-accordion>
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <h5>Dependents</h5>
+                            </mat-panel-title>
+                            <mat-panel-description>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <div class="row mb-3">
+                            <div class="col-xl-3">
+                                <div class="t-10 text-gray-5">Do you have any dependents/children?</div>
+                                <div>{{case?.caseDependent.isHavingDependents ? 'Yes': 'No'}}</div>
+                            </div>
+                            <div class="col-xl-3">
+                                <div class="t-10 text-gray-5">How many dependents</div>
+                                <div>{{case?.caseDependent.howManyDependents}}</div>
+                            </div>
+                        </div>
+                    </mat-expansion-panel>
+                </mat-accordion>
+
+                <mat-accordion>
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <h5>Primary Parents Details</h5>
+                            </mat-panel-title>
+                            <mat-panel-description>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <div class="row mb-3">
+                            <div class="col-xl-3">
+                                <div class="t-10 text-gray-5">Father's Name</div>
+                                <div>{{case?.casePrimaryParentDetail.fatherName}}</div>
+                            </div>
+                            <div class="col-xl-3">
+                                <div class="t-10 text-gray-5">Father's Residential Address</div>
+                                <div>{{case?.casePrimaryParentDetail.fatherResidentialAddress}}</div>
+                            </div>
+                            <div class="col-xl-3">
+                                <div class="t-10 text-gray-5">Father's DOB</div>
+                                <div>{{case?.casePrimaryParentDetail.fatherDOB === null ? '' : case?.caseDeadLineDate| appDateFormat: false}}</div>
+                            </div>
+                            <div class="col-xl-3">
+                                <div class="t-10 text-gray-5">Father's Occupation</div>
+                                <div>{{case?.casePrimaryParentDetail.fatherOccupation}}</div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-xl-3">
+                                <div class="t-10 text-gray-5">Mother's Name</div>
+                                <div>{{case?.casePrimaryParentDetail.motherName}}</div>
+                            </div>
+                            <div class="col-xl-3">
+                                <div class="t-10 text-gray-5">Mother's Residential Address</div>
+                                <div>{{case?.casePrimaryParentDetail.motherResidentialAddress}}</div>
+                            </div>
+                            <div class="col-xl-3">
+                                <div class="t-10 text-gray-5">Mother's DOB</div>
+                                <div>{{case?.casePrimaryParentDetail.motherDOB === null ? '' : case?.casePrimaryParentDetail.motherDOB | appDateFormat: false}}</div>
+                            </div>
+                            <div class="col-xl-3">
+                                <div class="t-10 text-gray-5">Mother's Occupation</div>
+                                <div>{{case?.casePrimaryParentDetail.motherOccupation}}</div>
+                            </div>
+                        </div>
+                    </mat-expansion-panel>
+                </mat-accordion>
+
+                <mat-accordion>
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <h5>Spouse Parents Details</h5>
+                            </mat-panel-title>
+                            <mat-panel-description>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <div class="row mb-3">
+                            <div class="col-xl-3">
+                                <div class="t-10 text-gray-5">Father's Name</div>
+                                <div>{{case?.caseSpouseParentDetail.fatherName}}</div>
+                            </div>
+                            <div class="col-xl-3">
+                                <div class="t-10 text-gray-5">Father's Residential Address</div>
+                                <div>{{case?.caseSpouseParentDetail.fatherResidentialAddress}}</div>
+                            </div>
+                            <div class="col-xl-3">
+                                <div class="t-10 text-gray-5">Father's DOB</div>
+                                <div>{{case?.caseSpouseParentDetail.fatherDOB === null ? '' : case?.caseSpouseParentDetail.fatherDOB | appDateFormat: false}}</div>
+                            </div>
+                            <div class="col-xl-3">
+                                <div class="t-10 text-gray-5">Father's Occupation</div>
+                                <div>{{case?.caseSpouseParentDetail.fatherOccupation}}</div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-xl-3">
+                                <div class="t-10 text-gray-5">Mother's Name</div>
+                                <div>{{case?.caseSpouseParentDetail.motherName}}</div>
+                            </div>
+                            <div class="col-xl-3">
+                                <div class="t-10 text-gray-5">Mother's Residential Address</div>
+                                <div>{{case?.caseSpouseParentDetail.motherResidentialAddress}}</div>
+                            </div>
+                            <div class="col-xl-3">
+                                <div class="t-10 text-gray-5">Mother's DOB</div>
+                                <div>{{case?.caseSpouseParentDetail.motherDOB === null ? '' : case?.caseSpouseParentDetail.motherDOB | appDateFormat: false}}</div>
+                            </div>
+                            <div class="col-xl-3">
+                                <div class="t-10 text-gray-5">Mother's Occupation</div>
+                                <div>{{case?.caseSpouseParentDetail.motherOccupation}}</div>
+                            </div>
+                        </div>
+                    </mat-expansion-panel>
+                </mat-accordion>
+
+                <mat-accordion>
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <h5>Sibling Details</h5>
+                            </mat-panel-title>
+                            <mat-panel-description>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <ng-container *ngFor="let item of case?.caseSiblings">
+                            <div class="row mb-3">
+                                <div class="col-xl-3">
+                                    <div class="t-10 text-gray-5">Name</div>
+                                    <div>{{item?.name}}</div>
+                                </div>
+                                <div class="col-xl-3">
+                                    <div class="t-10 text-gray-5">Occupation</div>
+                                    <div>{{item?.occupation}}</div>
+                                </div>
+                                <div class="col-xl-3">
+                                    <div class="t-10 text-gray-5">DOB</div>
+                                    <div>{{item?.dob === null ? '' : item?.dob | appDateFormat: false}}</div>
+                                </div>
+                                <div class="col-xl-3">
+                                    <div class="t-10 text-gray-5">Residential Address</div>
+                                    <div>{{item?.residentialAddress}}</div>
+                                </div>
+                            </div>
+                        </ng-container>
+
+                    </mat-expansion-panel>
+                </mat-accordion>
+
+                <mat-accordion>
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <h5>Applicant Declaration</h5>
+                            </mat-panel-title>
+                            <mat-panel-description>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <div class="row mb-3">
+                            <div class="col-xl-6">
+                                <div class="t-10 text-gray-5">Been convicted of, or are you currently charged with, on trial for, or party to a crime or offense, or subject of any criminal proceedings in any country?</div>
+                                <div>{{case?.caseApplicantDeclaration.isCriminalProceeding ? 'Yes' : 'No'}}</div>
+                            </div>
+                            <div class="col-xl-6">
+                                <div class="t-10 text-gray-5">Used, planned or advocated the use of armed struggle or violence to reach political, religious or social objectives?</div>
+                                <div>{{case?.caseApplicantDeclaration.isUsedArmedStruggle ? 'Yes' : 'No'}}</div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-xl-6">
+                                <div class="t-10 text-gray-5">Previously sought refugee status in Canada or applied for a Canadian immigrant or permanent resident visa or visitor or temporary resident visa?
+                                </div>
+                                <div>{{case?.caseApplicantDeclaration.isPreviouslyApplied ? 'Yes' : 'No'}}</div>
+                            </div>
+                            <div class="col-xl-6">
+                                <div class="t-10 text-gray-5">Been associated with a group that used, uses, advocated or advocates the use of armed struggle or violence to reach political, religious or social objectives?</div>
+                                <div>{{case?.caseApplicantDeclaration.isAssociatedWithGroup ? 'Yes' : 'No'}}</div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-xl-6">
+                                <div class="t-10 text-gray-5">Been refued refugee status in, or an immigrant or permanent resident rvisa or temporary resident visa to Canada or any other country, or have been refused a Certificat de selection du Quebec (CSQ) to Quebec?</div>
+                                <div>{{case?.caseApplicantDeclaration.isBeenRefused ? 'Yes' : 'No'}}</div>
+                            </div>
+                            <div class="col-xl-6">
+                                <div class="t-10 text-gray-5">Been member of an organization that is or was engaged in an activity that is part of a pattern of criminal activity?</div>
+                                <div>{{case?.caseApplicantDeclaration.isMemberOfCriminalOrg ? 'Yes' : 'No'}}</div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-xl-6">
+                                <div class="t-10 text-gray-5">Been refused admission to, or ordered to leaved Canada or any other Country?</div>
+                                <div>{{case?.caseApplicantDeclaration.isRefusedAdmission ? 'Yes' : 'No'}}</div>
+                            </div>
+                            <div class="col-xl-6">
+                                <div class="t-10 text-gray-5">Been detained or put in jail?</div>
+                                <div>{{case?.caseApplicantDeclaration.isDetained ? 'Yes' : 'No'}}</div>
+                            </div>
+                        </div>
+                    </mat-expansion-panel>
+                </mat-accordion>
+
+                <mat-accordion>
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <h5>Work in Canada</h5>
+                            </mat-panel-title>
+                            <mat-panel-description>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <div class="row mb-3">
+                            <div class="col-xl-6">
+                                <div class="t-10 text-gray-5">Do you have an offer of employment in Canada approved by the Human Resources Development Canada?</div>
+                                <div>{{case?.caseWorkInCanada.isHavingOffer ? 'Yes' : 'No'}}</div>
+                            </div>
+                            <div class="col-xl-6">
+                                <div class="t-10 text-gray-5">Are you currently working in Canada under a work permit?
+                                </div>
+                                <div>{{case?.caseWorkInCanada.isCurrentlyWorkinInCanada ? 'Yes' : 'No'}}</div>
+                            </div>
+                        </div>
+
+                    </mat-expansion-panel>
+                </mat-accordion>
+
+                <mat-accordion>
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <h5>Finances</h5>
+                            </mat-panel-title>
+                            <mat-panel-description>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <div class="row mb-3">
+                            <div class="col-xl-6">
+                                <div class="t-10 text-gray-5">Amount of unencumbered transferable and available funds you have, in Canadian dollars:</div>
+                                <div>${{case?.caseFinance.amountAvailable}}</div>
+                            </div>
+
+                        </div>
+
+                    </mat-expansion-panel>
+                </mat-accordion>
+
+                <mat-accordion>
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <h5>Travel History</h5>
+                            </mat-panel-title>
+                            <mat-panel-description>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <ng-container *ngFor="let item of case?.caseTravelHistories">
+                            <div class="row mb-3">
+                                <div class="col-xl-3">
+                                    <div class="t-10 text-gray-5">Destination Country</div>
+                                    <div>{{item?.destinationCountryName}}</div>
+                                </div>
+                                <div class="col-xl-3">
+                                    <div class="t-10 text-gray-5">Destination City</div>
+                                    <div>{{item?.destinationCityName}}</div>
+                                </div>
+                                <div class="col-xl-3">
+                                    <div class="t-10 text-gray-5">Purpose of travel</div>
+                                    <div>{{item?.purposeOfTravel}}</div>
+                                </div>
+                                <div class="col-xl-3">
+                                    <div class="t-10 text-gray-5">From</div>
+                                    <div>{{item?.from === null ? '' : item?.from | appDateFormat: false}}</div>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-xl-3">
+                                    <div class="t-10 text-gray-5">To</div>
+                                    <div>{{item?.to === null ? '' : item?.to | appDateFormat: false}}</div>
+                                </div>
+                                <div class="col-xl-3">
+                                    <div class="t-10 text-gray-5">Duration of stay (total days)</div>
+                                    <div>{{item?.durationOfStay}}</div>
+                                </div>
+
+                            </div>
+                        </ng-container>
+
+                    </mat-expansion-panel>
+                </mat-accordion>
+
+                <mat-accordion>
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <h5>Emergency Contact</h5>
+                            </mat-panel-title>
+                            <mat-panel-description>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <div class="row mb-3">
+                            <div class="col-xl-3">
+                                <div class="t-10 text-gray-5">Name</div>
+                                <div>{{case?.caseEmergencyContact.name}}</div>
+                            </div>
+                            <div class="col-xl-3">
+                                <div class="t-10 text-gray-5">Relationship</div>
+                                <div>{{case?.caseEmergencyContact.relationshipName}}</div>
+                            </div>
+                            <div class="col-xl-3">
+                                <div class="t-10 text-gray-5">Phone (Country-code)-(Area-code)-Number</div>
+                                <div>{{case?.caseEmergencyContact.phone}}</div>
+                            </div>
+                            <div class="col-xl-3">
+                                <div class="t-10 text-gray-5">Email</div>
+                                <div>{{case?.caseEmergencyContact.email}}</div>
+                            </div>
+
+                        </div>
+                    </mat-expansion-panel>
+                </mat-accordion>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Modal -->
+<div>
+    <nz-modal nzFooter="null" nzWidth="500" [(nzVisible)]="isVisible" [nzTitle]="modalTitle" (nzOnCancel)="isVisible = false" nzMaskClosable="false">
+        <form (ngSubmit)="onSubmit()" class="p-3">
+            <mat-form-field class="form-group mb-2 mt-2 w-100">
+                <mat-select placeholder="Contact/Team member" [(ngModel)]="selectedAssigneeId" name="item">
+                    <mat-option *ngFor="let item of contactList" [value]="item.id">{{item.name}}</mat-option>
+                    <mat-option *ngIf="contactList && contactList.length < 1" disabled>No record found
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <div class="form-group mt-3 text-center">
+                <button type="submit" nz-button nzType="primary" nzSize="large">Save</button>
+            </div>
+        </form>
+    </nz-modal>
+</div>
+
+<!-- Add Modal -->
+<div>
+    <nz-modal nzFooter="null" nzWidth="1100" [(nzVisible)]="editVisible" [nzTitle]="editModalTitle" (nzOnCancel)="editVisible = false" nzMaskClosable="false">
+        <app-add-cases [caseDataSub]="caseObserverSubject"></app-add-cases>
+    </nz-modal>
+</div>

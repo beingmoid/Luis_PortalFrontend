@@ -1,0 +1,65 @@
+<div class="client-appointment-view-div">
+    <div class="popup-action-btns">
+        <i nz-icon nzType="edit" nz-tooltip nzTooltipTitle="Edit Event" *ngIf="_permissionService.canEdit" (click)="editEvent()"
+           nzTheme="fill" class="text-success mr-3"></i>
+
+        <i nz-icon nzType="delete" nz-tooltip nzTooltipTitle="Delete Event" *ngIf="_permissionService.canDelete" (click)="deleteEvent()"
+           nzTheme="fill" class="text-danger"></i>
+      </div>
+      <!-- popup-action-btns -->
+    <div class="appointment-title pt-4">
+        <h5>
+            <span class="appointment-title-span mr-2"> </span>
+            {{event.subject}}
+        </h5>
+    </div>
+    <!-- appointment-title -->
+<div class="appointment-date mb-3">
+        <div class="f-12">
+            <span class="appointment-date-span w-auto mr-2 invisible"> <i class="fe fe-tag"></i></span>
+            {{event.selectedDate | date: 'MMMM d, y'}} {{event.time}}
+        </div>
+</div>
+<!-- appointment-date -->
+<div class="appointment-tag mb-3">
+    <div class="f-12">
+        <span class="appointment-tag-span mr-2">
+            <i class="fe fe-tag"></i>
+        </span>
+        <span class="appointment-tag-loop" *ngFor="let item of event.tags">
+            {{item}}
+        </span>
+    </div>
+</div>
+<!-- appointment-tag -->
+<div class="appointment-attendies f-12 mb-3">
+    <span class="appointment-attendies-span mr-2">
+        <i class="fe fe-user"></i>
+    </span>
+   <strong> {{event.attandees.length}} Attandees </strong>
+    <div class="f-12 mt-1" *ngFor="let item of attandeesList">
+        <span class="appointment-attendies-span mr-2 invisible">
+            <i class="fe fe-user"></i>
+        </span>   {{item.name}}
+    </div>
+</div>
+<!-- appointment-attendies  -->
+<div class="appointment-description mb-3">
+    <div class="f-12">  
+          <span class="appointment-description-span mr-2">
+        <i class="fe fe-list"></i>
+    </span>
+        {{event.notes}}
+    </div>
+    </div>
+    <!-- appointment-description  -->
+    <div class="appointment-docs mb-3" *ngIf="event.fileName">
+        <span class="appointment-docs-span mr-2">
+            <i class="fe fe-paperclip"></i>
+        </span>
+        <span style="cursor: pointer;" (click)="downloadAttachment()">
+            {{event.fileName}}
+        </span>
+        </div>
+        <!-- appointment-docs  -->
+</div>

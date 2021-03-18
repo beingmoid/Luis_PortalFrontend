@@ -1,0 +1,53 @@
+<div class="row mb-3">
+    <div class="col-xl-12">
+        <button class="float-right" nz-button nzType="primary" (click)="showModal()">Edit Status</button>
+    </div>
+</div>
+<div class="bg-white p-3">
+    <ng-container>
+        <div class="card col-xl-12">
+            <h6 class="text-gray-5">Immigration Department Status</h6>
+            <p>
+                <span class="badge badge-warning" *ngIf="data?.statusName == 'Pending'">{{ data.statusName }}</span>
+                <span class="badge badge-danger" *ngIf="data?.statusName == 'Rejected'">{{ data.statusName }}</span>
+                <span class="badge badge-success" *ngIf="data?.statusName == 'Approved'">{{ data.statusName }}</span>
+                <span class="badge badge-success" *ngIf="data?.statusName == 'Completed'">{{ data.statusName }}</span>
+            </p>
+            <h6 class="text-gray-5">Notes</h6>
+            <p>
+                {{data?.notes}}
+            </p>
+        </div>
+    </ng-container>
+</div>
+
+
+<!-- Status Modal -->
+<div>
+    <nz-modal nzFooter="null" nzWidth="700" [(nzVisible)]="isVisible" nzTitle="Edit Status"
+        (nzOnCancel)="handleCancel()" nzMaskClosable="false">
+        <form (ngSubmit)="onSubmit()" [formGroup]="statusForm" novalidate>
+            <mat-form-field class="w-50">
+                <mat-select placeholder="Immigration Department Status" formControlName="statusId">
+                    <mat-option *ngFor="let item of statuses" [value]="item.key">{{item.value}}</mat-option>
+                </mat-select>
+                <mat-error *ngIf="statusForm.get('statusId').hasError('required')">
+                    Immigration Department Status is required
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="w-100">
+                <input matInput placeholder="Notes" formControlName="notes">
+                <mat-error *ngIf="statusForm.get('notes').hasError('required')">
+                    Notes are required
+                </mat-error>
+            </mat-form-field>
+            <div class="form-group col-xl-12 d-none">
+                <mat-checkbox formControlName="sendUpdateToCustomer" class="text-primary">Send Update to customer
+                </mat-checkbox>
+            </div>
+            <div class="form-group text-center mt-4">
+                <button type="submit" nz-button nzType="primary">Update Status</button>
+            </div>
+        </form>
+    </nz-modal>
+</div>

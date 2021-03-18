@@ -1,0 +1,72 @@
+<div class="row mb-3">
+    <div class="col-xl-12">
+        <h5 class="font-weight-bold">
+            <button class="float-right" nz-button nzType="primary" (click)="showModal()">Add Notes</button>
+        </h5>
+    </div>
+</div>
+<div class="bg-white p-3">
+    <ng-container class="row d-flex justify-content-center" *ngIf="dataList.length > 0; else noData">
+        <ng-container *ngFor="let item of dataList">
+            <div class="card col-xl-12">
+                <h6 class="text-gray-5">
+                    Date
+                    <span class="float-right">
+                        <i nz-icon nzType="edit" nz-tooltip nzTooltipTitle="Edit Note" (click)="editCaseNote(item)"
+                            nzTheme="fill" class="text-success"></i>
+                        <nz-divider nzType="vertical"></nz-divider>
+                        <i nz-icon nzType="delete" nz-tooltip nzTooltipTitle="Delete Note"
+                            (click)="deleteCaseNote(item)" nzTheme="fill" class="text-danger"></i>
+                    </span>
+                </h6>
+                <p>{{ item?.createdDate | appDateFormat: false }}</p>
+                <h6 class="text-gray-5">Notes</h6>
+                <p>
+                    {{item?.note}}
+                </p>
+            </div>
+        </ng-container>
+    </ng-container>
+    <ng-template class="d-flex justify-content-center" #noData>
+        <nz-empty class="m-5" [nzNotFoundImage]="'assets/images/no-data/no-account.svg'"
+            [nzNotFoundContent]="noDataDescrp">
+        </nz-empty>
+    </ng-template>
+    <ng-template #noDataDescrp>
+        <div class="m-4">
+            No Data Available.
+            <a (click)="isVisible = true" class="kit__utils__link">
+                Create New Note
+            </a>
+        </div>
+    </ng-template>
+</div>
+
+
+<!-- Notes Modal -->
+<div>
+    <nz-modal nzFooter="null" nzWidth="700" [(nzVisible)]="isVisible" nzMaskClosable="false"
+        [nzTitle]="isEditMode ? 'Update Note' : 'Add Note'" (nzOnCancel)="handleCancel()">
+        <form (ngSubmit)="onSubmit(formDirective)" [formGroup]="noteForm" #formDirective="ngForm">
+            <mat-form-field class="w-25">
+                <input matInput [matDatepicker]="picker" placeholder="Date" formControlName="createdDate"
+                    (focus)="picker.open()" (keydown)="$event.preventDefault();">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+                <mat-error *ngIf="f.createdDate?.hasError('required')">Created Date is required</mat-error>
+                <mat-error *ngIf="f.createdDate?.hasError('invalid')">Created Date is invalid</mat-error>
+            </mat-form-field>
+            <mat-form-field class="w-100">
+                <input matInput placeholder="Notes" formControlName="note">
+                <mat-error *ngIf="f.note?.hasError('required')">Note is required</mat-error>
+            </mat-form-field>
+            <div class="form-group col-xl-12 d-none">
+                <mat-checkbox formControlName="sendUpdateToCustomer" class="text-primary">Send Update to customer
+                </mat-checkbox>
+            </div>
+            <div class="form-group text-center mt-5">
+                <button type="submit" nz-button nzType="primary">{{isEditMode ? 'Update Note' : 'Add Note'}}</button>
+            </div>
+        </form>
+    </nz-modal>
+</div>

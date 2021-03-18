@@ -1,0 +1,40 @@
+<div [formGroup]="casePassportDetails">
+    <mat-form-field class="col-xl-3 mb-2" title="Passport No.">
+        <input type="text" matInput placeholder="Passport No." formControlName="passportNumber" trim="blur">
+        <mat-error *ngIf="passportFormControl.passportNumber.hasError('pattern')">
+            Passport number can only be number
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field class="col-xl-3 mb-2" title="Country of Issue">
+        <mat-select formControlName="countryOfIssueId" placeholder="Country of Issue">
+            <mat-option *ngFor="let item of countries" [value]="item.key">{{item.value}}</mat-option>
+            <mat-option *ngIf="countries && countries.length < 1" disabled>No record found</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field class="col-xl-3 mb-2" title="Issue Date">
+        <input matInput #issueDateInput formControlName="issueDate" placeholder="Issue Date" [matDatepicker]="issueDate"
+            autocomplete="off" (focus)="issueDate.open()" (keydown)="$event.preventDefault();"  (dateChange)="issueDateChange(issueDateInput.value)">
+        <mat-datepicker-toggle matSuffix [for]="issueDate"></mat-datepicker-toggle>
+        <mat-datepicker #issueDate></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field class="col-xl-3 mb-2" title="Expiry Date">
+        <input [min]="minDate" matInput formControlName="expiryDate" placeholder="Expiry Date" [matDatepicker]="expiryDate"
+            autocomplete="off" (focus)="expiryDate.open()" (keydown)="$event.preventDefault();">
+        <mat-datepicker-toggle matSuffix [for]="expiryDate"></mat-datepicker-toggle>
+        <mat-datepicker #expiryDate></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field class="col-xl-3 mb-2" title="Identity Card Number, if applicable">
+        <input type="text" matInput placeholder="Identity Card Number, if applicable" formControlName="identityCardNo" trim="blur">
+        <mat-error *ngIf="passportFormControl.identityCardNo.hasError('pattern')">
+            Identity number can only be number
+        </mat-error>
+    </mat-form-field>
+    <mat-form-field class="col-xl-3 mb-2" title="Do you or spouse have a US Green Card?">
+        <mat-select formControlName="isUSGreenCard" placeholder="Do you or spouse have a US Green Card?">
+            <mat-option [value]="false">No</mat-option>
+            <mat-option [value]="true">Yes</mat-option>
+        </mat-select>
+    </mat-form-field>
+
+</div>

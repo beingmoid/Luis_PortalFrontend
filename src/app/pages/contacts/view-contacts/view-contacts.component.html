@@ -1,0 +1,191 @@
+<div class="breadcrumbs mb-3">
+  <strong>Contacts</strong>
+  <span class="text-muted"> | {{this.listData.length}} contacts in total</span>
+</div>
+<div>
+  <div class="row mb-4">
+    <div class="align-items-center col-xl-10 d-flex">
+      <div class="w-25 searchBarWidth">
+        <nz-input-group nzSize="large" [nzPrefix]="suffixIconSearch">
+          <input type="text" nz-input [(ngModel)]="search" (ngModelChange)="filter()"
+            placeholder="Search for Contacts" />
+        </nz-input-group>
+        <ng-template #suffixIconSearch>
+          <i nz-icon nzType="search"></i>
+        </ng-template>
+      </div>
+      <span *ngIf="filterMessage">
+        <strong class="ml-4 mr-2">{{filterCountMessage}}</strong> {{filterMessage}} <a class="text-blue ml-2"
+          (click)="resetFilters()">Clear
+          All</a>
+      </span>
+    </div>
+    <div class="col-xl-2 ">
+      <button nz-button class="float-right" nzType="primary" (click)="showModal()"
+        *ngIf="_permissionService.canCreate">Add
+        Contact</button>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xl-12 ">
+      <nz-table class="card" #filterTable [nzData]="listData" [nzNoResult]="noData" 
+        nzShowSizeChanger [nzPageSize]="pageSize">
+        <thead>
+          <tr>
+            <th *ngFor="let column of listOfColumns" [nzSortOrder]="column.sortOrder" [nzSortFn]="column.sortFn"
+              [nzSortDirections]="column.sortDirections" [nzFilterMultiple]="column.filterMultiple"
+              [nzFilters]="column.listOfFilter" [nzFilterFn]="column.filterFn" (nzFilterChange)="filterChanged($event)">
+              {{ column.name }}
+            </th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let data of filterTable.data; let i = index;" (click)="showSingleContacts(data)" nz-tooltip
+            nzTooltipTitle="Click to View Contact" style="cursor: pointer;">
+            <!-- <td></td> -->
+            <td>{{ data.index }}</td>
+            <td>
+              <nz-avatar nzIcon="user" [nzSrc]="data.blobURI"></nz-avatar>
+              {{ data.name }}
+            </td>
+            <td>{{ data.contactTypeName }}</td>
+            <td>{{ data.email }}</td>
+            <td>{{ data.createdDate | appDateFormat:false }}</td>
+            <td>{{ data.countryName }}</td>
+            <td>
+              <i nz-icon nzType="edit" nz-tooltip nzTooltipTitle="Edit Contact"
+                (click)="$event.stopPropagation(EditContacts(data))" nzTheme="fill" class="text-success"
+                *ngIf="_permissionService.canEdit"></i>
+
+              <nz-divider nzType="vertical"></nz-divider>
+
+              <i nz-icon nzType="delete" nz-tooltip nzTooltipTitle="Delete Contact"
+                (click)="$event.stopPropagation(DeleteContacts(data))" nzTheme="fill" class="text-danger"
+                *ngIf="_permissionService.canDelete"></i>
+
+              <ng-container *ngIf="data.contactTypeName == 'Client' && !data.isClientAccountCreated">
+                <nz-divider nzType="vertical"></nz-divider>
+                <i nz-icon nzType="user-add" nz-tooltip nzTooltipTitle="Create Account" class="text-primary"
+                  nzTheme="outline" (click)="$event.stopPropagation(createClientAccount(data))"></i>
+              </ng-container>
+
+              <ng-container *ngIf="data.contactTypeName == 'Client' && data.isClientAccountCreated">
+                <nz-divider nzType="vertical"></nz-divider>
+                <i nz-icon nzType="user-add" nz-tooltip nzTooltipTitle="Account already created"
+                  class="text-primary text-muted" nzTheme="outline"></i>
+              </ng-container>
+            </td>
+          </tr>
+        </tbody>
+      </nz-table>
+    </div>
+  </div>
+</div>
+
+<ng-template #noData>
+  <nz-empty class="m-5" [nzNotFoundImage]="'assets/images/no-data/no-contact.svg'" [nzNotFoundContent]="noDataDescrp">
+  </nz-empty>
+</ng-template>
+
+<ng-template #noDataDescrp>
+  <div class="m-4">
+    No Data Available.
+    <a *ngIf="_permissionService.canCreate" (click)="showModal()" class="kit__utils__link">
+      Create New Contact
+    </a>
+  </div>
+</ng-template>
+
+<!-- Add Modal -->
+<div>
+  <nz-modal nzFooter="null" nzWidth="700" [(nzVisible)]="isVisible" [nzTitle]="modalTitle" (nzOnCancel)="handleCancel()"
+    nzMaskClosable="false">
+    <app-add-contacts [contactDataSub]="contactObserverSubject"></app-add-contacts>
+  </nz-modal>
+</div>
+
+<!-- View Modal -->
+<div>
+  <nz-modal nzFooter="null" nzWidth="700" [(nzVisible)]="showContact" [nzTitle]="'Contact Info'" nzMaskClosable="false"
+    (nzOnCancel)="showContact = false">
+
+    <div>
+      <div class="row">
+        <div class="popup-action-btns">
+          <i nz-icon nzType="edit" nz-tooltip nzTooltipTitle="Edit Contact"
+            (click)="$event.stopPropagation(EditContacts(contact))" nzTheme="fill" class="text-success mr-3"></i>
+
+          <i nz-icon nzType="delete" nz-tooltip nzTooltipTitle="Delete Contact"
+            (click)="$event.stopPropagation(DeleteContacts(contact))" nzTheme="fill" class="text-danger"></i>
+        </div>
+        <!-- <div class="col-xl-12 m-3 text-center">
+                <nz-avatar nzIcon="user" [nzSrc]="data.blobURI"></nz-avatar>
+            </div> -->
+        <div class="d-flex w-100 justify-content-center">
+          <div class="kit__utils__avatar kit__utils__avatar--size110 kit__utils__avatar--rounded mt--15">
+            <img src="assets/images/avatars/avatar.png" alt="User" *ngIf="contact?.blobURI == null">
+            <img [src]="contact?.blobURI" alt="User" *ngIf="contact?.blobURI !== null">
+          </div>
+        </div>
+        <div class="col-xl-12 p-4">
+          <div class="card-body">
+            <div class="row mb-3">
+              <div class="col-xl-5 mb-4 offset-sm-1">
+                <div class="t-10 text-gray-5">First Name</div>
+                <div>{{contact.firstName}}</div>
+              </div>
+              <!-- First Name -->
+              <div class="col-xl-5 mb-4 offset-sm-1">
+                <div class="t-10 text-gray-5">Last Name</div>
+                <div>{{contact.lastName}}</div>
+              </div>
+              <!-- Last Name -->
+              <div class="col-xl-5 mb-4 offset-sm-1">
+                <div class="t-10 text-gray-5">Contact Type</div>
+                <div>{{contact.contactTypeName}}</div>
+              </div>
+              <!-- Contact Type -->
+              <div class="col-xl-5 mb-4 offset-sm-1">
+                <div class="t-10 text-gray-5">Email</div>
+                <div>{{contact.email}}</div>
+              </div>
+              <!-- Email -->
+              <div class="col-xl-5 mb-4 offset-sm-1">
+                <div class="t-10 text-gray-5">City</div>
+                <div>{{contact.cityName}}</div>
+              </div>
+              <!-- City -->
+              <div class="col-xl-5 mb-4 offset-sm-1">
+                <div class="t-10 text-gray-5">Province</div>
+                <div>{{contact.stateName}}</div>
+              </div>
+              <!-- Province -->
+              <div class="col-xl-5 mb-4 offset-sm-1">
+                <div class="t-10 text-gray-5">Country</div>
+                <div>{{contact.countryName}}</div>
+              </div>
+              <!-- Country  -->
+              <div class="col-xl-5 mb-4 offset-sm-1">
+                <div class="t-10 text-gray-5">Language</div>
+                <div>{{contact.languageName}}</div>
+              </div>
+              <!-- Language -->
+              <div class="col-xl-5 mb-4 offset-sm-1">
+                <div class="t-10 text-gray-5">Company Name</div>
+                <div>{{contact.companyName != 'null' ? contact.companyName : 'N/A'}}</div>
+              </div>
+              <!-- Company Name -->
+              <div class="col-xl-12 mb-4 offset-sm-1">
+                <div class="t-10 text-gray-5">Notes</div>
+                <div>{{contact.notes != 'null' ? contact.notes : 'N/A'}}</div>
+              </div>
+              <!-- Notes -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </nz-modal>
+</div>

@@ -1,0 +1,256 @@
+<div>
+    <div class="row mb-4">
+        <div class="col-xl-10">
+            <div class="w-25 searchBarWidth">
+                <nz-input-group nzSize="large" [nzPrefix]="suffixIconSearch">
+                    <input type="text" nz-input [(ngModel)]="search" (ngModelChange)="filter()" placeholder="Search for Retainer Schedule" />
+                </nz-input-group>
+                <ng-template #suffixIconSearch>
+                    <i nz-icon nzType="search"></i>
+                </ng-template>
+            </div>
+        </div>
+        <div class="col-xl-2 ">
+            <a nz-button class="float-right" nzType="primary" *ngIf="_permissionService.canCreate" (click)="showModal()">Add
+                Retainer Schedule</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xl-12 ">
+            <nz-table class="card" #rowSelectionTable [nzData]="listData" [nzNoResult]="noData" nzShowSizeChanger [nzPageSize]="pageSize">
+                <thead>
+                    <tr>
+                        <th class="ant-table-selection-column" [nzSortFn]="sortNumbersFn" (click)="sortOn('index')">#
+                        </th>
+                        <th [nzSortFn]="sortNamesFn" (click)="sortOn('caseName')">Case No.</th>
+                        <th [nzSortFn]="sortNamesFn" (click)="sortOn('description')">Description</th>
+                        <th [nzSortFn]="sortNamesFn" (click)="sortOn('dueOnName')">Due On</th>
+                        <th [nzSortFn]="sortNamesFn" (click)="sortOn('specificDate')">Specific Date</th>
+                        <th [nzSortFn]="sortNumbersFn" (click)="sortOn('total')">Total Amount</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr *ngFor="let data of rowSelectionTable.data; let i = index;" (click)="showSingalRetainerSchedule(data)" nz-tooltip nzTooltipTitle="Click to View Retainer Schedule" style="cursor: pointer;">
+                        <td> {{data.index}} </td>
+                        <td>{{ data.caseName }}</td>
+                        <td title="{{ data.description }}">{{ data.description }}</td>
+                        <td>{{ data.dueOnName }}</td>
+                        <td>{{ data.specificDate | appDateFormat: false}}</td>
+                        <td>${{ data.total }}</td>
+                        <td>
+                            <i nz-icon nzType="edit" *ngIf="_permissionService.canEdit" nz-tooltip nzTooltipTitle="Edit Retainer Schedule" (click)="$event.stopPropagation(editRetainerSchedule(data))" nzTheme="fill" class="text-success"></i>
+                            <nz-divider nzType="vertical"></nz-divider>
+                            <i nz-icon nzType="delete" *ngIf="_permissionService.canDelete" nz-tooltip nzTooltipTitle="Delete Retainer Schedule" (click)="$event.stopPropagation(deleteRetainerSchedule(data))" nzTheme="fill" class="text-danger"></i>
+                        </td>
+                    </tr>
+                </tbody>
+            </nz-table>
+        </div>
+    </div>
+</div>
+<!-- No Data for Retainer Schedule -->
+<ng-template #noData>
+    <nz-empty class="m-5" [nzNotFoundImage]="'assets/images/no-data/no-retainer.svg'" [nzNotFoundContent]="noDataDescrp">
+    </nz-empty>
+</ng-template>
+<ng-template #noDataDescrp>
+    <div class="m-4">
+        No Data Available.
+        <a *ngIf="_permissionService.canCreate" (click)="isVisible = true" class="kit__utils__link">
+            Create New Retainer Schedule
+        </a>
+    </div>
+</ng-template>
+
+<!-- Retainer Modal -->
+<div>
+    <nz-modal nzFooter="null" nzWidth="700" [(nzVisible)]="isVisible" [nzTitle]="modalTitle" (nzOnCancel)="handleCancel()" nzMaskClosable="false">
+        <div class="row">
+            <form [formGroup]="retainerForm" #formDirective="ngForm" (ngSubmit)="onSubmit(formDirective)" novalidate>
+                <mat-form-field class="form-group col-xl-6">
+                    <mat-label>Case</mat-label>
+                    <mat-select formControlName="caseId">
+                        <mat-option *ngFor="let item of casesList" [value]="item.id">{{item.caseNumber}}</mat-option>
+                        <mat-option *ngIf="casesList && casesList.length < 1" disabled>No record found
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="f.caseId.hasError('required')">Case is required</mat-error>
+                </mat-form-field>
+                <mat-form-field class="form-group col-xl-6">
+                    <input matInput placeholder="Description" formControlName="description" pattern="^[^-\s][\w\s-]+$">
+                    <mat-error *ngIf="f.description.hasError('required') || f.description.hasError('pattern')">
+                        Description is required</mat-error>
+                </mat-form-field>
+                <mat-form-field class="form-group col-xl-6">
+                    <mat-label>Due On</mat-label>
+                    <mat-select formControlName="dueOnId">
+                        <mat-option *ngFor="let item of dueOnList" [value]="item.id">{{item.name}}</mat-option>
+                        <mat-option *ngIf="dueOnList && dueOnList.length < 1" disabled>No record found
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="f.dueOnId.hasError('required')">Due On is required</mat-error>
+                </mat-form-field>
+                <mat-form-field class="form-group col-xl-6">
+                    <input matInput twoDecimal placeholder="Tax Rate" formControlName="taxRate" pattern="[0-9]+(\.[0-9][0-9]?)?">
+                    <span matSuffix>%</span>
+                    <mat-error *ngIf="f.taxRate.hasError('required')">Tax Rate is required</mat-error>
+                    <mat-error *ngIf="f.taxRate.hasError('pattern')">Please provide valid number</mat-error>
+                </mat-form-field>
+                <mat-form-field class="form-group col-xl-6">
+                    <mat-label>Specific Date</mat-label>
+                    <input matInput formControlName="specificDate" autocomplete="off" (focus)="specificDate.open()" [matDatepicker]="specificDate" (keydown)="$event.preventDefault();">
+                    <mat-datepicker-toggle matSuffix [for]="specificDate"></mat-datepicker-toggle>
+                    <mat-datepicker #specificDate></mat-datepicker>
+                    <mat-error *ngIf="f.specificDate.hasError('required')">Specific Date is required</mat-error>
+                </mat-form-field>
+                <div class="col-xl-12 mt-3">
+                    <h5 class="text-gray-6">
+                        Payment Terms
+                    </h5>
+                </div>
+                <mat-form-field class="form-group col-xl-6">
+                    <span matPrefix>$</span>
+                    <input matInput twoDecimal placeholder="Professional Fees" formControlName="professionalFees" pattern="[0-9]+(\.[0-9][0-9]?)?" maxlength="5">
+                    <mat-error *ngIf="f.professionalFees.hasError('required')">Professional Fees is required</mat-error>
+                    <mat-error *ngIf="f.professionalFees.hasError('pattern')">Please provide valid number</mat-error>
+                </mat-form-field>
+                <mat-form-field class="form-group col-xl-6">
+                    <span matPrefix>$</span>
+                    <input matInput twoDecimal placeholder="Taxes" formControlName="taxes" pattern="[0-9]+(\.[0-9][0-9]?)?" maxlength="5">
+                    <mat-error *ngIf="f.taxes.hasError('required')">Taxes is required</mat-error>
+                    <mat-error *ngIf="f.taxes.hasError('pattern')">Please provide valid number</mat-error>
+                </mat-form-field>
+                <mat-form-field class="form-group col-xl-6">
+                    <span matPrefix>$</span>
+                    <input matInput twoDecimal placeholder="Administrative Fee" formControlName="admissionFees" pattern="[0-9]+(\.[0-9][0-9]?)?" maxlength="5">
+                    <mat-error *ngIf="f.admissionFees.hasError('required')">administrative fees is required</mat-error>
+                    <mat-error *ngIf="f.admissionFees.hasError('pattern')">Please provide valid number</mat-error>
+                </mat-form-field>
+                <mat-form-field class="form-group col-xl-6">
+                    <span matPrefix>$</span>
+                    <input matInput twoDecimal placeholder="Government Fees" formControlName="governmentFees" pattern="[0-9]+(\.[0-9][0-9]?)?" maxlength="5">
+                    <mat-error *ngIf="f.governmentFees.hasError('required')">Government Fees is required</mat-error>
+                    <mat-error *ngIf="f.governmentFees.hasError('pattern')">Please provide valid number</mat-error>
+                </mat-form-field>
+                <mat-form-field class="form-group col-xl-6">
+                    <span matPrefix>$</span>
+                    <input matInput twoDecimal placeholder="Other Fees" formControlName="otherFees" pattern="[0-9]+(\.[0-9][0-9]?)?" maxlength="5">
+                    <mat-error *ngIf="f.otherFees.hasError('required')">Other Fees is required</mat-error>
+                    <mat-error *ngIf="f.otherFees.hasError('pattern')">Please provide valid number</mat-error>
+                </mat-form-field>
+                <mat-form-field class="form-group col-xl-6">
+                    <span matPrefix>$</span>
+                    <input matInput twoDecimal placeholder="Total" formControlName="total" pattern="[0-9]+(\.[0-9][0-9]?)?" maxlength="5">
+                    <mat-error *ngIf="f.total.hasError('required')">Total is required</mat-error>
+                    <mat-error *ngIf="f.total.hasError('pattern')">Please provide valid number</mat-error>
+                </mat-form-field>
+
+                <div class="form-group text-center mt-3">
+                    <button type="submit" nz-button nzType="primary">{{isEditMode ? 'Update Retainer Schedule' : 'Add
+                        Retainer Schedule'}}</button>
+                </div>
+            </form>
+        </div>
+    </nz-modal>
+</div>
+
+<!-- View Retainer Schedule Modal -->
+<div>
+    <nz-modal nzFooter="null" nzWidth="500" [(nzVisible)]="showRetainerSchedule" [nzTitle]="'Retainer Schedule Info'" nzMaskClosable="false" (nzOnCancel)="showRetainerSchedule = false">
+
+        <div>
+            <div class="row">
+                <div class="popup-action-btns">
+                    <i nz-icon nzType="edit" nz-tooltip nzTooltipTitle="Edit Retainer Schedule" (click)="$event.stopPropagation(editRetainerSchedule(data))" nzTheme="fill" class="text-success mr-3"></i>
+
+                    <i nz-icon nzType="delete" nz-tooltip nzTooltipTitle="Delete Retainer Schedule" (click)="$event.stopPropagation(deleteRetainerSchedule(data))" nzTheme="fill" class="text-danger"></i>
+
+                </div>
+                <div class="col-xl-12">
+                    <div class="">
+                        <div class="row px-2">
+                            <div class="col-xl-5 mb-4 offset-sm-1">
+                                <div class="t-10 text-gray-5">Case</div>
+                                <div>{{data.caseName}}</div>
+                            </div>
+                            <!-- Case No. -->
+                            <div class="col-xl-5 mb-4 offset-sm-1">
+                                <div class="t-10 text-gray-5">Description</div>
+                                <div>{{data.description }}</div>
+                            </div>
+                            <!-- Description -->
+                            <div class="col-xl-5 mb-4 offset-sm-1">
+                                <div class="t-10 text-gray-5">Due On</div>
+                                <div>{{data.dueOnName }}</div>
+                            </div>
+                            <!-- Due On -->
+                            <div class="col-xl-5 mb-4 offset-sm-1">
+                                <div class="t-10 text-gray-5">Tax Rate</div>
+                                <div>{{data.taxRate }}</div>
+                            </div>
+                            <!-- Tax Rate -->
+                            <div class="col-xl-5 mb-4 offset-sm-1">
+                                <div class="t-10 text-gray-5">Specific Date</div>
+                                <div>{{data.specificDate | appDateFormat: false }}</div>
+                            </div>
+                            <!-- Specific Date -->
+
+                            <!-- <div class="col-xl-5 mb-4 offset-sm-1">
+                  <div class="t-10 text-gray-5">Total Amount</div>
+                  <div>${{data.total }}</div>
+                </div> -->
+                            <!-- Total Amount -->
+
+                        </div>
+                        <!-- row ends  -->
+                        <div class="ant-modal-header ng-tns-c211-113 ng-star-inserted">
+                            <div class="ant-modal-title pt-0 pl-4">
+                                <div class="ng-star-inserted fw-500">Payment Terms</div>
+                            </div>
+                        </div>
+                        <div class="row mb-3 px-2">
+                            <div class="col-xl-5 mb-4 offset-sm-1">
+                                <div class="t-10 text-gray-5">Professional Fees</div>
+                                <div>{{data.professionalFees}}</div>
+                            </div>
+                            <!-- Professional Fees -->
+                            <div class="col-xl-5 mb-4 offset-sm-1">
+                                <div class="t-10 text-gray-5">Taxes</div>
+                                <div>{{data.taxes }}</div>
+                            </div>
+                            <!-- Taxes -->
+                            <div class="col-xl-5 mb-4 offset-sm-1">
+                                <div class="t-10 text-gray-5">Administrative Fees</div>
+                                <div>{{data.admissionFees}}</div>
+                            </div>
+                            <!-- Addmission Fees -->
+                            <div class="col-xl-5 mb-4 offset-sm-1">
+                                <div class="t-10 text-gray-5">Government Fees</div>
+                                <div>{{data.governmentFees }}</div>
+                            </div>
+                            <!-- Government Fees -->
+                            <div class="col-xl-5 mb-4 offset-sm-1">
+                                <div class="t-10 text-gray-5">Other Fees</div>
+                                <div>{{data.otherFees}}</div>
+                            </div>
+                            <!-- Other Fees -->
+                            <div class="col-xl-5 mb-4 offset-sm-1">
+                                <div class="t-10 text-gray-5">Total</div>
+                                <div>$ {{data.total }}</div>
+                            </div>
+                            <!-- Total -->
+                        </div>
+                        <!-- row ends  -->
+
+                        <div class="text-center">
+                            <a nz-button nzType="primary">Send to customer</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </nz-modal>
+</div>

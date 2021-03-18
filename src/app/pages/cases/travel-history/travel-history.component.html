@@ -1,0 +1,69 @@
+<div [formGroup]="form">
+    <div formArrayName="caseTravelHistories">
+        <ng-container *ngFor="let item of caseTravelHistory.controls; index as i">
+            <div [formGroupName]="i">
+                <mat-form-field class="col-xl-3 mb-2">
+                    <mat-select placeholder="Destination Country" formControlName="destinationCountryId"
+                        (selectionChange)="countryChange(i)">
+                        <mat-option *ngFor="let item of countries" [value]="item.key">{{item.value}}</mat-option>
+                        <mat-option *ngIf="countries && countries.length < 1" disabled>No record found</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field class="col-xl-3 mb-2">
+                    <mat-select placeholder="Province/State" (selectionChange)="stateChange(i)"
+                        formControlName="destinationStateId">
+                        <mat-option *ngFor="let item of states[i]" [value]="item.key">{{item.value}}</mat-option>
+                        <mat-option *ngIf="states[i] && states[i].length < 1" disabled>No record found</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field class="col-xl-3 mb-2">
+                    <mat-select placeholder="Destination City" formControlName="destinationCityId">
+                        <mat-option *ngFor="let item of cities[i]" [value]="item.key">{{item.value}}</mat-option>
+                        <mat-option *ngIf="cities[i] && cities[i].length < 1" disabled>No record found</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field class="col-xl-3 mb-2">
+                    <input matInput placeholder="Purpose of travel" formControlName="purposeOfTravel">
+                    <mat-error *ngIf="getFormGroup(item).purposeOfTravel.hasError('required')">
+                        Purpose of travel is required
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="col-xl-3 mb-2">
+                    <input matInput formControlName="from" placeholder="From" [matDatepicker]="from" autocomplete="off"
+                        (focus)="from.open()" (keydown)="$event.preventDefault();">
+                    <mat-datepicker-toggle matSuffix [for]="from"></mat-datepicker-toggle>
+                    <mat-datepicker #from></mat-datepicker>
+                    <mat-error *ngIf="getFormGroup(item).from.hasError('required')">
+                        From Date is required
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field class="col-xl-3 mb-2">
+                    <input matInput formControlName="to" placeholder="To" [matDatepicker]="to" autocomplete="off"
+                        (focus)="to.open()"  (keydown)="$event.preventDefault();">
+                    <mat-datepicker-toggle matSuffix [for]="to"></mat-datepicker-toggle>
+                    <mat-datepicker #to></mat-datepicker>
+                    <mat-error *ngIf="getFormGroup(item).to.hasError('required')">
+                        To Date is required
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="col-xl-3 mb-2">
+                    <input type="number" min="0" matInput placeholder="Duration of stay(total days)"
+                        formControlName="durationOfStay">
+                    <mat-error *ngIf="getFormGroup(item).durationOfStay.hasError('required')">
+                        Duration of stay is required
+                    </mat-error>
+                </mat-form-field>
+                <div class="col-xl-12 mb-2">
+                    <ng-container *ngIf="caseTravelHistory.length === (i+1)">
+                        <button nz-button nzType="primary" type="button" (click)="addFormGroup()"> Add New </button>
+                    </ng-container>
+                    <ng-container *ngIf="caseTravelHistory.length !== (i+1)">
+                        <button nz-button nzType="default" nzDanger type="button" (click)="removeFormGroup(i)"> Delete
+                        </button>
+                    </ng-container>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+</div>

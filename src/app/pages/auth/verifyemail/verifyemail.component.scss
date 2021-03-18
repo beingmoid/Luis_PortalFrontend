@@ -1,0 +1,58 @@
+// Responsiveness variables starts
+
+$maxwidth-name: max-device-width;
+$minwidth-name: min-device-width;
+$breakpoint-laptop: 1024px;
+$breakpoint-laptop-medium: 992px;
+$breakpoint-tablet: 769px;
+$breakpoint-mobile: 479px;
+
+// Responsiveness variables starts
+
+.verify-email-div{
+    background-image: url('../../../../assets/images/signup/signup-bg-img.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.verify-email-div:before {
+    content: "";
+    background-color: #000;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    opacity: .3;
+}
+.verify-email-box {
+    background: #fff;
+    border-radius: 6px;
+    margin: 0 auto;
+    text-align: center;
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 15px 30px;
+}
+.verify-email{
+
+ h5.title{
+    letter-spacing: -0.5px;
+}
+
+}
+
+// Responsivenss 
+
+
+@media only screen and ($maxwidth-name : $breakpoint-mobile) {
+    .verify-email-box {
+    margin: 10px;
+    }
+  }
+

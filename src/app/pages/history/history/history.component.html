@@ -1,0 +1,90 @@
+<div class="breadcrumbs mb-3">
+    <strong>History</strong>
+    <button class="btn btn-primary btn-lg ant-btn-primary pull-right" id="exportData" (click)="ExportData()">
+        <span class="pl-4 pr-4">Export Data</span>
+    </button>
+</div>
+<div class="row mb-4">
+    <div class="col-xl-10">
+      <div class="w-30">
+        <nz-input-group nzSize="large" [nzPrefix]="suffixIconSearch" *ngIf="tabName == 'Case'">
+          <input type="text" nz-input [(ngModel)]="searchCase" placeholder="Search for Case" (keyup)="FilterCase($event)"/>
+        </nz-input-group>
+        <nz-input-group nzSize="large" [nzPrefix]="suffixIconSearch" *ngIf="tabName == 'Event'">
+            <input type="text" nz-input [(ngModel)]="searchEvent" placeholder="Search for Event" (keyup)="FilterEvent($event)"/>
+        </nz-input-group>
+        <nz-input-group nzSize="large" [nzPrefix]="suffixIconSearch" *ngIf="tabName == 'Task'">
+            <input type="text" nz-input [(ngModel)]="searchTask" placeholder="Search for Task" (keyup)="FilterTask($event)"/>
+        </nz-input-group>
+        <nz-input-group nzSize="large" [nzPrefix]="suffixIconSearch" *ngIf="tabName == 'Contact'">
+            <input type="text" nz-input [(ngModel)]="searchContact" placeholder="Search for Contact" (keyup)="FilterContact($event)"/>
+        </nz-input-group>
+        <nz-input-group nzSize="large" [nzPrefix]="suffixIconSearch" *ngIf="tabName == 'Commission'">
+            <input type="text" nz-input [(ngModel)]="searchCommission" placeholder="Search for Commission" (keyup)="FilterCommission($event)"/>
+        </nz-input-group>
+        <nz-input-group nzSize="large" [nzPrefix]="suffixIconSearch" *ngIf="tabName == 'Accounting'">
+            <input type="text" nz-input [(ngModel)]="searchAccount" placeholder="Search for Accounting" (keyup)="FilterAccount($event)"/>
+        </nz-input-group>
+        <nz-input-group nzSize="large" [nzPrefix]="suffixIconSearch" *ngIf="tabName == 'Documents'">
+            <input type="text" nz-input [(ngModel)]="searchDocument" placeholder="Search for Documents" (keyup)="FilterDocument($event)"/>
+        </nz-input-group>
+        <ng-template #suffixIconSearch>
+          <i nz-icon nzType="search"></i>
+        </ng-template>
+      </div>
+    </div>
+</div>
+
+<ng-container>
+  <div class="row">
+    <div class="col-xl-12">
+        <div class="col-xl-12 card">
+            <nz-tabset class="" nzSize="large">
+                <nz-tab nzTitle="Case" (nzClick)="changeTab('Case')" *ngIf="ShowCaseHistory">
+                    <ng-container *ngTemplateOutlet="Case"></ng-container>
+                </nz-tab>
+                <nz-tab nzTitle="Event" (nzClick)="changeTab('Event')" *ngIf="ShowEventHistory">
+                    <ng-container *ngTemplateOutlet="Event"></ng-container>
+                </nz-tab>
+                <nz-tab nzTitle="Task" (nzClick)="changeTab('Task')" *ngIf="ShowTaskHistory">
+                    <ng-container *ngTemplateOutlet="Task"></ng-container>
+                </nz-tab>
+                <nz-tab nzTitle="Contact" (nzClick)="changeTab('Contact')" *ngIf="ShowContactHistory">
+                    <ng-container *ngTemplateOutlet="Contact"></ng-container>
+                </nz-tab>
+                <nz-tab nzTitle="Commission" (nzClick)="changeTab('Commission')" *ngIf="ShowCommissionHistory">
+                    <ng-container *ngTemplateOutlet="Commission"></ng-container>
+                </nz-tab>
+                <nz-tab nzTitle="Accounting" (nzClick)="changeTab('Accounting')" *ngIf="ShowAccountHistory">
+                    <ng-container *ngTemplateOutlet="Accounting"></ng-container>
+                </nz-tab>
+                <nz-tab nzTitle="Documents" (nzClick)="changeTab('Documents')" *ngIf="ShowDocumentHistory">
+                    <ng-container *ngTemplateOutlet="Documents"></ng-container>
+                </nz-tab>
+            </nz-tabset>
+        </div>
+    </div>
+</div>
+
+<ng-template #Case>
+    <app-history-case [searchCase]="searchCase"  [filterCaseObserver]="filterCaseSubject" [exportCaseObserver]="exportCaseSubject"></app-history-case>
+</ng-template>
+<ng-template #Event>
+    <app-history-event [searchEvent]="searchEvent" [filterEventObserver]="filterEventSubject" [exportEventObserver]="exportEventSubject"></app-history-event>
+</ng-template>
+<ng-template #Task>
+    <app-history-task [searchTask]="searchTask" [filterTaskObserver]="filterTaskSubject" [exportTaskObserver]="exportTaskSubject"></app-history-task>
+</ng-template>
+<ng-template #Contact>
+    <app-history-contact [searchContact]="searchContact"  [filterContactObserver]="filterContactSubject" [exportContactObserver]="exportContactSubject"></app-history-contact>
+</ng-template>
+<ng-template #Commission>
+    <app-history-commission [searchCommission]="searchCommission" [filterCommissionObserver]="filterCommissionSubject" [exportCommissionObserver]="exportCommissionSubject"></app-history-commission>
+</ng-template>
+<ng-template #Accounting>
+    <app-history-account [searchAccount]="searchAccount" [filterAccountObserver]="filterAccountSubject" [exportAccountObserver]="exportAccountSubject"></app-history-account>
+</ng-template>
+<ng-template #Documents>
+    <app-history-document [searchDocument]="searchDocument" [filterDocumentObserver]="filterDocumentSubject" [exportDocumentObserver]="exportDocumentSubject"></app-history-document>
+</ng-template>
+</ng-container>

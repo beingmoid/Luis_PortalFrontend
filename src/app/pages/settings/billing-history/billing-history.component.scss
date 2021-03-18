@@ -1,0 +1,17 @@
+ .invoice-detail-div{
+     .invoice-detail
+     {
+         & i {
+        width: 15%;
+        display: inline-table;
+    }
+
+    & span {
+        width: 60%;
+    }
+}
+
+ }
+ .ant-table-thead > tr > th:first-child:not(.ant-table-selection-column) {
+    padding-left: 2% !important;
+}

@@ -1,0 +1,205 @@
+<div class="breadcrumbs">
+    <strong>Documents</strong>
+</div>
+<div>
+    <div class="row mb-4 mt-3">
+        <div class="col-xl-10">
+            <div class="w-25">
+                <nz-input-group nzSize="large" [nzPrefix]="suffixIconSearch" *ngIf="selectedTabName == 'general'">
+                    <input type="text" nz-input [(ngModel)]="clientSearch" (ngModelChange)="filterClient()"
+                        placeholder="Search for client files" />
+                </nz-input-group>
+                <nz-input-group nzSize="large" [nzPrefix]="suffixIconSearch" *ngIf="selectedTabName == 'personal'">
+                    <input type="text" nz-input [(ngModel)]="personalSearch" (ngModelChange)="filterPersonal()"
+                        placeholder="Search for personal files" />
+                </nz-input-group>
+                <ng-template #suffixIconSearch>
+                    <i nz-icon nzType="search"></i>
+                </ng-template>
+            </div>
+        </div>
+        <div class="col-xl-2">
+            <a nz-button class="float-right"
+                *ngIf="_permissionService.canCreate || _permissionService.getRole() == 'Client'" nzType="primary"
+                (click)="addDocument()">Add Documents</a>
+        </div>
+    </div>
+    <!-- Tabs -->
+    <div class="row">
+        <div class="col-xl-12">
+            <nz-tabset class="" nzSize="large">
+                <nz-tab nzTitle="Client/General" (nzClick)="changeTab('general')">
+                    <ng-container *ngTemplateOutlet="general"></ng-container>
+                </nz-tab>
+                <nz-tab nzTitle="Personal Documents" (nzClick)="changeTab('personal')">
+                    <ng-container *ngTemplateOutlet="personal"></ng-container>
+                </nz-tab>
+            </nz-tabset>
+        </div>
+    </div>
+
+    <ng-template #general>
+        <div class="row">
+            <div class="col-xl-12 ">
+                <nz-table class="card" #clientsTable [nzData]="clientDocuments" [nzNoResult]="noData" nzShowSizeChanger
+                    [nzPageSize]="clientPageSize">
+                    <thead>
+                        <tr>
+                            <th class="ant-table-selection-column" [nzSortFn]="sortNumbersFn" (click)="sortOn('index')">
+                                #</th>
+                            <th [nzSortFn]="sortNamesFn" (click)="sortOn('documentName')">Document Name</th>
+                            <th [nzSortFn]="sortNamesFn" (click)="sortOn('createdDate')">Uploaded Date</th>
+                            <th [nzSortFn]="sortNamesFn" (click)="sortOn('documentTypeName')">Document Type</th>
+                            <th [nzSortFn]="sortNamesFn" (click)="sortOn('useForCase')">Use for the case</th>
+                            <th [nzSortFn]="sortNamesFn" (click)="sortOn('caseName')">Case</th>
+                            <th [hidden]="_permissionService.getRole() == 'Client'">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr *ngFor="let data of clientsTable.data; let i = index;" (click)="showSingleDocuments(data)" nz-tooltip
+                        nzTooltipTitle="Click to View Documents" style="cursor: pointer;">
+                            <td>{{data.index}}</td>
+                            <td>{{ data.documentName }}</td>
+                            <td>{{ data.createdDate | appDateFormat: false }}</td>
+                            <td>{{ data.documentTypeName }}</td>
+                            <td>{{ data.useForCase }}</td>
+                            <td>{{ data.caseName }}</td>
+                            <td [hidden]="_permissionService.getRole() == 'Client'">
+                                <i nz-icon nzType="edit" *ngIf="_permissionService.canEdit" nz-tooltip
+                                    nzTooltipTitle="Edit Document" (click)="$event.stopPropagation(editDocument(data))" nzTheme="fill"
+                                    class="text-success"></i>
+                                <nz-divider nzType="vertical"></nz-divider>
+                                <i nz-icon nzType="delete" *ngIf="_permissionService.canDelete" nz-tooltip
+                                    nzTooltipTitle="Delete Document" (click)="$event.stopPropagation(deleteDocument(data))" nzTheme="fill"
+                                    class="text-danger"></i>
+                            </td>
+                        </tr>
+                    </tbody>
+                </nz-table>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template #personal>
+        <div class="row">
+            <div class="col-xl-12 ">
+                <nz-table class="card" #personalTable [nzData]="personalDocuments" [nzNoResult]="noData"
+                    nzShowSizeChanger [nzPageSize]="personalPageSize">
+                    <thead>
+                        <tr>
+                            <th class="ant-table-selection-column" [nzSortFn]="sortNumbersFn" (click)="sortOn('index')">
+                                #</th>
+                            <th [nzSortFn]="sortNamesFn" (click)="sortOn('documentName')">Document Name</th>
+                            <th [nzSortFn]="sortNamesFn" (click)="sortOn('createdDate')">Uploaded Date</th>
+                            <th [nzSortFn]="sortNamesFn" (click)="sortOn('documentTypeName')">Document Type</th>
+                            <th [nzSortFn]="sortNamesFn" (click)="sortOn('useForCase')">Use for the case</th>
+                            <th [nzSortFn]="sortNamesFn" (click)="sortOn('caseName')">Case</th>
+                            <th [hidden]="_permissionService.getRole() == 'Client'">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr *ngFor="let data of personalTable.data; let i = index;" (click)="showSingleDocuments(data)"
+                            nz-tooltip nzTooltipTitle="Click to View Document" style="cursor: pointer;">
+                            <td>{{data.index}}</td>
+                            <td>{{ data.documentName }}</td>
+                            <td>{{ data.createdDate | appDateFormat: false }}</td>
+                            <td>{{ data.documentTypeName }}</td>
+                            <td>{{ data.useForCase }}</td>
+                            <td>{{ data.caseName }}</td>
+                            <td [hidden]="_permissionService.getRole() == 'Client'">
+                                <i nz-icon nzType="edit" *ngIf="_permissionService.canEdit" nz-tooltip
+                                    nzTooltipTitle="Edit Document" (click)="$event.stopPropagation(editDocument(data))"
+                                    nzTheme="fill" class="text-success"></i>
+                                <nz-divider nzType="vertical"></nz-divider>
+                                <i nz-icon nzType="delete" *ngIf="_permissionService.canDelete" nz-tooltip
+                                    nzTooltipTitle="Delete Document"
+                                    (click)="$event.stopPropagation(deleteDocument(data))" nzTheme="fill"
+                                    class="text-danger"></i>
+                            </td>
+                        </tr>
+                    </tbody>
+                </nz-table>
+            </div>
+        </div>
+    </ng-template>
+</div>
+<ng-template #noData>
+    <nz-empty class="m-5" [nzNotFoundImage]="'assets/images/no-data/no-doc.svg'" [nzNotFoundContent]="noDataDescrp">
+    </nz-empty>
+</ng-template>
+<ng-template #noDataDescrp>
+    <div class="m-4">
+        No Data Available.
+        <a *ngIf="_permissionService.canCreate" (click)="addDocument()" class="kit__utils__link">
+            Upload New Documents
+        </a>
+    </div>
+</ng-template>
+
+<!-- Documents Modal -->
+<div>
+    <nz-modal nzFooter="null" nzWidth="700" [(nzVisible)]="isVisible" [nzTitle]="modalTitle"
+        (nzOnCancel)="handleCancel()" nzMaskClosable="false">
+        <app-add-documents [documentSub]="documentObserverSubject" [caseId]="caseId" [caseNumber]="caseNumber">
+        </app-add-documents>
+    </nz-modal>
+</div>
+
+<!-- View Modal -->
+<div>
+    <nz-modal nzFooter="null" nzWidth="700" [(nzVisible)]="showDocument" [nzTitle]="'Document Details'"
+        nzMaskClosable="false" (nzOnCancel)="showDocument = false">
+
+        <div>
+            <div class="row">
+                <div class="popup-action-btns">
+                    <i nz-icon nzType="edit" nz-tooltip nzTooltipTitle="Edit Document"
+                        *ngIf="_permissionService.canEdit" (click)="$event.stopPropagation(editDocument(document))"
+                        nzTheme="fill" class="text-success mr-3"></i>
+
+                    <i nz-icon nzType="delete" nz-tooltip nzTooltipTitle="Delete Document"
+                        *ngIf="_permissionService.canDelete" (click)="$event.stopPropagation(deleteDocument(document))"
+                        nzTheme="fill" class="text-danger"></i>
+                </div>
+
+                <div class="col-xl-12">
+                    <div class="">
+                        <div class="row mb-3">
+                            <div class="col-sm-6 mb-4">
+                                <div class="t-10 text-gray-5">Document Name</div>
+                                <div>{{document.documentName}}</div>
+                            </div>
+                            <!-- Document Name -->
+                            <div class="col-sm-6 mb-4">
+                                <div class="t-10 text-gray-5">Document Type</div>
+                                <div>{{document.documentTypeName}}</div>
+                            </div>
+                            <!-- Document Type -->
+                            <div class="col-sm-6 mb-4">
+                                <div class="t-10 text-gray-5">Use of the Case</div>
+                                <div>{{document.useForCase}}</div>
+                            </div>
+                            <!-- Use of the Case -->
+                            <div class="col-sm-6 mb-4">
+                                <div class="t-10 text-gray-5">Case</div>
+                                <div>{{document.caseName}}</div>
+                            </div>
+                            <!-- Case Name -->
+                            <div class="col-sm-6 mb-4">
+                                <div class="f-13 text-primary font-weight-bold"> <a href="{{document.documentBlobURI}}"
+                                        class=" text-primary"> {{document.documentName}} </a><i nz-icon
+                                        nzType="vertical-align-bottom" nzTheme="outline" class="f-14"> </i> </div>
+                                <div>{{document.caseName}}</div>
+                            </div>
+                            <!-- passport PDF -->
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </nz-modal>
+</div>

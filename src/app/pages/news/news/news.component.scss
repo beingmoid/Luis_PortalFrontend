@@ -1,0 +1,24 @@
+
+.immigration-news{
+
+.card{
+    box-shadow: 0 4px 10px 0 rgba(20, 19, 34, 0.03), 0 0 10px 0 rgba(20, 19, 34, 0.02);
+    border: 1px solid #e4e9f0;
+    border-radius: calc(4px - 1px);
+    background: #fff;
+    height: 340px;
+
+    .news-img-div{
+        height: 160px;
+    
+        img{
+            height: 100%;
+        }
+   
+    }
+}
+
+}
+.no-data{
+    padding-top: 150px;
+}

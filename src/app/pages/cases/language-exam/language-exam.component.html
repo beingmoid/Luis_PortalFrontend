@@ -1,0 +1,111 @@
+<div [formGroup]="form">
+    <div formArrayName="caseLanguageExams">
+        <ng-container *ngFor="let item of languageExam.controls; index as i">
+            <div [formGroupName]="i">
+                <mat-form-field class="col-xl-3 mb-2" title="Have you taken a Language Exam, in either English or French, within the last two(2) years?">
+                    <mat-select
+                        placeholder="Have you taken a Language Exam, in either English or French, within the last two(2) years?"
+                        formControlName="isTakenExam">
+                        <mat-option [value]="false">No</mat-option>
+                        <mat-option [value]="true">Yes</mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="getFormGroup(item).isTakenExam.hasError('required')">
+                        This field is required
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="col-xl-3 mb-2" title="Which language test did you take?">
+                    <mat-select placeholder="Which language test did you take?" formControlName="languageId">
+                        <mat-option *ngFor="let item of languages" [value]="item.key">{{item.value}}</mat-option>
+                        <mat-option *ngIf="languages && languages.length < 1" disabled>No record found</mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="getFormGroup(item).languageId.hasError('required')">
+                        Language is required
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="col-xl-3 mb-2" title="Issue Date">
+                    <input matInput formControlName="issueDate" placeholder="Issue Date" [matDatepicker]="issueDate" maxlength=3
+                        autocomplete="off" (focus)="issueDate.open()" (keydown)="$event.preventDefault();">
+                    <mat-datepicker-toggle matSuffix [for]="issueDate"></mat-datepicker-toggle>
+                    <mat-datepicker #issueDate></mat-datepicker>
+                    <mat-error *ngIf="getFormGroup(item).issueDate.hasError('required')">
+                        Issue Date is required
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="col-xl-3 mb-2" title="Which IELTS Exam did you take?">
+                    <mat-select placeholder="Which IELTS Exam did you take?" formControlName="ieltsExamId">
+                        <mat-option *ngFor="let item of ieltsExams" [value]="item.key">{{item.value}}</mat-option>
+                        <mat-option *ngIf="ieltsExams && ieltsExams.length < 1" disabled>No record found</mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="getFormGroup(item).ieltsExamId.hasError('required')">
+                        Which IELTS Exam did you take? is required
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field class="col-xl-3 mb-2" title="Score of Speaking Test">
+                    <input onlyNumbers matInput formControlName="speakingScore" placeholder="Score of Speaking Test" maxlength=3>
+                    <mat-error *ngIf="getFormGroup(item).speakingScore.hasError('required')" >
+                        Score of Speaking Test is required
+                    </mat-error>
+                    <mat-error *ngIf="getFormGroup(item).speakingScore.hasError('min')">
+                        Minimum score cannot be less than 0
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="col-xl-3 mb-2" title="Score of Listening Test">
+                    <input onlyNumbers matInput formControlName="listeningScore" maxlength=3
+                        placeholder="Score of Listening Test">
+                    <mat-error *ngIf="getFormGroup(item).listeningScore.hasError('required')">
+                        Score of Listening Test is required
+                    </mat-error>
+                    <mat-error *ngIf="getFormGroup(item).listeningScore.hasError('min')">
+                        Minimum score cannot be less than 0
+                    </mat-error>
+
+                    <mat-error *ngIf="getFormGroup(item).listeningScore.hasError('maxlength')">
+                        Minimum score cannot be more than 100
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="col-xl-3 mb-2" title="Score of Reading Test">
+                    <input onlyNumbers matInput formControlName="readingScore" placeholder="Score of Reading Test" maxlength=3>
+                    <mat-error *ngIf="getFormGroup(item).readingScore.hasError('required')">
+                        Score of Reading Test is required
+                    </mat-error>
+                    <mat-error *ngIf="getFormGroup(item).readingScore.hasError('min')">
+                        Minimum score cannot be less than 0
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="col-xl-3 mb-2" title="Score of Writing Test">
+                    <input onlyNumbers matInput formControlName="writingScore" placeholder="Score of Writing Test" maxlength=3>
+                    <mat-error *ngIf="getFormGroup(item).writingScore.hasError('required')">
+                        Score of Writing Test is required
+                    </mat-error>
+                    <mat-error *ngIf="getFormGroup(item).writingScore.hasError('min')">
+                        Minimum score cannot be less than 0
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field class="col-xl-3 mb-2" title="Do you have other language results?">
+                    <mat-select placeholder="Do you have other language results?"
+                        formControlName="isOtherLanguageResult">
+                        <mat-option [value]="false">No</mat-option>
+                        <mat-option [value]="true">Yes</mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="getFormGroup(item).isOtherLanguageResult.hasError('required')">
+                        Do you have other language results? is required
+                    </mat-error>
+                </mat-form-field>
+                <div class="col-xl-12 mb-2 d-inline">
+                    <ng-container *ngIf="languageExam.length === (i+1)">
+                        <button nz-button nzType="primary" type="button" (click)="addFormGroup()"> Add New </button>
+                    </ng-container>
+                    <ng-container *ngIf="languageExam.length !== (i+1)">
+                        <button nz-button nzType="default" nzDanger type="button" (click)="removeFormGroup(i)"> Delete
+                        </button>
+                        <!-- <i nz-icon nzType="delete" nzDange (click)="removeFormGroup(i)" nz-tooltip nzTooltipTitle="Delete Language Exam"
+                        nzTheme="fill" class="text-danger pointer"></i> -->
+                    </ng-container>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+
+</div>

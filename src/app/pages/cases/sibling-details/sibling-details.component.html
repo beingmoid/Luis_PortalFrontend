@@ -1,0 +1,45 @@
+<div [formGroup]="form">
+    <div formArrayName="caseSiblings">
+        <ng-container *ngFor="let item of caseSiblings.controls; index as i">
+            <div [formGroupName]="i">
+                <mat-form-field class="col-xl-3 mb-2" title="Name">
+                    <input matInput placeholder="Name" formControlName="name" trim="blur">
+                    <mat-error *ngIf="getFormGroup(item).name.hasError('required')">
+                        Name is required
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="col-xl-3 mb-2" title="Occupation">
+                    <input matInput placeholder="Occupation" formControlName="occupation" trim="blur">
+                    <mat-error *ngIf="getFormGroup(item).occupation.hasError('required')">
+                        Occupation is required
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="col-xl-3 mb-2" title="DOB">
+                    <input matInput formControlName="dob" placeholder="DOB" [matDatepicker]="DOB" autocomplete="off"
+                        (focus)="DOB.open()" (keydown)="$event.preventDefault();">
+                    <mat-datepicker-toggle matSuffix [for]="DOB"></mat-datepicker-toggle>
+                    <mat-datepicker #DOB></mat-datepicker>
+                    <mat-error *ngIf="getFormGroup(item).dob.hasError('required')">
+                        Date of Birth is required
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="col-xl-3 mb-2" title="Residential Address">
+                    <input matInput placeholder="Residential Address" formControlName="residentialAddress" trim="blur">
+                    <mat-error *ngIf="getFormGroup(item).residentialAddress.hasError('required')">
+                        Residential Address is required
+                    </mat-error>
+                </mat-form-field>
+                <div class="col-xl-12 mb-2">
+                    <ng-container *ngIf="caseSiblings.length === (i+1)">
+                        <button nz-button nzType="primary" type="button" (click)="addFormGroup()"> Add New </button>
+                    </ng-container>
+                    <ng-container *ngIf="caseSiblings.length !== (i+1)">
+                        <button nz-button nzType="default" nzDanger type="button" (click)="removeFormGroup(i)"> Delete
+                        </button>
+                    </ng-container>
+                </div>
+            </div>
+        </ng-container>
+
+    </div>
+</div>

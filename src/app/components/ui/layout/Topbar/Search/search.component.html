@@ -1,0 +1,50 @@
+<div class="d-inline-block mr-4">
+  <nz-input-group class="extInput" [nzPrefix]="prefixIconSearch">
+    <input nz-input (focus)="setVisible()" placeholder="Global Search..." style="width: 250px" />
+  </nz-input-group>
+  <ng-template #prefixIconSearch>
+    <i nz-icon nzType="search" class="extInputIcon" style="color: rgba(0,0,0,.25)"></i>
+  </ng-template>
+  <div class="livesearch" [ngClass]="{'livesearchVisible': showSearch}">
+    <button class="close" type="button" (click)="setHidden()">
+      <i class="icmn-cross"></i>
+    </button>
+    <div class="container-fluid">
+      <div class="wrapper">
+        <input #liveSearchInput [(ngModel)]="searchText" (keyup)="handleKeyUp($event)" class="searchInput"
+          placeholder="{{ 'topBar.typeToSearch' | translate }}" />
+        <ul class="options">
+          <li class="option">Press enter to search</li>
+        </ul>
+
+        <div *ngIf="!searchText" class="results">
+          <div class="resultsTitle">
+            <span>No Results Found</span>
+          </div>
+        </div>
+
+        <div *ngIf="searchResultData.length > 0" class="results">
+          <div class="resultsTitle">
+            <span>({{searchResultData.length}}) Search Results</span>
+          </div>
+          <div class="row">
+            <div class="col-lg-4">
+              <div class="resultContent" *ngFor="let data of searchResultData" class="mb-2 pointer"
+                (click)="handleSearchNavigation(data)">
+                <div class="resultThumb">
+                  {{data.index}}
+                </div>
+                <div class="result">
+                  <div class="resultText">{{data.value}}</div>
+                  <div class="resultSource">In {{data.tableDisplayName}} | Created on {{data.createdDate |
+                    appDateFormat:false}}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,87 @@
+@import 'src/app/components/mixins.scss';
+
+// Responsive utils
+// $xxl-min-width: 1600px;
+// $xxl-max-width: 1599px;
+// $xl-min-width: 1200px;
+// $xl-max-width: 1199px;
+// $lg-min-width: 992px;
+// $lg-max-width: 991px;
+// $md-min-width: 768px;
+// $md-max-width: 767px;
+// $sm-min-width: 576px;
+// $sm-max-width: 575px;
+
+nz-date-picker {
+  margin: 0 8px 12px 0;
+}
+
+.c3 {
+  margin-left: -15px;
+}
+
+  // **************************************** Responsiveness Starts ***************************************** 
+
+@media (max-width: $xxl-max-width) {
+
+  .analyticsPage {
+    .topRow strong {
+      font-size: .9rem;
+    }
+
+    .casePerDayMsg {
+      font-size: 0.8rem;
+      margin-bottom: 0;
+    }
+
+    .accountsReceivables {
+      padding-top: 10px;
+    }
+
+  }
+
+  // analyticsPage ends 
+}
+
+// (max-width: 1599px) ends 
+
+@media (max-width: $xl-max-width) {
+  .analyticsPage {
+
+    .card-header,
+    .card-footer,
+    .card-body {
+      padding: .6rem 1rem;
+    }
+
+    .casePerDayMsg {
+      font-size: 0.7rem;
+      margin: 0 !important;
+    }
+    .caseStatusDiv{
+      padding-top: 1.5rem;
+    }
+
+    .caseStatusDiv .my-3 {
+      margin: 0 !important;
+  }
+
+  }
+
+  // analyticsPage ends 
+}
+
+// $xl-max-width: 1199px ends 
+
+@media (max-width: $lg-max-width){
+
+}
+// $lg-max-width: 991px;
+
+@media (max-width: $sm-max-width){
+ 
+}
+// $sm-max-width: 575px;
+
+  // **************************************** Responsiveness Ends ***************************************** 
+

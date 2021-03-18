@@ -1,0 +1,70 @@
+<div [formGroup]="form">
+    <table formArrayName="caseEducationalHistories" class="table table-responsive-xl">
+        <thead class="text-gray-5">
+            <tr>
+                <th>Name of School/Institution</th>
+                <th>Course Name</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th class="text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let item of educationalHistory.controls; index as i">
+                <ng-container [formGroupName]="i">
+                    <td>
+                        <mat-form-field class="w-100" title="Name of School/Institution">
+                            <input matInput formControlName="nameOfSchool" placeholder="Name of School/Institution" trim="blur">
+                            <mat-error *ngIf="getFormGroup(item).nameOfSchool.hasError('required')">
+                                Name of School is required
+                            </mat-error>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="w-100" title="Course Name">
+                            <input matInput formControlName="courseName" placeholder="Course Name" trim="blur">
+                            <mat-error *ngIf="getFormGroup(item).courseName.hasError('required')">
+                                Course Name is required
+                            </mat-error>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="w-100" title="Start Date">
+                            <input [min]="minStartDate" matInput #startDateInput formControlName="startDate" placeholder="Start Date" autocomplete="off"
+                                (focus)="startDate.open()" [matDatepicker]="startDate"
+                                (keydown)="$event.preventDefault();" (dateChange)="startDateChange(startDateInput.value,item)">
+                            <mat-datepicker-toggle matSuffix [for]="startDate"></mat-datepicker-toggle>
+                            <mat-datepicker #startDate></mat-datepicker>
+                            <mat-error *ngIf="getFormGroup(item).startDate.hasError('required')">
+                                Start Date is required
+                            </mat-error>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="w-100" title="End Date">
+                            <input [min]="getFormGroup(item)['startDate']['_pendingValue']" matInput formControlName="endDate" placeholder="End Date" [matDatepicker]="endDate"
+                                autocomplete="off" (keydown)="$event.preventDefault();" (focus)="endDate.open()">
+                            <mat-datepicker-toggle matSuffix [for]="endDate"></mat-datepicker-toggle>
+                            <mat-datepicker #endDate></mat-datepicker>
+                            <mat-error *ngIf="getFormGroup(item).endDate.hasError('required')">
+                                End Date is required
+                            </mat-error>
+                        </mat-form-field>
+                    </td>
+                    <td class="v-middle text-center">
+                        <ng-container *ngIf="educationalHistory.length === (i+1)">
+                            <button nz-button nzType="primary" type="button" (click)="addFormGroup()"> Add New </button>
+                        </ng-container>
+
+                        <ng-container *ngIf="educationalHistory.length !== (i+1)">
+                            <i nz-icon nzType="delete" nzDanger (click)="removeFormGroup(i)" nz-tooltip
+                                nzTooltipTitle="Delete Educational History" nzTheme="fill"
+                                class="text-danger pointer"></i>
+                        </ng-container>
+                    </td>
+                </ng-container>
+            </tr>
+        </tbody>
+    </table>
+
+</div>

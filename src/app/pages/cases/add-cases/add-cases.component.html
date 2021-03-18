@@ -1,0 +1,379 @@
+<div class="row">
+    <div class="col-xl-12">
+        <!-- <div class="py-4">
+            <h5 class="font-weight-bold">{{ isEditMode ? 'Edit Case' : 'Add New Case' }}</h5>
+        </div> -->
+        <div class="bg-white">
+            <form (ngSubmit)="handleSubmit(formDirective)" (keydown.enter)="$event.preventDefault();" [formGroup]="form"
+                novalidate #formDirective="ngForm">
+
+                <div class="col-xl-12 p-5 text-center" [hidden]="!isEditMode">
+                    <!-- <nz-upload class="avatar-uploader d-flex justify-content-center"
+                        nzAction="https://www.mocky.io/v2/5cc8019d300000980a055e76" nzShowButton="true" nzName="avatar"
+                        nzListType="picture-card" [nzShowUploadList]="false" [nzBeforeUpload]="beforeUpload"
+                        (nzChange)="handleChange($event)">
+                        <ng-container *ngIf="!avatarUrl">
+                            <i class="upload-icon" nz-icon [nzType]="loading ? 'loading' : 'plus'"></i>
+                            <div class="ant-upload-text">Upload</div>
+                        </ng-container>
+                        <img *ngIf="avatarUrl" [src]="avatarUrl" style="width: 100%" />
+                    </nz-upload> -->
+
+                    <div class="kit__utils__avatar kit__utils__avatar--size64 kit__utils__avatar--rounded mx-auto my-4">
+                        <img src="assets/images/avatars/avatar.png" alt="User" *ngIf="caseUserDetail?.image == null">
+                        <img [src]="caseUserDetail?.image" alt="User" *ngIf="caseUserDetail?.image !== null">
+                    </div>
+
+                </div>
+
+                <mat-form-field class="col-xl-3 mb-2" title="Case Number">
+                    <mat-label>Case No</mat-label>
+                    <input matInput formControlName="caseNumber" trim="blur" maxlength=20>
+                    <mat-error *ngIf="f.caseNumber.hasError('required')">
+                        Case Number is required
+                    </mat-error>
+
+                    <mat-error *ngIf="f.caseNumber.hasError('maxlength')">
+                        Case no must be atmost 20 character
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field class=" col-xl-3 mb-2 " title="Client ">
+                    <mat-label>Client</mat-label>
+                    <mat-select formControlName="contactClientId">
+                        <mat-option *ngFor="let item of contactClientData" [value]="item.id">{{item.name}}</mat-option>
+                        <mat-option *ngIf="contactClientData && contactClientData.length < 1 " disabled>No record found
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="f.contactClientId.hasError( 'required') ">
+                        Client is required
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="col-xl-3 mb-2 " title="Case Type ">
+                    <mat-label>Case Type</mat-label>
+                    <mat-select formControlName="caseTypeId">
+                        <mat-option *ngFor="let item of caseTypes " [value]="item.key ">{{item.value}}</mat-option>
+                        <mat-option *ngIf="caseTypes && caseTypes.length < 1 " disabled>No record found</mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="f.caseTypeId.hasError( 'required') ">
+                        Case Type is required
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="col-xl-3 mb-2 " title="Country to Immigrate ">
+                    <mat-label>Country to Immigrate</mat-label>
+                    <mat-select formControlName="countryToImmigrateId">
+                        <mat-option *ngFor="let item of countryToImmigrate" [value]="item.key ">{{item.value}}
+                        </mat-option>
+                        <mat-option *ngIf="countryToImmigrate && countryToImmigrate.length < 1 " disabled>No record
+                            found
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="f.countryToImmigrateId.hasError('required') ">
+                        Country to Immigrate is required
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field class="col-xl-3 mb-2 " title="Responsible Team Member ">
+                    <mat-label>Responsible Team Member</mat-label>
+                    <mat-select formControlName="teamMemberId">
+                        <mat-option *ngFor="let item of teamMembers | async" [value]="item.id ">{{item.firstName + " " +
+                            item.lastName }}
+                        </mat-option>
+                        <mat-option *ngIf="(teamMembers | async) && (teamMembers | async).length < 1 " disabled>No
+                            record found
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="f.teamMemberId.hasError( 'required')">
+                        Responsible Team Member is required
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field class="col-xl-3 mb-2 " title="Case Referred By ">
+                    <mat-label>Case Referred By</mat-label>
+                    <input matInput formControlName="caseReferredBy" trim="blur ">
+                    <mat-error *ngIf="f.caseReferredBy.hasError( 'required') ">
+                        Case Referred By is required
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="col-xl-3 mb-2 " title="Case Started By ">
+                    <mat-label>Case Started By</mat-label>
+                    <input matInput formControlName="caseStartedBy" trim="blur">
+                    <mat-error *ngIf="f.caseStartedBy.hasError('required') ">
+                        Case Started By is required
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="col-xl-3 mb-2 " title="Current Location">
+                    <mat-label>Current Location</mat-label>
+                    <mat-select formControlName="currentLocationId">
+                        <mat-option *ngFor="let item of countryData " [value]="item.key ">{{item.value}}</mat-option>
+                        <mat-option *ngIf="countryData && countryData.length < 1 " disabled>No record found</mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="f.currentLocationId.hasError( 'required') ">
+                        Current Location is required
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field class="col-xl-3 mb-2" title="Status">
+                    <mat-label>Status</mat-label>
+                    <mat-select formControlName="statusId">
+                        <mat-option *ngFor="let item of caseStatuses " [value]="item.key ">{{item.value}}</mat-option>
+                        <mat-option *ngIf="caseStatuses && caseStatuses.length < 1 " disabled>No record found
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="f.statusId.hasError( 'required') ">
+                        Status is required
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field class="col-xl-3 mb-2 " title="Case Deadline Date ">
+                    <mat-label>Case Deadline Date</mat-label>
+                    <input matInput formControlName="caseDeadLineDate" autocomplete="off"
+                        (focus)="caseDeadlineDate.open()" [matDatepicker]="caseDeadlineDate"
+                        (keydown)="$event.preventDefault(); ">
+                    <mat-datepicker-toggle matSuffix [for]="caseDeadlineDate "></mat-datepicker-toggle>
+                    <mat-datepicker #caseDeadlineDate></mat-datepicker>
+                    <mat-error *ngIf="f.caseDeadLineDate.hasError( 'required') ">
+                        Case Deadline Date is required
+                    </mat-error>
+                </mat-form-field>
+                <mat-form-field class="col-xl-3 mb-2 " title="Open Date ">
+                    <mat-label>Open Date</mat-label>
+                    <input matInput formControlName="caseOpenDate" #openDateInput autocomplete="off"
+                        (focus)="openDate.open()" [matDatepicker]="openDate " (keydown)="$event.preventDefault();"
+                        (dateChange)="openDateChange(openDateInput.value) ">
+                    <mat-datepicker-toggle matSuffix [for]="openDate "></mat-datepicker-toggle>
+                    <mat-datepicker #openDate></mat-datepicker>
+                    <mat-error *ngIf="f.caseOpenDate.hasError( 'required') ">
+                        Open Date is required
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field class="col-xl-6 mb-2 " title="Case Description ">
+                    <mat-label>Case Description</mat-label>
+                    <input matInput formControlName="description" trim="blur ">
+                    <mat-error *ngIf="f.description.hasError( 'required') ">
+                        Case Description is required
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-accordion>
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <h5>Additional Information</h5>
+                            </mat-panel-title>
+                            <mat-panel-description>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-additional-info [form]="form "></app-additional-info>
+                    </mat-expansion-panel>
+                </mat-accordion>
+
+                <mat-accordion>
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <h5>Immigration History</h5>
+                            </mat-panel-title>
+                            <mat-panel-description>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-immigration-history [form]="form "></app-immigration-history>
+                    </mat-expansion-panel>
+                </mat-accordion>
+
+                <mat-accordion>
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <h5>School Details</h5>
+                            </mat-panel-title>
+                            <mat-panel-description>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-school-details [form]="form "></app-school-details>
+                    </mat-expansion-panel>
+                </mat-accordion>
+
+                <mat-accordion>
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <h5>Educational History</h5>
+                            </mat-panel-title>
+                            <mat-panel-description>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-educational-history [form]="form "></app-educational-history>
+                    </mat-expansion-panel>
+                </mat-accordion>
+
+                <mat-accordion>
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <h5>Language Exam</h5>
+                            </mat-panel-title>
+                            <mat-panel-description>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-language-exam [form]="form "></app-language-exam>
+                    </mat-expansion-panel>
+                </mat-accordion>
+
+                <mat-accordion>
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <h5>Employment History</h5>
+                            </mat-panel-title>
+                            <mat-panel-description>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-employment-history [form]="form "></app-employment-history>
+                    </mat-expansion-panel>
+                </mat-accordion>
+
+                <mat-accordion>
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <h5>Passport Details</h5>
+                            </mat-panel-title>
+                            <mat-panel-description>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-passport-details [form]="form "></app-passport-details>
+                    </mat-expansion-panel>
+                </mat-accordion>
+
+                <mat-accordion>
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <h5>Dependents</h5>
+                            </mat-panel-title>
+                            <mat-panel-description>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-dependents [form]="form "></app-dependents>
+                    </mat-expansion-panel>
+                </mat-accordion>
+
+                <mat-accordion>
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <h5>Primary Parents Details</h5>
+                            </mat-panel-title>
+                            <mat-panel-description>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-primary-parents-details [form]="form "></app-primary-parents-details>
+                    </mat-expansion-panel>
+                </mat-accordion>
+
+                <mat-accordion>
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <h5>Spouse Parents Details</h5>
+                            </mat-panel-title>
+                            <mat-panel-description>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-spouse-parents-details [form]="form "></app-spouse-parents-details>
+                    </mat-expansion-panel>
+                </mat-accordion>
+
+                <mat-accordion>
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <h5>Sibling Details</h5>
+                            </mat-panel-title>
+                            <mat-panel-description>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-sibling-details [form]="form "></app-sibling-details>
+                    </mat-expansion-panel>
+                </mat-accordion>
+
+                <mat-accordion>
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <h5>Applicant Declaration</h5>
+                            </mat-panel-title>
+                            <mat-panel-description>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-applicant-declaration [form]="form"></app-applicant-declaration>
+                    </mat-expansion-panel>
+                </mat-accordion>
+
+                <mat-accordion>
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <h5>Work in Canada</h5>
+                            </mat-panel-title>
+                            <mat-panel-description>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-work-in-canada [form]="form "></app-work-in-canada>
+                    </mat-expansion-panel>
+                </mat-accordion>
+
+                <mat-accordion>
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <h5>Finances</h5>
+                            </mat-panel-title>
+                            <mat-panel-description>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-finances [form]="form"></app-finances>
+                    </mat-expansion-panel>
+                </mat-accordion>
+
+                <mat-accordion>
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <h5>Travel History</h5>
+                            </mat-panel-title>
+                            <mat-panel-description>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-travel-history [form]="form "></app-travel-history>
+                    </mat-expansion-panel>
+                </mat-accordion>
+
+                <mat-accordion>
+                    <mat-expansion-panel>
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <h5>Emergency Contact</h5>
+                            </mat-panel-title>
+                            <mat-panel-description>
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <app-emergency-contact [form]="form"></app-emergency-contact>
+                    </mat-expansion-panel>
+                </mat-accordion>
+
+                <div class="form-group col-xl-12 d-none ">
+                    <mat-checkbox formControlName="sendUpdateToCustomer" class="text-primary ">Send Update to customer
+                    </mat-checkbox>
+                </div>
+                <div class="form-group text-center mt-5">
+                    <button type="submit" nz-button nzType="primary">
+                        {{isEditMode ? 'Update Case' : 'Add Case'}}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

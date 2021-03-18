@@ -1,0 +1,38 @@
+<div [formGroup]="schoolDetails">
+    <mat-form-field class="col-xl-3 mb-2" title="Name of School/Institution">
+        <input matInput formControlName="nameOfSchool" placeholder="Name of School/Institution" trim="blur">
+    </mat-form-field>
+    <mat-form-field class="col-xl-3 mb-2" title="Preferred Program/Course?">
+        <mat-select placeholder="Preferred Program/Course?" formControlName="preferredCourseId">
+            <mat-option *ngFor="let item of courses" [value]="item.key">{{item.value}}</mat-option>
+            <mat-option *ngIf="courses && courses.length < 1" disabled>No record found</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field class="col-xl-3 mb-2" title="Preferred Country?">
+        <mat-select placeholder="Preferred Country?" formControlName="preferredCountryId"
+            (selectionChange)="countryChange()">
+            <mat-option *ngFor="let item of countries" [value]="item.key">{{item.value}}</mat-option>
+            <mat-option *ngIf="countries && countries.length < 1" disabled>No record found</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field class="col-xl-3 mb-2" title="Preferred Province?">
+        <mat-select placeholder="Preferred Province?" formControlName="preferredProvinceId">
+            <mat-option *ngFor="let item of states" [value]="item.key">{{item.value}}</mat-option>
+            <mat-option *ngIf="states && states.length < 1" disabled>No record found</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field class="col-xl-3 mb-2" title="Target Start Date?">
+        <input matInput formControlName="targetStartDate" placeholder="Target Start Date?" autocomplete="off"
+            (focus)="targetStartDate.open()" [matDatepicker]="targetStartDate" (keydown)="$event.preventDefault();">
+        <mat-datepicker-toggle matSuffix [for]="targetStartDate"></mat-datepicker-toggle>
+        <mat-datepicker #targetStartDate></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field class="col-xl-3 mb-2" title="Maximum Tuition Budget (Canadian Dollars)">
+        <input matInput formControlName="maxTutionBudget" placeholder="Maximum Tuition Budget (Canadian Dollars)"
+            twoDecimal pattern="^[0-9]+(.[0-9]{0,2})?$">
+            <mat-error *ngIf="schoolDetails.controls['maxTutionBudget'].hasError('pattern')">
+              InValid Budget Amount
+            </mat-error>
+    </mat-form-field>
+</div>

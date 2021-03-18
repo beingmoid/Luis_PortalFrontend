@@ -1,0 +1,760 @@
+
+<div>
+    <div class="row mb-4">
+        <div class="col-xl-10">
+            <div class="w-25 searchBarWidth">
+                <nz-input-group nzSize="large" [nzPrefix]="suffixIconSearch">
+                    <input type="text" nz-input [(ngModel)]="search" (ngModelChange)="filter()" placeholder="Search for Invoices" />
+                </nz-input-group>
+                <ng-template #suffixIconSearch>
+                    <i nz-icon nzType="search"></i>
+                </ng-template>
+            </div>
+        </div>
+        <div class="col-xl-2 ">
+            <a nz-button class="float-right" *ngIf="_permissionService.canCreate" nzType="primary" (click)="showModal()">Add
+                Invoice</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xl-12 mobilePadding ">
+            <nz-table class="card" #rowSelectionTable [nzData]="listData" [nzNoResult]="noData" nzShowSizeChanger
+                [nzPageSize]="pageSize">
+                <thead>
+                    <tr>
+                        <th class="ant-table-selection-column" [nzSortFn]="sortNumbersFn" (click)="sortOn('index')">#
+                        </th>
+                        <th [nzSortFn]="sortNamesFn" (click)="sortOn('invoiceNo')">Invoice #</th>
+                        <th [nzSortFn]="sortNamesFn" (click)="sortOn('invoiceDate')">Invoice Date</th>
+                        <th [nzSortFn]="sortNamesFn" (click)="sortOn('dueDate')">Due Date</th>
+                        <th [nzSortFn]="sortNumbersFn" (click)="sortOn('totalAmount')">Total Amount</th>
+                        <th [nzSortFn]="sortNumbersFn" (click)="sortOn('paid')">Paid</th>
+                        <th [nzSortFn]="sortNumbersFn" (click)="sortOn('balance')">Balance</th>
+                        <th [nzSortFn]="sortNamesFn" (click)="sortOn('invoiceNo')">Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr *ngFor="let data of rowSelectionTable.data; let i = index;" (click)="showSingleInvoice(data)" nz-tooltip nzTooltipTitle="Click to View Invoice" style="cursor: pointer;">
+                        <td>{{ data.index }}</td>
+                        <td>{{ data.invoiceNo }}</td>
+                        <td>{{ data.invoiceDate | appDateFormat: false }}</td>
+                        <td>{{ data.dueDate | appDateFormat: false }}</td>
+                        <td>${{ data.totalAmount }}</td>
+                        <td>${{ data.paid }}</td>
+                        <td>${{ data.balance }}</td>
+                        <td>
+                            <span class="badge badge-primary" *ngIf="data.statusName == 'Pending'">
+                                {{ data.statusName }}</span>
+                            <span class="badge badge-success" *ngIf="data.statusName == 'Completed'">
+                                {{ data.statusName }}</span>
+                            <span class="badge badge-danger" *ngIf="data.statusName == 'Canceled'">
+                                {{ data.statusName }}</span>
+                            <span class="badge badge-success" *ngIf="data.statusName == 'Paid'">
+                                {{ data.statusName }}</span>
+                        </td>
+                        <td>
+                            <i nz-icon nzType="edit" *ngIf="_permissionService.canEdit" (click)="$event.stopPropagation(editInvoice(data))" nz-tooltip nzTooltipTitle="Edit Invoice" nzTheme="fill" class="text-success"></i>
+                            <nz-divider nzType="vertical"></nz-divider>
+                            <i nz-icon nzType="delete" *ngIf="_permissionService.canDelete" (click)="$event.stopPropagation(deleteInvoice(data))" nz-tooltip nzTooltipTitle="Delete Invoice" nzTheme="fill" class="text-danger"></i>
+                        </td>
+                    </tr>
+                </tbody>
+            </nz-table>
+        </div>
+    </div>
+</div>
+
+<!-- No Data for Invoices -->
+<ng-template #noData>
+    <nz-empty class="m-5" [nzNotFoundImage]="'assets/images/no-data/no-invoice.svg'" [nzNotFoundContent]="noDataDescrp">
+    </nz-empty>
+</ng-template>
+<ng-template #noDataDescrp>
+    <div class="m-4">
+        No Data Available.
+        <a *ngIf="_permissionService.canCreate" (click)="showModal()" class="kit__utils__link">
+            Create New Invoice
+        </a>
+    </div>
+</ng-template>
+
+<!-- Invoices Modal -->
+<div>
+    <nz-modal nzFooter="null" nzWidth="1100" [(nzVisible)]="isVisible" nzMaskClosable="false"
+        [nzTitle]="isEditMode ? 'Update Invoice' :  'Create New Invoice'" (nzOnCancel)="handleCancel()">
+        <div class="row accountInvoiceRow">
+            <form [formGroup]="invoiceForm" #formDirective="ngForm" (ngSubmit)="onSubmit(formDirective)" novalidate
+                class="text-size-12">
+                <mat-form-field class="col-xl-3 mb-2">
+                    <mat-select placeholder="Contact" formControlName="contactId">
+                        <mat-option *ngFor="let item of contacts" [value]="item.id">{{item.name}}</mat-option>
+                        <mat-option *ngIf="contacts && contacts.length < 1" disabled>No record found
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="f.contactId.hasError('required')">Contact is required</mat-error>
+                </mat-form-field>
+                <mat-form-field class="col-xl-3 mb-2">
+                    <mat-select placeholder="Case" formControlName="caseId">
+                        <mat-option *ngFor="let item of cases" [value]="item.id">{{item.caseNumber}}</mat-option>
+                        <mat-option *ngIf="cases && cases.length < 1" disabled>No record found
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="f.caseId.hasError('required')">Case is required</mat-error>
+                </mat-form-field>
+                <mat-form-field class="col-xl-3 mb-2">
+                    <input matInput formControlName="invoiceDate" autocomplete="off" (focus)="invoiceDate.open()" placeholder="Invoice Date" [matDatepicker]="invoiceDate" (keydown)="$event.preventDefault();">
+                    <mat-datepicker-toggle matSuffix [for]="invoiceDate"></mat-datepicker-toggle>
+                    <mat-datepicker #invoiceDate></mat-datepicker>
+                    <mat-error *ngIf="f.invoiceDate.hasError('required')">Invoice Date is required</mat-error>
+                </mat-form-field>
+                <mat-form-field class="col-xl-3 mb-2">
+                    <input matInput formControlName="dueDate" autocomplete="off" (focus)="dueDate.open()" placeholder="Due Date" [matDatepicker]="dueDate" (keydown)="$event.preventDefault();">
+                    <mat-datepicker-toggle matSuffix [for]="dueDate"></mat-datepicker-toggle>
+                    <mat-datepicker #dueDate></mat-datepicker>
+                    <mat-error *ngIf="f.dueDate.hasError('required')">Due Date is required</mat-error>
+                </mat-form-field>
+                <mat-form-field class="col-xl-3 mb-2">
+                    <mat-select placeholder="Retainer" formControlName="retainerId">
+                        <mat-option *ngFor="let item of retainersList" [value]="item.id">{{item.dueOnName}}</mat-option>
+                        <mat-option *ngIf="retainersList && retainersList.length < 1" disabled>No record found
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="f.retainerId.hasError('required')">Retainer is required</mat-error>
+                </mat-form-field>
+                <mat-form-field class="col-xl-3 mb-2">
+                    <mat-select placeholder="Status" formControlName="statusId">
+                        <mat-option *ngFor="let item of statuses" [value]="item.key">{{item.value}}</mat-option>
+                        <mat-option *ngIf="statuses && statuses.length < 1" disabled>No record found
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="f.statusId.hasError('required')">Status is required</mat-error>
+                </mat-form-field>
+                <div class="col-xl-12 mobilePadding">
+                    <h5>Retainers</h5>
+                    <div class="table-responsive">
+                    <table formArrayName="retainers" class="table">
+                        <thead class="text-gray-5 text-size-10 font-weight-normal">
+                            <tr>
+                                <th>Professional Fees</th>
+                                <th>Taxes</th>
+                                <th>Administrative Fees</th>
+                                <th>Government Fees</th>
+                                <th>Other Fees</th>
+                                <th>Total</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of retainers.controls; index as i">
+                                <ng-container [formGroupName]="i">
+                                    <td>
+                                        <mat-form-field class="w-100">
+                                            <span matPrefix>$</span>
+                                            <input (change)="onAmountChange()" maxlength="8" onlyNumbers min="0" matInput formControlName="professionalFees" placeholder="Professional Fees">
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <mat-form-field class="w-100">
+                                            <span matPrefix>$</span>
+                                            <input (change)="onAmountChange()" maxlength="8" onlyNumbers min="0" matInput formControlName="taxes" placeholder="Taxes">
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <mat-form-field class="w-100">
+                                            <span matPrefix>$</span>
+                                            <input (change)="onAmountChange()" maxlength="8" onlyNumbers min="0" matInput formControlName="administrativeFees" placeholder="Administrative Fees">
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <mat-form-field class="w-100">
+                                            <span matPrefix>$</span>
+                                            <input (change)="onAmountChange()" maxlength="8" onlyNumbers min="0" matInput formControlName="governmentFees" placeholder="Government Fees">
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <mat-form-field class="w-100">
+                                            <span matPrefix>$</span>
+                                            <input (change)="onAmountChange()" maxlength="8" onlyNumbers min="0" matInput formControlName="otherFees" placeholder="Other Fees">
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <mat-form-field class="w-100">
+                                            <span matPrefix>$</span>
+                                            <input readonly onlyNumbers min="0" matInput formControlName="total" placeholder="Total">
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <ng-container *ngIf="retainers.length === (i+1)">
+                                            <button nz-button nzType="primary" type="button" (click)="addRatinersFormGroup()"> Add
+                                                More </button>
+                                        </ng-container>
+
+                                        <ng-container *ngIf="retainers.length !== (i+1)">
+                                            <button nz-button nzType="default" nzDanger type="button" (click)="removeReatinersFormGroup(i)"> Delete </button>
+                                        </ng-container>
+
+                                    </td>
+                                </ng-container>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                </div>
+                <div class="col-xl-12 mobilePadding">
+                    <h5>Time Enteries</h5>
+                    <div class="table-responsive">
+                    <table formArrayName="timeEntries" class="table">
+                        <thead class="text-gray-5 text-size-10 font-weight-normal">
+                            <tr>
+                                <th>Time Entry</th>
+                                <th>Description</th>
+                                <th>Date</th>
+                                <th>Billed By</th>
+                                <th>Hours</th>
+                                <th>Per Hour Rate</th>
+                                <th>Tax</th>
+                                <th>Total</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of timeEntries.controls; index as i">
+                                <ng-container [formGroupName]="i">
+                                    <td>
+                                        <div class="ngx-timepicker-field pt-10px">
+                                            <ngx-timepicker-field [defaultTime]="'12:00 AM'" [controlOnly]="true" formControlName="timeEntry">
+                                            </ngx-timepicker-field>
+                                        </div>
+                                        <!-- <mat-form-field class="w-100">
+                                            <input matInput formControlName="timeEntry" placeholder="Time Entry">
+                                        </mat-form-field> -->
+                                    </td>
+                                    <td>
+                                        <mat-form-field class="w-100">
+                                            <input matInput formControlName="description" placeholder="Description">
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <mat-form-field class="w-100">
+                                            <input matInput [matDatepicker]="picker" placeholder="Date" formControlName="date" (focus)="picker.open()" (keydown)="$event.preventDefault();">
+                                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                                            <mat-datepicker #picker></mat-datepicker>
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <mat-form-field class="w-100">
+                                            <input matInput formControlName="billedBy" placeholder="Billed By">
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <mat-form-field class="w-100">
+                                            <input (change)="onAmountChange()" maxlength="4" matInput onlyNumbers min="0" formControlName="hours" placeholder="Hours">
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <mat-form-field class="w-100">
+                                            <span matPrefix>$</span>
+                                            <input (change)="onAmountChange()" maxlength="8" matInput twoDecimal min="0" formControlName="perHourRate" placeholder="Per Hour Rate">
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <mat-form-field class="w-100">
+                                            <span matPrefix>$</span>
+                                            <input (change)="onAmountChange()" maxlength="8" matInput onlyNumbers min="0" formControlName="tax" placeholder="Tax">
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <mat-form-field class="w-100">
+                                            <span matPrefix>$</span>
+                                            <input readonly matInput onlyNumbers min="0" formControlName="total" placeholder="Total">
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <ng-container *ngIf="timeEntries.length === (i+1)">
+                                            <button nz-button nzType="primary" type="button" (click)="addTimeFormGroup()"> Add
+                                                More </button>
+                                        </ng-container>
+
+                                        <ng-container *ngIf="timeEntries.length !== (i+1)">
+                                            <button nz-button nzType="default" nzDanger type="button" (click)="removeTimeFormGroup(i)"> Delete </button>
+                                        </ng-container>
+
+                                    </td>
+                                </ng-container>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                </div>
+                <div class="col-xl-12 mobilePadding">
+                    <h5>Expenses</h5>
+                    <div class="table-responsive">
+                    <table formArrayName="expenses" class="table">
+                        <thead class="text-gray-5 text-size-10 font-weight-normal">
+                            <tr>
+                                <th>Expense</th>
+                                <th>Description</th>
+                                <th>Date</th>
+                                <th>Billed By</th>
+                                <th>Qty</th>
+                                <th>Price</th>
+                                <th>Tax</th>
+                                <th>Total</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of expenses.controls; index as i">
+                                <ng-container [formGroupName]="i">
+                                    <td>
+                                        <mat-form-field class="w-100">
+                                            <input min="0" matInput formControlName="expense" placeholder="Expense">
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <mat-form-field class="w-100">
+                                            <input matInput formControlName="description" placeholder="Description">
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <mat-form-field class="w-100">
+                                            <input matInput [matDatepicker]="picker" placeholder="Date" formControlName="date" (focus)="picker.open()" (keydown)="$event.preventDefault();">
+                                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                                            <mat-datepicker #picker></mat-datepicker>
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <mat-form-field class="w-100">
+                                            <input matInput formControlName="billedBy" placeholder="Billed By">
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <mat-form-field class="w-100">
+                                            <input matInput maxlength="8" (change)="onAmountChange()" onlyNumbers min="0" formControlName="qty" placeholder="Qty">
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <mat-form-field class="w-100">
+                                            <span matPrefix>$</span>
+                                            <input matInput maxlength="8" (change)="onAmountChange()" onlyNumbers min="0" formControlName="price" placeholder="Price">
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <mat-form-field class="w-100">
+                                            <span matPrefix>$</span>
+                                            <input matInput maxlength="8" (change)="onAmountChange()" onlyNumbers min="0" formControlName="tax" placeholder="Tax">
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <mat-form-field class="w-100">
+                                            <span matPrefix>$</span>
+                                            <input readonly matInput onlyNumbers min="0" formControlName="total" placeholder="Total">
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <ng-container *ngIf="expenses.length === (i+1)">
+                                            <button nz-button nzType="primary" type="button" (click)="addExpensesFormGroup()"> Add
+                                                More </button>
+                                        </ng-container>
+
+                                        <ng-container *ngIf="expenses.length !== (i+1)">
+                                            <button nz-button nzType="default" nzDanger type="button" (click)="removeExpensesFormGroup(i)"> Delete </button>
+                                        </ng-container>
+
+                                    </td>
+                                </ng-container>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                </div>
+                <div class="col-xl-12 mobilePadding">
+                    <h5>Flat Fees</h5>
+                    <div class="table-responsive">
+                    <table formArrayName="flatFees" class="table">
+                        <thead class="text-gray-5 text-size-10 font-weight-normal">
+                            <tr>
+                                <th>Flat Fees</th>
+                                <th>Description</th>
+                                <th>Date</th>
+                                <th>Billed By</th>
+                                <th>Qty</th>
+                                <th>Price</th>
+                                <th>Tax</th>
+                                <th>Total</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of flatFees.controls; index as i">
+                                <ng-container [formGroupName]="i">
+                                    <td>
+                                        <mat-form-field class="w-100">
+                                            <input min="0" matInput formControlName="flatFees" placeholder="Flat Fees">
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <mat-form-field class="w-100">
+                                            <input matInput formControlName="description" placeholder="Description">
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <mat-form-field class="w-100">
+                                            <input matInput [matDatepicker]="picker" placeholder="Date" formControlName="date" (focus)="picker.open()" (keydown)="$event.preventDefault();">
+                                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                                            <mat-datepicker #picker></mat-datepicker>
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <mat-form-field class="w-100">
+                                            <input matInput formControlName="billedBy" placeholder="Billed By">
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <mat-form-field class="w-100">
+                                            <input matInput onlyNumbers min="0" (change)="onAmountChange()" formControlName="qty" placeholder="Qty">
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <mat-form-field class="w-100">
+                                            <span matPrefix>$</span>
+                                            <input matInput onlyNumbers min="0" (change)="onAmountChange()" formControlName="price" placeholder="Price">
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <mat-form-field class="w-100">
+                                            <span matPrefix>$</span>
+                                            <input matInput onlyNumbers min="0" formControlName="tax" (change)="onAmountChange()" placeholder="Tax">
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <mat-form-field class="w-100">
+                                            <span matPrefix>$</span>
+                                            <input readonly matInput onlyNumbers min="0" formControlName="total" placeholder="Total">
+                                        </mat-form-field>
+                                    </td>
+                                    <td>
+                                        <ng-container *ngIf="flatFees.length === (i+1)">
+                                            <button nz-button nzType="primary" type="button" (click)="addFlatFormGroup()"> Add
+                                                More </button>
+                                        </ng-container>
+
+                                        <ng-container *ngIf="flatFees.length !== (i+1)">
+                                            <button nz-button nzType="default" nzDanger type="button" (click)="removeFlatFormGroup(i)"> Delete </button>
+                                        </ng-container>
+
+                                    </td>
+                                </ng-container>
+                            </tr>
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+                <div class="d-flex mobilePadding">
+                    <div class="col-xl-8">
+                        <h5>Notes, Terms & Conditions</h5>
+                        <mat-form-field class="form-group w-75">
+                            <input matInput placeholder="Notes" formControlName="notes">
+                        </mat-form-field>
+                        <mat-form-field class="form-group w-75">
+                            <input matInput placeholder="Terms & Conditions" formControlName="terms">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-xl-4">
+                        <div class="d-flex justify-content-between">
+                            <span class="text-gray-5">Total(USD):</span>
+                            <span class="font-weight-bold">${{totalWithoutTaxAmount | number : '1.2-2'}}</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between">
+                            <span class="text-gray-5">Tax(13%):</span>
+                            <span class="font-weight-bold">${{totalTax | number : '1.2-2'}}</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between">
+                            <span class="text-gray-5">Paid to Date:</span>
+                            <span class="font-weight-bold">${{totalPaidToDate | number : '1.2-2'}}</span>
+                        </div>
+                        <div class="bg-primary d-flex justify-content-between p-3 mt-3 totalNumber" style="border-radius: 5px;">
+                            <span class="text-white">Total:</span>
+                            <span class="font-weight-bold text-white">${{totalAmount | number : '1.2-2'}}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-12 mobilePadding mt-4">
+                    <div class="form-group text-center mt-5 savePreviewBtn">
+                        <div class="float-right">
+                            <button type="button" nz-button nzType="default" class="mr-5">Preview</button>
+                            <button type="submit" nz-button nzType="primary">{{isEditMode ? 'Update' : 'Save'}}</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </nz-modal>
+</div>
+
+
+
+
+<!-- View Modal -->
+<div>
+    <nz-modal nzFooter="null" nzWidth="1100" [(nzVisible)]="isVisible" [nzTitle]="'Invoice Info'" nzMaskClosable="false" (nzOnCancel)="isVisible = false">
+        <div>
+            <div class="row">
+                <div class="popup-action-btns">
+                    <i nz-icon nzType="edit" nz-tooltip nzTooltipTitle="Edit Invoice" (click)="$event.stopPropagation(editInvoice(invoiceData))" nzTheme="fill" class="text-success mr-3"></i>
+
+                    <i nz-icon nzType="delete" nz-tooltip nzTooltipTitle="Delete Invoice" (click)="$event.stopPropagation(deleteInvoice(invoiceData))" nzTheme="fill" class="text-danger"></i>
+                </div>
+
+                <div id="inv" class="modalDdata px-4">
+                    <div class="">
+                        <div class="invoice-top-section pl-3">
+                            <div class="row">
+                                <div class="col-md-3 invoice-logo jumbotron bg-white">
+                                    <ng-container *ngIf="userCompany?.blobImageURI; else defaultImg">
+                                        <img [src]="userCompany.blobImageURI" style="width: 100%; height: 100%; max-width: 160px;" />
+                                    </ng-container>
+                                    <ng-template #defaultImg>
+                                        <img src="assets/images/casolve-logo.png" style="width: 100%; height: 100%; max-width: 160px;" />
+                                    </ng-template>
+                                </div>
+                                <!-- col-md-3  -->
+                                <div class="col-md-7">
+                                    <div class="invoice-title">
+                                        <h1 class="fw-700 text-primary">Invoice</h1>
+                                    </div>
+                                    <!-- invoice-title -->
+                                    <div class="invoice-number">
+                                        <div class="f-12 fw-600 mb-3">Invoice No. {{invoiceData?.invoiceNo}}</div>
+                                    </div>
+                                    <!-- invoice-number -->
+                                    <div class="invoice-detail-div">
+                                        <div class="row f-12 fw-500">
+                                            <div class="col-md-6 invoice-detail mb-2 tel-number"> <i class="fe fe-phone text-primary"></i> <span>
+                                                    {{userCompany?.phoneNo}}
+                                                </span> </div>
+                                            <div class="col-md-6 invoice-detail mb-2 address-title"> <i class="fe fe-map-pin text-primary"></i>
+                                                <span>{{userCompany?.cityName + " " + userCompany?.provinceName}}
+                                                </span> </div>
+                                            <div class="col-md-6 invoice-detail mb-2 email"> <i class="fe fe-mail text-primary"></i>
+                                                <span> {{userCompany?.companyEmail}} </span>
+                                            </div>
+                                            <div class="col-md-6 invoice-detail mb-2 address"> <i></i> <span>
+                                                {{userCompany?.countryName}}    
+                                            </span> </div>
+                                            <div class="col-md-6 invoice-detail mb-2 website"> <i class="fe fe-globe text-primary"></i> <span>
+                                                    {{userCompany?.website}}
+                                                </span> </div>
+                                            <div class="col-md-6 invoice-detail mb-2 zip-code"> <i></i> <span>
+                                                    {{userCompany?.zipCode}} </span>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <!-- invoice-detail -->
+                                </div>
+                                <!-- col-md-7 -->
+                            </div>
+                        </div>
+                        <!-- invoice-top-section -->
+                        <div class="text-size-12 ">
+                            <div class="row pt-5 pb-4">
+                                <div class="mb-4 col-md-3">
+                                    <div class="t-10 text-gray-5">Contact</div>
+                                    <div class="f-13">{{invoiceData?.contactName}}</div>
+                                </div>
+                                <!-- Subscription Name -->
+                                <div class="mb-4 col-md-3">
+                                    <div class="t-10 text-gray-5">Case</div>
+                                    <div class="f-13">{{invoiceData?.caseName}}</div>
+                                </div>
+                                <!-- Type -->
+                                <div class="mb-4 col-md-3">
+                                    <div class="t-10 text-gray-5">Invoice Date</div>
+                                    <div class="f-13">{{invoiceData?.invoiceDate | appDateFormat: false}}</div>
+                                </div>
+                                <!-- Invoice Date -->
+                                <div class="mb-4 col-md-3">
+                                    <div class="t-10 text-gray-5">Due Date</div>
+                                    <div class="f-13">{{invoiceData?.dueDate | appDateFormat: false}}</div>
+                                </div>
+                                <!-- Due Date -->
+                                <div class="mb-4 col-md-3">
+                                    <div class="t-10 text-gray-5">Retainer</div>
+                                    <div class="f-13">{{getRetainer(invoiceData?.retainerId)}}</div>
+                                </div>
+                                <!-- Retainer -->
+                            </div>
+                            <!-- row ends  -->
+                            <!-- Retainer row strts  -->
+                            <div class="row mb-5 px-3">
+
+                                <h6 class="fw-500 mY-3 retainer">Retainer</h6>
+
+                                <div class="invoiceRowTitle w-100 pb-3 border-bottom">
+                                    <div class="f-11 text-gray-5 titleData">Professional Fees</div>
+                                    <div class="f-11 text-gray-5 titleData">Taxes</div>
+                                    <div class="f-11 text-gray-5 titleData">Administrative Fees</div>
+                                    <div class="f-11 text-gray-5 titleData">Government Fees</div>
+                                    <div class="f-11 text-gray-5 titleData">Other Fees</div>
+                                    <div class="f-11 text-gray-5 titleData">Total</div>
+                                </div>
+                                <ng-container *ngFor="let item of invoiceData?.retainers">
+                                    <div class="invoiceRowDescp w-100 py-3 border-bottom row-1">
+                                        <div class="f-11 text-muted descpData">${{item.professionalFees}}</div>
+                                        <div class="f-11 text-muted descpData">${{item.taxes}}</div>
+                                        <div class="f-11 text-muted descpData">${{item.administrativeFees}}</div>
+                                        <div class="f-11 text-muted descpData">${{item.governmentFees}}</div>
+                                        <div class="f-11 text-muted descpData">${{item.otherFees}}</div>
+                                        <div class="f-11 text-muted descpData">${{item.total}}</div>
+                                    </div>
+                                </ng-container>
+
+                            </div>
+
+                            <!-- Time Entries -->
+                            <div class="row row2 mb-5 px-3">
+
+                                <h6 class="fw-500 mY-3 retainer">Time Entries</h6>
+
+                                <div class="invoiceRowTitle w-100 pb-3 border-bottom">
+                                    <div class="f-11 text-gray-5 titleData">Time Entry</div>
+                                    <div class="f-11 text-gray-5 titleData">Description</div>
+                                    <div class="f-11 text-gray-5 titleData">Date</div>
+                                    <div class="f-11 text-gray-5 titleData">Billed By</div>
+                                    <div class="f-11 text-gray-5 titleData">Hours</div>
+                                    <div class="f-11 text-gray-5 titleData">Per Hour Rate</div>
+                                    <div class="f-11 text-gray-5 titleData">Tax</div>
+                                    <div class="f-11 text-gray-5 titleData">Total</div>
+                                </div>
+                                <ng-container *ngFor="let item of invoiceData?.timeEntries">
+                                    <div class="invoiceRowDescp w-100 py-3 border-bottom row-1">
+                                        <div class="f-11 text-muted descpData">{{item.timeEntry}}</div>
+                                        <div class="f-11 text-muted descpData">{{item.description}}</div>
+                                        <div class="f-11 text-muted descpData">{{item.date | appDateFormat: false}}
+                                        </div>
+                                        <div class="f-11 text-muted descpData">{{item.billedBy}}</div>
+                                        <div class="f-11 text-muted descpData">{{item.hours}}</div>
+                                        <div class="f-11 text-muted descpData">${{item.perHourRate}}</div>
+                                        <div class="f-11 text-muted descpData">${{item.tax}}</div>
+                                        <div class="f-11 text-muted descpData">${{item.total}}</div>
+                                    </div>
+                                </ng-container>
+
+                            </div>
+
+                            <!-- Expenses -->
+                            <div class="row  row2 mb-5 px-3">
+                                <h6 class="fw-500 mY-3 retainer">Expenses</h6>
+                                <div class="invoiceRowTitle w-100 pb-3 border-bottom">
+                                    <div class="f-11 text-gray-5 titleData">Expense</div>
+                                    <div class="f-11 text-gray-5 titleData">Description</div>
+                                    <div class="f-11 text-gray-5 titleData">Date</div>
+                                    <div class="f-11 text-gray-5 titleData">Billed By</div>
+                                    <div class="f-11 text-gray-5 titleData">Qty</div>
+                                    <div class="f-11 text-gray-5 titleData">Price</div>
+                                    <div class="f-11 text-gray-5 titleData">Tax</div>
+                                    <div class="f-11 text-gray-5 titleData">Total</div>
+                                </div>
+                                <ng-container *ngFor="let item of invoiceData?.expenses">
+                                    <div class="invoiceRowDescp w-100 py-3 border-bottom row-1">
+                                        <div class="f-11 text-muted descpData">{{item.expense}}</div>
+                                        <div class="f-11 text-muted descpData">{{item.description}}</div>
+                                        <div class="f-11 text-muted descpData">{{item.date | appDateFormat: false}}
+                                        </div>
+                                        <div class="f-11 text-muted descpData">{{item.billedBy}}</div>
+                                        <div class="f-11 text-muted descpData">{{item.qty}}</div>
+                                        <div class="f-11 text-muted descpData">${{item.price}}</div>
+                                        <div class="f-11 text-muted descpData">${{item.tax}}</div>
+                                        <div class="f-11 text-muted descpData">${{item.total}}</div>
+                                    </div>
+                                </ng-container>
+
+                            </div>
+
+                            <!-- Flat Fees -->
+                            <div class="row row2 mb-5 px-3">
+
+                                <h6 class="fw-500 mY-3 retainer">Flat Fees</h6>
+
+                                <div class="invoiceRowTitle w-100 pb-3 border-bottom">
+                                    <div class="f-11 text-gray-5 titleData">Flat Fees</div>
+                                    <div class="f-11 text-gray-5 titleData">Description</div>
+                                    <div class="f-11 text-gray-5 titleData">Date</div>
+                                    <div class="f-11 text-gray-5 titleData">Billed By</div>
+                                    <div class="f-11 text-gray-5 titleData">Qty</div>
+                                    <div class="f-11 text-gray-5 titleData">Price</div>
+                                    <div class="f-11 text-gray-5 titleData">Tax</div>
+                                    <div class="f-11 text-gray-5 titleData">Total</div>
+                                </div>
+                                <ng-container *ngFor="let item of invoiceData?.flatFees">
+                                    <div class="invoiceRowDescp w-100 py-3 border-bottom row-1">
+                                        <div class="f-11 text-muted descpData">{{item.flatFees}}</div>
+                                        <div class="f-11 text-muted descpData">{{item.description}}</div>
+                                        <div class="f-11 text-muted descpData">{{item.date | appDateFormat: false}}
+                                        </div>
+                                        <div class="f-11 text-muted descpData">{{item.billedBy}}</div>
+                                        <div class="f-11 text-muted descpData">{{item.qty}}</div>
+                                        <div class="f-11 text-muted descpData">${{item.price}}</div>
+                                        <div class="f-11 text-muted descpData">${{item.tax}}</div>
+                                        <div class="f-11 text-muted descpData">${{item.total}}</div>
+                                    </div>
+                                </ng-container>
+
+                            </div>
+
+
+                            <div class="row">
+                                <div class="col-sm-8">
+                                    <div class="title">
+                                        <h5>Notes, Terms & Conditions</h5>
+                                    </div>
+                                    <div class="mb-4">
+                                        <div class="t-10 text-gray-5">Notes</div>
+                                        <div>{{invoiceData?.notes}}</div>
+                                    </div>
+                                    <!-- Notes  -->
+                                    <div class="mb-4">
+                                        <div class="t-10 text-gray-5">Terms & Conditions</div>
+                                        <div>{{invoiceData?.terms}}</div>
+                                    </div>
+                                    <!-- Terms & Conditions -->
+                                </div>
+                                <div class="col-sm-4">
+                                    <div class="d-flex justify-content-between pl-5">
+                                        <span class="text-gray-5">Total(USD):</span>
+                                        <span class="font-weight-bold">$ {{invoiceData?.balance}}</span>
+                                    </div>
+                                    <hr>
+                                    <div class="d-flex justify-content-between pl-5">
+                                        <span class="text-gray-5">Tax(13%):</span>
+                                        <span class="font-weight-bold">$ {{invoiceData?.tax}}</span>
+                                    </div>
+                                    <hr>
+                                    <div class="d-flex justify-content-between pl-5">
+                                        <span class="text-gray-5">Paid to Date:</span>
+                                        <span class="font-weight-bold">$ {{invoiceData?.paid}}</span>
+                                    </div>
+                                    <div class="bg-primary d-flex justify-content-between p-2 mt-3 pl-5" style="border-radius: 5px;">
+                                        <span class="text-white">Total:</span>
+                                        <span class="font-weight-bold text-white">$ {{invoiceData?.totalAmount}}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-12 mobilePadding download-btn mt-5 m-2 text-right w-100">
+                    <!-- <button class="ant-btn ant-btn-default mr-3">Send File</button> -->
+                    <button class="mr-3 ant-btn ant-btn-primary" (click)="downloadFile()">Download</button>
+                </div>
+            </div>
+        </div>
+    </nz-modal>
+</div>

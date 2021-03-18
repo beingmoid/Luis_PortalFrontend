@@ -1,0 +1,35 @@
+<div [formGroup]="casePrimaryParentDetails">
+    <mat-form-field class="col-xl-3 mb-2" title="Father's Name">
+        <input matInput placeholder="Father's Name" formControlName="fatherName" trim="blur">
+    </mat-form-field>
+    <mat-form-field class="col-xl-3 mb-2" title="Father's Residential Address">
+        <input matInput placeholder="Father's Residential Address" formControlName="fatherResidentialAddress" trim="blur">
+    </mat-form-field>
+    <mat-form-field class="col-xl-3 mb-2" title="Father's DOB">
+        <input [max]="maxDate" matInput formControlName="fatherDOB" placeholder="Father's DOB" [matDatepicker]="fatherDOB"
+            autocomplete="off" (focus)="fatherDOB.open()" (keydown)="$event.preventDefault();">
+        <mat-datepicker-toggle matSuffix [for]="fatherDOB"></mat-datepicker-toggle>
+        <mat-datepicker #fatherDOB></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field class="col-xl-3 mb-2" title="Father's Occupation">
+        <input matInput placeholder="Father's Occupation" formControlName="fatherOccupation" trim="blur">
+    </mat-form-field>
+
+    <mat-form-field class="col-xl-3 mb-2" title="Mother's Name">
+        <input matInput placeholder="Mother's Name" formControlName="motherName">
+    </mat-form-field>
+    <mat-form-field class="col-xl-3 mb-2">
+        <input matInput placeholder="Mother's Residential Address" formControlName="motherResidentialAddress" trim="blur">
+    </mat-form-field>
+    <mat-form-field class="col-xl-3 mb-2" title="Mother's DOB">
+        <input [max]="maxDate" matInput formControlName="motherDOB" placeholder="Mother's DOB" [matDatepicker]="motherDOB"
+            autocomplete="off" (focus)="motherDOB.open()" (keydown)="$event.preventDefault();">
+        <mat-datepicker-toggle matSuffix [for]="motherDOB"></mat-datepicker-toggle>
+        <mat-datepicker #motherDOB></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field class="col-xl-3 mb-2" title="Mother's Occupation">
+        <input matInput placeholder="Mother's Occupation" formControlName="motherOccupation" trim="blur">
+    </mat-form-field>
+
+
+</div>

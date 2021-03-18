@@ -1,0 +1,73 @@
+
+<div>
+    <div class="row mb-4">
+        <div class="col-xl-10">
+            <div class="w-25">
+                <nz-input-group nzSize="large" [nzPrefix]="suffixIconSearch">
+                    <input type="text" nz-input [(ngModel)]="search" (ngModelChange)="filter()" placeholder="Search for Role" />
+                </nz-input-group>
+                <ng-template #suffixIconSearch>
+                    <i nz-icon nzType="search"></i>
+                </ng-template>
+            </div>
+        </div>
+        <div class="col-xl-2 ">
+            <a nz-button class="float-right" nzType="primary" (click)="addRole()"  *ngIf="_permissionService.canCreate">Add Role</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xl-12 ">
+            <nz-table class="card" #rowSelectionTable [nzData]="listData" [nzNoResult]="noData" nzShowSizeChanger
+            [nzPageSize]="pageSize">
+                <thead>
+                    <tr>
+                        <th [nzSortFn]="sortNamesFn" (click)="sortOn('roleName')">Role Name</th>
+                        <th [nzSortFn]="sortNumbersFn" (click)="sortOn('noOfUsers')">No of Users</th>
+                        <th [nzSortFn]="sortNamesFn" (click)="sortOn('createdDate')">Created Time</th>
+                        <th [nzSortFn]="sortNamesFn" (click)="sortOn('modifiedDate')">Last Modified Time</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr *ngFor="let data of rowSelectionTable.data; let i = index;">
+                        <td>{{ data.roleName.substring(0,  data.roleName.lastIndexOf('_') > 0 ?  data.roleName.lastIndexOf('_') :  data.roleName.length) }}</td>
+                        <td>{{ data.noOfUsers }}</td>
+                        <td>{{ data.createdDate | appDateFormat: false }}</td>
+                        <td>{{ data.modifiedDate !== null ? (data.modifiedDate | appDateFormat: false) : 'N/A'}}</td>
+                        <td>
+                            <i nz-icon nzType="edit" nz-tooltip nzTooltipTitle="Edit Role" nzTheme="fill"
+                                class="text-success" (click)="editRole(data.id)"  *ngIf="_permissionService.canEdit"></i>
+                            <nz-divider nzType="vertical"></nz-divider>
+                            <i nz-icon nzType="delete" nz-tooltip nzTooltipTitle="Delete Role" nzTheme="fill"
+                                class="text-danger" (click)="deleteRole(data.id)"  *ngIf="_permissionService.canDelete"></i>
+                        </td>
+                    </tr>
+                </tbody>
+            </nz-table>
+        </div>
+    </div>
+</div>
+
+<ng-template #noData>
+    <nz-empty class="m-5" [nzNotFoundImage]="'assets/images/no-data/no-role.svg'"
+        [nzNotFoundContent]="noDataDescrp">
+    </nz-empty>
+</ng-template>
+
+<ng-template #noDataDescrp>
+    <div class="m-4">
+        No Data Available.
+        <a  *ngIf="_permissionService.canCreate" (click)="addRole()" class="kit__utils__link">
+            Create New Role
+        </a>
+    </div>
+</ng-template>
+
+<!-- Add/Update Modal -->
+<div>
+    <nz-modal nzFooter="null" nzWidth="700" [(nzVisible)]="isVisible" [nzTitle]="modalTitle"
+        (nzOnCancel)="isVisible = false" nzMaskClosable="false">
+        <app-add-role  [roleIdSubject]="roleIdObserverSubject"></app-add-role>
+    </nz-modal>
+</div>

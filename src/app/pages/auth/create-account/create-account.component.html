@@ -1,0 +1,125 @@
+<div class="create-account-div">
+
+  <div class="create-account-content position-relative">
+    <div class="create-account-box">
+      <div class="create-account">
+        <h5 class="text-primary fw-500 title text-center py-3">
+          Sign up to join us
+        </h5>
+        <div class="signup-form">
+          <form nz-form [nzLayout]="'vertical'" [formGroup]="form" #f="ngForm" (ngSubmit)="submitForm()" role="form"
+            novalidate>
+            <nz-form-item class="mb-4">
+              <label class="fw-500 f-13 mb-1"> First Name <span class="text-danger">*</span></label>
+              <nz-form-control>
+                <input class="input-lg-height" type="text" nz-input formControlName="firstName" nzSize="large"
+                  placeholder="Enter your First Name" autocomplete="off"
+                  [ngClass]="{ 'is-invalid': submitted && firstName.errors }" />
+                <div class="text-danger f-12">
+                  <ng-container *ngIf="submitted && firstName.hasError('required')">First Name is Required
+                  </ng-container>
+                </div>
+              </nz-form-control>
+            </nz-form-item>
+            <!-- First Name -->
+            <nz-form-item class="mb-4">
+              <label class="fw-500 f-13 mb-1"> Last Name <span class="text-danger">*</span></label>
+              <nz-form-control>
+                <input class="input-lg-height" type="text" nz-input formControlName="lastName" nzSize="large"
+                  placeholder="Enter your Last Name" autocomplete="off"
+                  [ngClass]="{ 'is-invalid': submitted && lastName.errors }" />
+                <div class="text-danger f-12">
+                  <ng-container *ngIf="submitted && lastName.hasError('required')">Last Name is Required</ng-container>
+                </div>
+              </nz-form-control>
+            </nz-form-item>
+            <!-- Last Name -->
+            <nz-form-item class="mb-4">
+              <label class="fw-500 f-13 mb-1"> Password <span class="text-danger">*</span></label>
+              <nz-form-control>
+                <input class="input-lg-height" type="password" nz-input formControlName="password" nzSize="large"
+                  minlength="8" placeholder="Enter your Password" autocomplete="off"
+                  [ngClass]="{ 'is-invalid': submitted && password.errors }" />
+                <div class="text-danger f-12">
+                  <ng-container *ngIf="submitted && password.hasError('required')">Password is Required</ng-container>
+                  <ng-container *ngIf="submitted && password.hasError('pattern') && !password.hasError('required')">
+                    Password is required, Minimum 8 characters <br> (use uppercase, lowercase, digits and special
+                    characters)
+                  </ng-container>
+                </div>
+              </nz-form-control>
+            </nz-form-item>
+            <!-- Password -->
+            <nz-form-item class="mb-4">
+              <label class="fw-500 f-13 mb-1"> Repeat Password <span class="text-danger">*</span></label>
+              <nz-form-control>
+                <input class="input-lg-height" type="password" nz-input formControlName="repeatPassword" nzSize="large"
+                  placeholder="Enter your Password Again" autocomplete="off"
+                  [ngClass]="{ 'is-invalid': submitted && confirmPass.errors }" />
+                <div class="text-danger f-12">
+                  <ng-container *ngIf="submitted && confirmPass.hasError('required')">
+                    Confirm Password is Required <br> Must Match with Password Field
+                  </ng-container>
+                  <ng-container *ngIf="submitted && confirmPass.invalid && !confirmPass.hasError('required')">
+                    Confirm Password should match with New Password Field
+                  </ng-container>
+                </div>
+              </nz-form-control>
+            </nz-form-item>
+            <!-- Repeat Password -->
+            <nz-form-item class="mb-4">
+              <label class="fw-500 f-13 mb-1"> Phone Number <span class="text-danger">*</span> </label>
+              <nz-form-control class="custom">
+                <ngx-mat-intl-tel-input [ngClass]="{ 'is-invalid': submitted && phoneNo.errors }"
+                  [preferredCountries]="['ca']" [enablePlaceholder]="true" [enableSearch]="true" name="phone"
+                  inputPlaceholder="Enter your Phone Number" formControlName="phone" #phone>
+                </ngx-mat-intl-tel-input>
+                <!-- <mat-error *ngIf="phone.errors?.validatePhoneNumber">Invalid Phone Number</mat-error> -->
+                <!-- <input class="input-lg-height" type="text" nz-input formControlName="phone" nzSize="large"
+                  placeholder="Enter your Phone Number" phoneMask [ngClass]="{ 'is-invalid': submitted && phone.errors }"/> -->
+              </nz-form-control>
+              <div class="text-danger f-12">
+                <ng-container *ngIf="submitted && phoneNo.hasError('validatePhoneNumber')">
+                  Invalid Phone Number
+                </ng-container>
+                <ng-container *ngIf="submitted && phoneNo.hasError('required')">
+                  Phone number is required
+                </ng-container>
+              </div>
+            </nz-form-item>
+            <!-- Phone Number -->
+            <nz-form-item class="mb-4 text-center">
+              <nz-form-control>
+                <button nzType="primary" nz-button [nzSize]="'large'" [nzLoading]="loading"
+                  class="custom text-center w-75 mx-auto  my-2">
+                  <span class="f-13 fw-500">Create Account</span>
+                </button>
+              </nz-form-control>
+            </nz-form-item>
+            <p class="f-12 font-weight-bold mb-5">By continuing, You agree with our <a href="javascript:void(0)"
+                class="text-primary">
+                <span (click)="showModal()"> Terms of services </span> </a></p>
+          </form>
+        </div>
+        <!-- signup-form -->
+      </div>
+      <!-- create-account -->
+    </div>
+    <!-- create-account-box -->
+  </div>
+  <!-- create-account-content -->
+
+</div>
+<!-- create-account-div -->
+
+<!-- Terms of Condition Modal -->
+<div>
+  <nz-modal class="termsModal" nzWidth="700" [(nzVisible)]="isVisible" nzTitle="Terms of Condition"
+    (nzOnCancel)="handleCancel()" nzMaskClosable="false" nzClosable="false">
+    <app-terms-of-conditions></app-terms-of-conditions>
+    <div class="agree-btn text-right" (click)="handleCancel()">
+      <button nz-button="" ng-reflect-nz-type="primary" ng-reflect-nz-loading="false" ng-reflect-disabled="false"
+        class="ant-btn ant-btn-primary">Agree </button>
+    </div>
+  </nz-modal>
+</div>

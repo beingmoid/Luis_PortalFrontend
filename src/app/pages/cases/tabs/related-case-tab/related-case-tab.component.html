@@ -1,0 +1,83 @@
+<div class="breadcrumbs mb-3">
+    <strong>Cases</strong>
+</div>
+<div>
+    <div class="row mb-4">
+        <div class="col-xl-10">
+            <div class="w-25">
+                <nz-input-group nzSize="large" [nzPrefix]="suffixIconSearch">
+                    <input type="text" nz-input [(ngModel)]="search" (ngModelChange)="filter()" placeholder="Search for Case" />
+                </nz-input-group>
+                <ng-template #suffixIconSearch>
+                    <i nz-icon nzType="search"></i>
+                </ng-template>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xl-12 ">
+            <nz-table class="card" #rowSelectionTable [nzData]="relatedCaseList" [nzNoResult]="noData" nzShowSizeChanger [nzPageSize]="pageSize">
+                <thead>
+                    <tr>
+                        <th [nzSortFn]="sortNumbersFn" class="ant-table-selection-column" (click)="sortOn('index')">#</th>
+                        <th [nzSortFn]="sortNamesFn" (click)="sortOn('caseNumber')">Case Number</th>
+                        <th [nzSortFn]="sortNamesFn" (click)="sortOn('contactClientName')">Client</th>
+                        <th [nzSortFn]="sortNamesFn" (click)="sortOn('caseTypeName')">Case Type</th>
+                        <th [nzSortFn]="sortNamesFn" (click)="sortOn('caseStatusName')">Status</th>
+                        <th [nzSortFn]="sortNamesFn" (click)="sortOn('caseDeadLineDate')">Dead Line</th>
+                        <th [hidden]="_permissionService.getRole() == 'Client'">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr *ngFor="let data of rowSelectionTable.data; let i = index;" style="cursor: pointer;">
+                        <td>{{data.index}}</td>
+                        <td>{{ data.caseNumber }}</td>
+                        <td>{{ data.contactClientName }}</td>
+                        <td>{{ data.caseTypeName }}</td>
+                        <td>
+                            <span class="badge badge-primary" *ngIf="data.caseStatusName == 'Pending'">{{
+                                data.caseStatusName }}</span>
+                            <span class="badge badge-success" *ngIf="data.caseStatusName == 'Completed'">{{
+                                data.caseStatusName }}</span>
+                            <span class="badge badge-danger" *ngIf="data.caseStatusName == 'Rejected'">{{
+                                data.caseStatusName }}</span>
+                            <span class="badge badge-warning" *ngIf="data.caseStatusName !== 'Pending' && data.caseStatusName !== 'Rejected' && data.caseStatusName !== 'Completed'">{{
+                                data.caseStatusName }}</span>
+                        </td>
+                        <td>{{ data.caseDeadLineDate | appDateFormat: false }}</td>
+                        <td [hidden]="_permissionService.getRole() == 'Client'">
+                            <i nz-icon nzType="edit" nz-tooltip nzTooltipTitle="Edit Case" (click)="editCase(data)" nzTheme="fill" class="text-success"></i>
+                            <nz-divider nzType="vertical"></nz-divider>
+                            <i nz-icon nzType="delete" nz-tooltip nzTooltipTitle="Delete Case" (click)="deleteCase(data)" nzTheme="fill" class="text-danger"></i>
+                        </td>
+                    </tr>
+                </tbody>
+            </nz-table>
+        </div>
+    </div>
+</div>
+
+<ng-template #noData>
+    <nz-empty class="m-5" [nzNotFoundImage]="'assets/images/no-data/no-case.svg'" [nzNotFoundContent]="noDataDescrp">
+    </nz-empty>
+</ng-template>
+
+<ng-template #noDataDescrp>
+    <div class="m-4">
+        No Data Available.
+        <span class="f-12">Create New Case for same Client</span>
+
+        <!-- <a [routerLink]="['/cases/add']" class="kit__utils__link">
+            Create New Case
+        </a> -->
+    </div>
+</ng-template>
+
+
+<!-- Add Modal -->
+<div>
+    <nz-modal nzFooter="null" nzWidth="1100" [(nzVisible)]="isVisible" [nzTitle]="modalTitle" (nzOnCancel)="handleCancel()" nzMaskClosable="false">
+        <app-add-cases [caseDataSub]="caseObserverSubject"></app-add-cases>
+    </nz-modal>
+</div>

@@ -1,0 +1,117 @@
+<div class="row mb-3">
+    <div class="col-xl-12">
+        <a class="font-size-16 text-primary" [routerLink]="['/cases']"><i class="fe fe-arrow-left"></i> Back to Case
+            List</a>
+    </div>
+</div>
+<div class="row mb-3" [hidden]="_permissionService.getRole() == 'Client'">
+    <div class="col-xl-12">
+        <button nz-button nzType="primary">
+            <i nz-icon nzType="plus" nzTheme="outline"></i>
+            Add Applicant
+        </button>
+    </div>
+</div>
+<!-- Profile -->
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card bg-white">
+            <div class="card-body d-flex align-items-center align-content-center">
+                <div class="col-xl-1">
+                    <div class="kit__utils__avatar kit__utils__avatar--size64 kit__utils__avatar--rounded mr-2">
+                        <img src="assets/images/avatars/avatar.png" alt="User" *ngIf="userData?.image == null">
+                        <img [src]="userData?.image" alt="User" *ngIf="userData?.image !== null">
+                    </div>
+                </div>
+                <div class="col-xl-2">
+                    <div class="font-size-12 text-gray-5">
+                        Full Name
+                    </div>
+                    <div class="text-dark font-weight-bold">
+                        {{userData?.firstName}} {{userData?.lastName}}
+                    </div>
+                </div>
+                <div class="col-xl-3">
+                    <div class="font-size-12 text-gray-5">
+                        Email
+                    </div>
+                    <div class="text-dark font-weight-bold">
+                        {{userData?.email}}
+                    </div>
+                </div>
+                <div class="col-xl-3">
+                    <div class="font-size-12 text-gray-5">
+                        Case Type
+                    </div>
+                    <div class="text-dark font-weight-bold">
+                        {{userData?.caseType}}
+                    </div>
+                </div>
+                <div class="col-xl-3">
+                    <div class="font-size-12 text-gray-5">
+                        Immigration Department Status
+                    </div>
+                    <div class="text-dark font-weight-bold">
+                        {{userData?.immigrationStatusName}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Tabs -->
+<div class="row">
+    <div class="col-xl-12">
+        <nz-tabset class="" nzSize="large">
+            <nz-tab nzTitle="Case">
+                <ng-container *ngTemplateOutlet="case"></ng-container>
+            </nz-tab>
+            <nz-tab nzTitle="Related Case">
+                <ng-container *ngTemplateOutlet="relatedCase"></ng-container>
+            </nz-tab>
+            <nz-tab nzTitle="Documents">
+                <ng-container *ngTemplateOutlet="documents"></ng-container>
+            </nz-tab>
+            <nz-tab nzTitle="Forms">
+                <ng-container *ngTemplateOutlet="forms"></ng-container>
+            </nz-tab>
+            <nz-tab nzTitle="Notes">
+                <ng-container *ngTemplateOutlet="notes"></ng-container>
+            </nz-tab>
+            <nz-tab nzTitle="Task">
+                <ng-container *ngTemplateOutlet="task"></ng-container>
+            </nz-tab>
+            <nz-tab nzTitle="Accounting">
+                <ng-container *ngTemplateOutlet="accounting"></ng-container>
+            </nz-tab>
+            <nz-tab nzTitle="Immigration Department Status">
+                <ng-container *ngTemplateOutlet="immigrationDepartmentsStatus"></ng-container>
+            </nz-tab>
+        </nz-tabset>
+    </div>
+</div>
+
+<ng-template #case>
+    <app-case-tab></app-case-tab>
+</ng-template>
+<ng-template #relatedCase>
+    <app-related-case-tab [ClientIdSubject]="contactClientIdSubject"></app-related-case-tab>
+</ng-template>
+<ng-template #documents>
+    <app-documents-tab></app-documents-tab>
+</ng-template>
+<ng-template #forms>
+    <app-forms-tab></app-forms-tab>
+</ng-template>
+<ng-template #notes>
+    <app-notes-tab></app-notes-tab>
+</ng-template>
+<ng-template #task>
+    <app-task-tab></app-task-tab>
+</ng-template>
+<ng-template #accounting>
+    <app-accounting-tab></app-accounting-tab>
+</ng-template>
+<ng-template #immigrationDepartmentsStatus>
+    <app-immigration-tab></app-immigration-tab>
+</ng-template>

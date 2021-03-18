@@ -1,0 +1,109 @@
+<div class="row">
+    <div class="col-xl-12">
+        <form (ngSubmit)="handleSubmit(formDirective)" [formGroup]="form" #formDirective="ngForm" novalidate>
+
+            <mat-form-field class="col-xl-6 mb-2">
+                <mat-label>Person/Agent Name</mat-label>
+                <input matInput formControlName="agentName" trim="blur">
+                <mat-error *ngIf="f.agentName.hasError('required')">
+                    Person/Agent Name is required
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="col-xl-6 mb-2">
+                <mat-label>Company Name</mat-label>
+                <input matInput formControlName="companyName" trim="blur">
+                <mat-error *ngIf="f.companyName.hasError('required')">
+                    Company Name is required
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field class="col-xl-6 mb-2">
+                <mat-label>Case No.</mat-label>
+                <mat-select formControlName="caseId">
+                    <mat-option *ngFor="let item of cases" [value]="item.id">{{item.caseNumber}}
+                    </mat-option>
+                    <mat-option *ngIf="cases && cases.length < 1" disabled>No Record Found
+                    </mat-option>
+                </mat-select>
+                <mat-error *ngIf="f.caseId.hasError('required')">
+                    Case No. is required
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field class="col-xl-6 mb-2">
+                <mat-label>Case Type</mat-label>
+                <mat-select formControlName="caseTypeId">
+                    <mat-option *ngFor="let item of caseTypes" [value]="item.key">{{item.value}}
+                    </mat-option>
+                    <mat-option *ngIf="caseTypes && caseTypes.length < 1" disabled>No Record Found
+                    </mat-option>
+                </mat-select>
+                <mat-error *ngIf="f.caseTypeId.hasError('required')">
+                    Case Type is required
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field class="col-xl-6 mb-2">
+                <mat-label>Client</mat-label>
+                <mat-select formControlName="contactClientId">
+                    <mat-option *ngFor="let item of contactClientData" [value]="item.id">{{item.name}}</mat-option>
+                    <mat-option *ngIf="contactClientData && contactClientData.length < 1" disabled>No record found
+                    </mat-option>
+                </mat-select>
+                <mat-error *ngIf="f.contactClientId.hasError('required')">
+                    Client is required
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field class="col-xl-6 mb-2">
+                <mat-label>Referred on Date</mat-label>
+                <input matInput formControlName="referredOnDate" autocomplete="off" (focus)="referredOnDate.open()" [matDatepicker]="referredOnDate" (keydown)="$event.preventDefault();">
+                <mat-datepicker-toggle matSuffix [for]="referredOnDate"></mat-datepicker-toggle>
+                <mat-datepicker #referredOnDate></mat-datepicker>
+                <mat-error *ngIf="f.referredOnDate.hasError('required')">
+                    Referred on Date is required
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="col-xl-6 mb-2">
+                <mat-label>Total Commission</mat-label>
+                <span matPrefix>$</span>
+                <input matInput (focus)="calculateBalance()" (change)="calculateBalance()" formControlName="totalCommission" twoDecimal>
+                <mat-error *ngIf="f.totalCommission.hasError('required')">
+                    Total Commission is required
+                </mat-error>
+
+                <mat-error *ngIf="f.totalCommission.hasError('pattern')">
+                    Total Commission must be in numbers only
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field class="col-xl-6 mb-2">
+                <mat-label>Paid</mat-label>
+                <span matPrefix>$</span>
+                <input matInput (focus)="calculateBalance()" (change)="calculateBalance()" formControlName="paid" twoDecimal>
+                <mat-error *ngIf="f.paid.hasError('required')">
+                    Paid is required
+                </mat-error>
+                <mat-error *ngIf="f.paid.hasError('pattern')">
+                    Paid amount must be in numbers only
+                </mat-error>
+                <mat-hint class="text-danger" *ngIf="isPaidGreater">
+                    Paid amount should not be more then total commission
+                </mat-hint>
+
+            </mat-form-field>
+            <mat-form-field class="col-xl-6 mb-2">
+                <mat-label>Balance</mat-label>
+                <span matPrefix>$</span>
+                <input matInput formControlName="balance" twoDecimal>
+                <mat-error *ngIf="f.balance.hasError('required')">
+                    Balance is required
+                </mat-error>
+            </mat-form-field>
+            <div class="form-group text-center mt-4">
+                <button type="submit" nz-button nzType="primary" [nzLoading]="loading">{{ isEditMode ? 'Update
+                    Commission' : 'Add Commission'}}</button>
+            </div>
+        </form>
+    </div>
+</div>

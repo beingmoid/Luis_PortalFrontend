@@ -1,0 +1,96 @@
+<div class="row">
+    <div class="col-xl-12">
+        <form (ngSubmit)="handleSubmit(formDirective)" [formGroup]="form" novalidate #formDirective="ngForm">
+            <mat-form-field class="w-50 mb-3">
+                <mat-label>Role Name</mat-label>
+                <input matInput #roleName formControlName="roleName" (focusout)="checkRole()" trim="blur">
+                <mat-error *ngIf="roleControl.hasError('required')">Role Name is Requied</mat-error>
+                <mat-error *ngIf="roleControl.hasError('whitespace') && !(roleControl.hasError('required'))">Whitespaces
+                    are Not Allowed</mat-error>
+                <mat-error *ngIf="roleControl.errors">{{roleControl?.errors.found}}</mat-error>
+            </mat-form-field>
+            <div class="row">
+                <div class="col-xl-4 text-gray-5">Permission Name</div>
+                <div class="col-xl-2 font-weight-bold">Create</div>
+                <div class="col-xl-2 font-weight-bold">View</div>
+                <div class="col-xl-2 font-weight-bold">Edit</div>
+                <div class="col-xl-2 font-weight-bold">Delete</div>
+            </div>
+            <hr>
+            <ng-container formArrayName="claimType">
+                <ng-container *ngFor="let fg of claimType; let i = index">
+                    <ng-container *ngIf="fg.controls['claimTypeName'].value && fg.controls['claimTypeName'].value.includes('History_Case')">
+                        <div class="row">
+
+                            <div class="col-xl-4 text-gray-5 font-weight-bold">History Permissions</div>
+                            <div class="col-xl-2 font-weight-bold text-gray-5">Create</div>
+                            <div class="col-xl-2 font-weight-bold">View</div>
+                            <div class="col-xl-2 font-weight-bold text-gray-5">Edit</div>
+                            <div class="col-xl-2 font-weight-bold text-gray-5">Delete</div>
+                        </div>
+                        <hr>
+                    </ng-container>
+
+                    <div class="row" [formGroupName]="i">
+
+                        <div class="col-xl-4 font-weight-bold">
+                            {{ convertString(fg.controls['claimTypeName'].value) | titlecase}}
+                        </div>
+
+                        <ng-container [formGroupName]="'claimValue'">
+
+                            <div class="col-xl-2">
+                                <ng-container>
+                                    <nz-switch formControlName="create" [nzCheckedChildren]="checkedTemplate"
+                                        [nzUnCheckedChildren]="unCheckedTemplate" (click)="clickSwitch(fg)">
+                                    </nz-switch>
+                                    <ng-template #checkedTemplate><i nz-icon nzType="check"></i></ng-template>
+                                    <ng-template #unCheckedTemplate><i nz-icon nzType="close"></i></ng-template>
+                                </ng-container>
+                            </div>
+
+                            <div class="col-xl-2">
+                                <ng-container>
+                                    <nz-switch formControlName="view" [nzCheckedChildren]="checkedTemplate"
+                                        [nzUnCheckedChildren]="unCheckedTemplate" (click)="clickViewSwitch(fg)">
+                                    </nz-switch>
+                                    <ng-template #checkedTemplate><i nz-icon nzType="check"></i></ng-template>
+                                    <ng-template #unCheckedTemplate><i nz-icon nzType="close"></i></ng-template>
+                                </ng-container>
+                            </div>
+
+                            <div class="col-xl-2">
+                                <ng-container>
+                                    <nz-switch formControlName="edit" [nzCheckedChildren]="checkedTemplate"
+                                        [nzUnCheckedChildren]="unCheckedTemplate" (click)="clickSwitch(fg)">
+                                    </nz-switch>
+                                    <ng-template #checkedTemplate><i nz-icon nzType="check"></i></ng-template>
+                                    <ng-template #unCheckedTemplate><i nz-icon nzType="close"></i></ng-template>
+                                </ng-container>
+                            </div>
+
+                            <div class="col-xl-2">
+                                <ng-container>
+                                    <nz-switch formControlName="delete" [nzCheckedChildren]="checkedTemplate"
+                                        [nzUnCheckedChildren]="unCheckedTemplate" (click)="clickSwitch(fg)">
+                                    </nz-switch>
+                                    <ng-template #checkedTemplate><i nz-icon nzType="check"></i></ng-template>
+                                    <ng-template #unCheckedTemplate><i nz-icon nzType="close"></i></ng-template>
+                                </ng-container>
+                            </div>
+                        </ng-container>
+
+                    </div>
+                    <hr>
+
+                </ng-container>
+            </ng-container>
+            <div class="form-group text-center mt-4">
+                <button type="submit" nz-button nzType="primary" [nzLoading]="buttonLoading">
+                    <!-- [disabled]="form.invalid" -->
+                    {{isEditMode ? 'Update Role' : 'Add Role'}}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

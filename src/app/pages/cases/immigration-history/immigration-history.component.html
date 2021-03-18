@@ -1,0 +1,27 @@
+<div [formGroup]="immigrationHistory">
+    <mat-form-field class="col-xl-6 mb-2" title="Have you or your spouse ever been refused for any type of application for any country or any province?">
+        <mat-select formControlName="isRefusedApplication"
+            placeholder="Have you or your spouse ever been refused for any type of application for any country or any province?">
+            <mat-option [value]="false">No</mat-option>
+            <mat-option [value]="true">Yes</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field class="col-xl-6 mb-2" title="Have you or your spouse ever been arrested, detained, charged or convicted in any country in past?">
+        <mat-select
+            placeholder="Have you or your spouse ever been arrested, detained, charged or convicted in any country in past?"
+            formControlName="isArrested">
+            <mat-option [value]="false">No</mat-option>
+            <mat-option [value]="true">Yes</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field class="col-xl-6 mb-2" title="Have you or your spouse previously applied for immigration or visa to Canada?">
+        <mat-select placeholder="Have you or your spouse previously applied for immigration or visa to Canada?"
+            formControlName="isAppliedForCanad">
+            <mat-option [value]="false">No</mat-option>
+            <mat-option [value]="true">Yes</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field class="col-xl-6 mb-2" title="Any further information?">
+        <input matInput placeholder="Any further information?" formControlName="anyFurtherInfo" trim="blur">
+    </mat-form-field>
+</div>

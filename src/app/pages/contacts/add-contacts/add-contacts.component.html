@@ -1,0 +1,133 @@
+<div class="row">
+    <div class="col-xl-12">
+        <form (ngSubmit)="handleSubmit(formDirective)" [formGroup]="form" novalidate #formDirective="ngForm">
+
+            <div class="col-xl-12 m-3 text-center">
+                <!-- <nz-upload class="avatar-uploader d-flex justify-content-center" [nzAction]="imageUploadURL"
+                    nzShowButton="true" nzName="avatar" nzListType="picture-card" [nzShowUploadList]="false"
+                    [nzBeforeUpload]="beforeUpload" (nzChange)="handleChange($event)">
+                    <ng-container *ngIf="!avatarUrl">
+                        <i class="upload-icon" nz-icon [nzType]="loading ? 'loading' : 'plus'"></i>
+                        <div class="ant-upload-text">Upload</div>
+                    </div>
+                    </ng-container>
+                    <img *ngIf="avatarUrl" [src]="avatarUrl" style="width: 100%" />
+                    <i class="fe fe-edit-2 pic-edit-icon position-absolute" *ngIf="avatarUrl"></i>
+                </nz-upload> -->
+
+                <nz-upload class="avatar-uploader d-flex justify-content-center" nzShowButton="true" nzName="avatar" nzListType="picture-card" [nzShowUploadList]="false" [nzBeforeUpload]="beforeUpload">
+                    <div *ngIf="!avatarUrl">
+                        <i class="upload-icon" nz-icon [nzType]="loading ? 'loading' : 'plus'"></i>
+                        <div class="ant-upload-text">Upload</div>
+                    </div>
+                    <img *ngIf="avatarUrl" [src]="avatarUrl" style="width: 100%" />
+                    <i class="fe fe-edit-2 pic-edit-icon position-absolute" *ngIf="avatarUrl"></i>
+                </nz-upload>
+
+            </div>
+            <mat-form-field class="col-xl-6 mb-2">
+                <mat-label>First Name</mat-label>
+                <input matInput formControlName="firstName" trim="blur" maxlength=20 pattern="^[a-zA-Z \-\']+">
+                <mat-error *ngIf="f.firstName.hasError('required')">
+                    First Name is required
+                </mat-error>
+                <mat-error *ngIf="f.firstName.hasError('pattern')">
+                    First Name can only be in alphabets
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="col-xl-6 mb-2">
+                <mat-label>Last Name</mat-label>
+                <input matInput formControlName="lastName" trim="blur" maxlength=20 pattern="^[a-zA-Z \-\']+">
+                <mat-error *ngIf="f.lastName.hasError('required')">
+                    Last Name is required
+                </mat-error>
+                <mat-error *ngIf="f.lastName.hasError('pattern')">
+                    Last Name can only be in alphabets
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field class="col-xl-6 mb-2">
+                <mat-label>Contact Type</mat-label>
+                <mat-select formControlName="contactTypeId">
+                    <mat-option *ngFor="let item of contactTypeData" [value]="item.key">{{item.value}}</mat-option>
+                </mat-select>
+                <mat-error *ngIf="f.contactTypeId.hasError('required')">
+                    Contact type is required
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="col-xl-6 mb-2">
+                <mat-label>Email</mat-label>
+                <input matInput formControlName="email" pattern=".+@.+\..+" trim="blur" [readonly]="isClientAccountCreated" (blur)="checkEmail()">
+                <mat-error *ngIf="f.email.hasError('required')">
+                    Valid email is required
+                </mat-error>
+                <mat-error *ngIf="f.email.hasError('pattern') && !(f.email.hasError('required'))">
+                    Email is invalid
+                </mat-error>
+                <mat-error *ngIf="f.email.hasError('found') && !(f.email.hasError('required'))">
+                    Email already exists.
+                </mat-error>
+                <mat-hint *ngIf="emailAlreadyExist"><span class="text-danger"> Email already exists</span></mat-hint>
+            </mat-form-field>
+
+            <mat-form-field class="col-xl-6 mb-2">
+                <mat-label>Country</mat-label>
+                <mat-select formControlName="countryId" (selectionChange)="countryChange()">
+                    <mat-option *ngFor="let item of countries" [value]="item.key">{{item.value}}</mat-option>
+                    <mat-option *ngIf="countries && countries.length < 1" disabled>No Record Found</mat-option>
+                </mat-select>
+                <mat-error *ngIf="f.countryId.hasError('required')">
+                    Country is required
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field class="col-xl-6 mb-2">
+                <mat-label>Province</mat-label>
+                <mat-select formControlName="stateId" (selectionChange)="stateChange()">
+                    <mat-option *ngFor="let item of states" [value]="item.key">{{item.value}}</mat-option>
+                    <mat-option *ngIf="states && states.length < 1" disabled>No Record Found</mat-option>
+                </mat-select>
+                <mat-error *ngIf="f.stateId.hasError('required')">
+                    State is required
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field class="col-xl-6 mb-2">
+                <mat-label>City</mat-label>
+                <mat-select formControlName="cityId">
+                    <mat-option *ngFor="let item of cities" [value]="item.key">{{item.value}}</mat-option>
+                    <mat-option *ngIf="cities && cities.length < 1" disabled>No Record Found</mat-option>
+                </mat-select>
+                <mat-error *ngIf="f.cityId.hasError('required')">
+                    City is required
+                </mat-error>
+            </mat-form-field>
+
+
+            <mat-form-field class="col-xl-6 mb-2">
+                <mat-label>Language</mat-label>
+                <mat-select formControlName="languageId">
+                    <mat-option *ngFor="let item of languages" [value]="item.key">{{item.value}}</mat-option>
+                </mat-select>
+                <mat-error *ngIf="f.languageId.hasError('required')">
+                    Language is required
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field class="col-xl-6 mb-2">
+                <mat-label>Company Name</mat-label>
+                <input matInput formControlName="companyName" trim="blur">
+            </mat-form-field>
+
+            <mat-form-field class="col-xl-12 mb-2">
+                <mat-label>Notes</mat-label>
+                <input matInput formControlName="notes" trim="blur">
+            </mat-form-field>
+
+            <div class="form-group text-center mt-4">
+                <button type="submit" nz-button nzType="primary">Save Contact</button>
+                <!-- [nzLoading]="buttonLoading" -->
+            </div>
+        </form>
+    </div>
+</div>

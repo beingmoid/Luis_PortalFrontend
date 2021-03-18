@@ -1,0 +1,210 @@
+<div class="breadcrumbs mb-3">
+    <strong>Accounting</strong>
+</div>
+<div>
+    <div class="row mb-4">
+        <div class="col-xl-10">
+            <div class="w-25 searchBarWidth">
+                <nz-input-group nzSize="large" [nzPrefix]="suffixIconSearch">
+                    <input type="text" nz-input [(ngModel)]="search" (ngModelChange)="filter()"
+                        placeholder="Search for Accounts" />
+                </nz-input-group>
+                <ng-template #suffixIconSearch>
+                    <i nz-icon nzType="search"></i>
+                </ng-template>
+            </div>
+        </div>
+        <div class="col-xl-2 ">
+            <a nz-button class="float-right" nzType="primary" *ngIf="_permissionService.canCreate"
+                (click)="showModal()">Add
+                Account</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xl-12 ">
+            <nz-table class="card" #rowSelectionTable [nzData]="listData" [nzNoResult]="noData" nzShowSizeChanger
+                [nzPageSize]="pageSize">
+                <thead>
+                    <tr>
+                        <th class="ant-table-selection-column" [nzSortFn]="sortNumbersFn" (click)="sortOn('index')">#
+                        </th>
+                        <th [nzSortFn]="sortNamesFn" (click)="sortOn('bankName')">Bank</th>
+                        <th [nzSortFn]="sortNamesFn" (click)="sortOn('accountName')">Account</th>
+                        <th [nzSortFn]="sortNumbersFn" (click)="sortOn('accountNumber')">Account No.</th>
+                        <th [nzSortFn]="sortNamesFn" (click)="sortOn('bankAccountTypeName')">Type</th>
+                        <th [nzSortFn]="sortNumbersFn" (click)="sortOn('balance')">Balance</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr *ngFor="let data of rowSelectionTable.data; let i = index;" (click)="showSingleAccount(data)"
+                        nz-tooltip nzTooltipTitle="Click to View Accounting" style="cursor: pointer;">
+                        <td>{{data.index}}</td>
+                        <td>{{ data.bankName }}</td>
+                        <td>{{ data.accountName }}</td>
+                        <td>{{ data.accountNumber }}</td>
+                        <td>{{ data.bankAccountTypeName }}</td>
+                        <td>{{ data.balance }}</td>
+                        <td>
+                            <i nz-icon nzType="edit" nz-tooltip nzTooltipTitle="Edit Account"
+                                *ngIf="_permissionService.canEdit" nzTheme="fill" class="text-success"
+                                (click)="$event.stopPropagation(editAccount(data))"></i>
+                            <nz-divider nzType="vertical"></nz-divider>
+                            <i nz-icon nzType="delete" nz-tooltip nzTooltipTitle="Delete Account"
+                                *ngIf="_permissionService.canDelete" nzTheme="fill" class="text-danger"
+                                (click)="$event.stopPropagation(deleteBankAccount(data.id))"></i>
+                        </td>
+                    </tr>
+                </tbody>
+            </nz-table>
+        </div>
+    </div>
+</div>
+<!-- No Data for Accounts -->
+<ng-template #noData>
+    <nz-empty class="m-5" [nzNotFoundImage]="'assets/images/no-data/no-account.svg'" [nzNotFoundContent]="noDataDescrp">
+    </nz-empty>
+</ng-template>
+<ng-template #noDataDescrp>
+    <div class="m-4">
+        No Data Available.
+        <a *ngIf="_permissionService.canCreate" (click)="showModal()" class="kit__utils__link">
+            Create New Account
+        </a>
+    </div>
+</ng-template>
+
+<!-- Tabs -->
+<app-tabs></app-tabs>
+
+<!-- Add account Modal  -->
+
+<div class="add-account-modal-div">
+    <nz-modal nzFooter="null" nzWidth="700" [(nzVisible)]="isVisible" nzMaskClosable="false"
+        [nzTitle]="isEditMode ? 'Update Account':'Create New Account'" (nzOnCancel)="handleCancel()">
+        <div class="row">
+            <form [formGroup]="AccountForm" (ngSubmit)="onSubmit(formDirective)" novalidate #formDirective="ngForm">
+
+                <mat-form-field class="form-group col-xl-6">
+                    <mat-label>Account Type</mat-label>
+                    <mat-select formControlName="bankAccountTypeId">
+                        <mat-option *ngFor="let item of bankAccountTypes" [value]="item.key">{{item.value}}</mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="f.bankAccountTypeId.hasError('required')">
+                        Account type is required
+                    </mat-error>
+                </mat-form-field>
+                <!-- Account Type -->
+
+                <mat-form-field class="form-group col-xl-6">
+                    <input matInput type="text" placeholder="Bank Name" maxlength="15" formControlName="bankName">
+                    <mat-error *ngIf="f.bankName.hasError('required')">
+                        Bank Name is required
+                    </mat-error>
+                </mat-form-field>
+                <!-- Bank Name -->
+
+                <mat-form-field class="form-group col-xl-6">
+                    <input matInput type="text" placeholder="Account Name" maxlength="15" formControlName="accountName">
+                    <mat-error *ngIf="f.accountName.hasError('required')">
+                        Account Name is required
+                    </mat-error>
+                </mat-form-field>
+                <!-- Account Name -->
+
+                <mat-form-field class="form-group col-xl-6">
+                    <input matInput type="text" placeholder="Account Number" formControlName="accountNumber"
+                        minlength="7" maxlength="13">
+                    <mat-error *ngIf="f.accountNumber.hasError('required')">
+                        Account number is required
+                    </mat-error>
+                    <mat-error *ngIf="f.accountNumber.hasError('maxlength') || f.accountNumber.hasError('minlength')">
+                        Account number can be in between 7 to 13 characters
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field class="form-group col-xl-6">
+                    <input matInput onlyNumbers placeholder="Balance" maxlength="9" formControlName="balance"
+                        pattern="[0-9]+(\.[0-9][0-9]?)?">
+                    <mat-error *ngIf="f.balance.hasError('required')">
+                        Balance is required
+                    </mat-error>
+                    <mat-error *ngIf="f.balance.hasError('pattern')">
+                        Please provide valid number
+                    </mat-error>
+                </mat-form-field>
+
+                <div class="form-group col-xl-12">
+                    <mat-checkbox formControlName="isActive" class="text-primary">Active
+                    </mat-checkbox>
+                </div>
+
+                <div class="form-group text-center mt-3">
+                    <button type="submit" nz-button nzType="primary">{{isEditMode ? 'Update Account' : 'Add
+                        Account'}}</button>
+                </div>
+            </form>
+        </div>
+    </nz-modal>
+</div>
+
+<!-- View Account Modal -->
+<div>
+    <nz-modal nzFooter="null" nzWidth="500" [(nzVisible)]="showAccount" [nzTitle]="'Account Info'"
+        nzMaskClosable="false" (nzOnCancel)="showAccount = false">
+
+        <div>
+            <div class="row">
+                <div class="popup-action-btns">
+                    <i nz-icon nzType="edit" nz-tooltip nzTooltipTitle="Edit Account"
+                        (click)="$event.stopPropagation(editAccount(data))" nzTheme="fill"
+                        class="text-success mr-3"></i>
+
+                    <i nz-icon nzType="delete" nz-tooltip nzTooltipTitle="Delete Account"
+                        (click)="$event.stopPropagation(deleteBankAccount(data.id))" nzTheme="fill"
+                        class="text-danger"></i>
+
+                </div>
+                <div class="col-xl-12">
+                    <div class="">
+                        <div class="row mb-3 px-2">
+                            <div class="col-xl-5 mb-4">
+                                <div class="t-10 text-gray-5">Account Type:</div>
+                                <div>{{data.bankAccountTypeName }}</div>
+                            </div>
+                            <!-- Account Type -->
+                            <div class="col-xl-5 mb-4">
+                                <div class="t-10 text-gray-5">Bank Name</div>
+                                <div>{{data.bankName }}</div>
+                            </div>
+                            <!-- Bank Name -->
+                            <div class="col-xl-5 mb-4">
+                                <div class="t-10 text-gray-5">Account Name</div>
+                                <div>{{data.accountName }}</div>
+                            </div>
+                            <!-- Account Name -->
+                            <div class="col-xl-5 mb-4">
+                                <div class="t-10 text-gray-5">Account Number</div>
+                                <div>{{data.accountNumber }}</div>
+                            </div>
+                            <!-- Account Number -->
+
+                            <div class="col-xl-5 mb-4">
+                                <div class="t-10 text-gray-5">Balance</div>
+                                <div>${{data.balance }}</div>
+                            </div>
+                            <!-- Balance -->
+                            <div class="col-xl-5 mb-4">
+                                <div class="t-10 text-gray-5">Status</div>
+                                <div>{{data.isActive ? 'Active' : 'Inactive'}}</div>
+                            </div>
+                            <!-- Balance -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </nz-modal>
+</div>

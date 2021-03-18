@@ -1,0 +1,72 @@
+<div [formGroup]="form">
+    <table formArrayName="caseEmploymentHistories" class="table table-responsive-xl">
+        <thead class="text-gray-5">
+            <tr>
+                <th>Employer Name</th>
+                <th>Job Title</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th class="text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let item of employmentHistory.controls; index as i">
+                <ng-container [formGroupName]="i">
+                    <td>
+                        <mat-form-field class="w-100" title="Employer Name">
+                            <input matInput formControlName="employerName" placeholder="Employer Name" trim="blur">
+                            <mat-error *ngIf="getFormGroup(item).employerName.hasError('required')">
+                                Employer Name is required
+                            </mat-error>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="w-100" title="Job Title">
+                            <input matInput formControlName="jobTitle" placeholder="Job Title" trim="blur">
+                            <mat-error *ngIf="getFormGroup(item).jobTitle.hasError('required')">
+                                Job Title is required
+                            </mat-error>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="w-100" title="Start Date">
+                            <input matInput #startDateInput formControlName="startDate" placeholder="Start Date" autocomplete="off" (focus)="startDate.open()" [matDatepicker]="startDate" (keydown)="$event.preventDefault();" (dateChange)="startDateChange(item)">
+                            <mat-datepicker-toggle matSuffix [for]="startDate"></mat-datepicker-toggle>
+                            <mat-datepicker #startDate></mat-datepicker>
+                            <mat-error *ngIf="getFormGroup(item).startDate.hasError('required')">
+                                Start Date is required
+                            </mat-error>
+                            <mat-error *ngIf="getFormGroup(item).startDate.hasError('invalidDate')">
+                                Start Date must be smaller than End Date
+                            </mat-error>
+                        </mat-form-field>
+                    </td>
+                    <td>
+                        <mat-form-field class="w-100" title="End Date">
+                            <input matInput #endDateInput formControlName="endDate" placeholder="End Date" autocomplete="off" (focus)="endDate.open()" [matDatepicker]="endDate" (keydown)="$event.preventDefault();" (dateChange)="endDateChange(item)">
+                            <mat-datepicker-toggle matSuffix [for]="endDate"></mat-datepicker-toggle>
+                            <mat-datepicker #endDate></mat-datepicker>
+                            <mat-error *ngIf="getFormGroup(item).endDate.hasError('required')">
+                                End Date is required
+                            </mat-error>
+                            <mat-error *ngIf="getFormGroup(item).endDate.hasError('invalidDate')">
+                                End Date must be greated than Start Date
+                            </mat-error>
+                        </mat-form-field>
+                    </td>
+                    <td class="v-middle text-center">
+                        <ng-container *ngIf="employmentHistory.length === (i+1)">
+                            <button nz-button nzType="primary" type="button" (click)="addFormGroup()"> Add New </button>
+                        </ng-container>
+
+                        <ng-container *ngIf="employmentHistory.length !== (i+1)">
+                            <!-- <button nz-button nzType="default" nzDanger type="button" (click)="removeFormGroup(i)"> Delete </button> -->
+                            <i nz-icon nzType="delete" nzDanger (click)="removeFormGroup(i)" nz-tooltip nzTooltipTitle="Delete Employment History" nzTheme="fill" class="text-danger pointer"></i>
+                        </ng-container>
+
+                    </td>
+                </ng-container>
+            </tr>
+        </tbody>
+    </table>
+</div>

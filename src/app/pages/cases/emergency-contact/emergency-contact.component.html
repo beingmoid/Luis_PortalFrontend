@@ -1,0 +1,30 @@
+<div [formGroup]="caseEmergencyContact" #f="ngForm">
+    <mat-form-field class="col-xl-3 mb-2" title="Name">
+        <input matInput formControlName="name" placeholder="Name" trim="blur">
+    </mat-form-field>
+    <mat-form-field class="col-xl-3 mb-2">
+        <mat-select placeholder="Relationship" formControlName="relationshipId">
+            <mat-option *ngFor="let item of relationships" [value]="item.key">{{item.value}}</mat-option>
+            <mat-option *ngIf="relationships && relationships.length < 1" disabled>No record found</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field class="col-xl-3 mb-2" title="Phone Number">
+        <mat-label>Phone Number</mat-label>
+        <ngx-mat-intl-tel-input 
+            [preferredCountries]="['ca']"
+            [enablePlaceholder]="true" 
+            [enableSearch]="true" 
+            name="phone"
+            inputPlaceholder="Phone Number"
+            formControlName="phone" #phone>
+        </ngx-mat-intl-tel-input>
+        <mat-error *ngIf="caseEmergencyContact.controls['phone'].errors?.validatePhoneNumber">Invalid Phone Number</mat-error>
+        <!-- <input matInput formControlName="phone" placeholder="Phone (Country code)-(Area code)-Number" phoneMask> -->
+    </mat-form-field>
+    <mat-form-field class="col-xl-3 mb-2" title="Email">
+        <input type="email" matInput formControlName="email" placeholder="Email" trim="blur">
+        <mat-error *ngIf="caseEmergencyContact.controls['email'].errors?.pattern">
+            Invalid Email Address
+        </mat-error>
+    </mat-form-field>
+</div>

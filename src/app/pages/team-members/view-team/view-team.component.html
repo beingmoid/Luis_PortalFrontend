@@ -1,0 +1,267 @@
+<div>
+    <div class="row mb-4">
+        <div class="col-xl-10">
+            <div class="w-25 TM-searchBar">
+                <nz-input-group nzSize="large" [nzPrefix]="suffixIconSearch">
+                    <input type="text" nz-input [(ngModel)]="search" (ngModelChange)="filter()"
+                        placeholder="Search for Team Members" />
+                </nz-input-group>
+                <ng-template #suffixIconSearch>
+                    <i nz-icon nzType="search"></i>
+                </ng-template>
+            </div>
+        </div>
+        <div class="col-xl-2 " *ngIf="showAddButton">
+            <a nz-button class="float-right" nzType="primary" *ngIf="_permissionService.canCreate"
+                (click)="showModal()">Add Team Member</a>
+        </div>
+    </div>
+    <div class="plans-div" *ngIf="!showAddButton">
+        <ngb-alert [dismissible]="false" class="trial-expiry-info f-13 w-100 mb-4">
+            <i nz-icon nzType="warning" nzTheme="outline" class="font-weight-bold f-18 mr-2"></i>
+            Maximum of {{numberOfUsers}} Team members can be created as per your subscribed plan.
+        </ngb-alert>
+    </div>
+
+    <div class="plans-div" *ngIf="showAddButton">
+        <ngb-alert [dismissible]="false" type="info" class=" f-13 w-100 mb-4">
+            <i nz-icon nzType="info-circle" nzTheme="outline" class="font-weight-bold f-18 mr-2"></i>
+            {{numberOfUsers}} Team members allowed as per your subscribed plan.
+        </ngb-alert>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-12 ">
+            <nz-table class="card" #rowSelectionTable [nzData]="listData" [nzNoResult]="noData" nzShowSizeChanger
+                [nzPageSize]="pageSize">
+                <thead>
+                    <tr>
+                        <th class="ant-table-selection-column" [nzSortFn]="sortNumbersFn" (click)="sortOn('index')">#
+                        </th>
+                        <th [nzSortFn]="sortNamesFn" (click)="sortOn('firstName')">Name</th>
+                        <th [nzSortFn]="sortNamesFn" (click)="sortOn('email')">Email Address</th>
+                        <th [nzSortFn]="sortNumbersFn" (click)="sortOn('memberStatus')">Status</th>
+                        <th [nzSortFn]="sortNamesFn" (click)="sortOn('role')">Role</th>
+                        <!-- <th>Phone Number</th> -->
+                        <th [nzSortFn]="sortNamesFn" (click)="sortOn('lastLoggedIn')">Last Logged in</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr *ngFor="let data of rowSelectionTable.data; let i = index;" (click)="showSingleTaskMember(data)" nz-tooltip
+                    nzTooltipTitle="Click to View Task" style="cursor: pointer;">
+                        <td>{{data.index}}</td>
+                        <td>
+                            <nz-avatar nzIcon="user" [nzSrc]="data.blobURI"></nz-avatar>
+                            {{ data.firstName }} {{data.lastName}}
+                        </td>
+                        <td>{{ data.email }}</td>
+                        <td>
+                            <span class="badge badge-danger" *ngIf="!data.memberStatus">Deactive</span>
+                            <span class="badge badge-success" *ngIf="data.memberStatus">Active</span>
+                        </td>
+                        <td>{{ data.role.substring(0, data.role.lastIndexOf('_') > 0 ? data.role.lastIndexOf('_') :
+                            data.role.length) }}</td>
+                        <!-- <td>{{ data.phoneNumber }}</td> -->
+                        <td>{{ data.lastLoggedIn == null ? 'N/A' : data.lastLoggedIn | appDateFormat: false}}
+                        </td>
+                        <td>
+                            <i nz-icon nzType="edit" nz-tooltip nzTooltipTitle="Edit Team Member" nzTheme="fill"
+                                (click)="$event.stopPropagation(EditTeamMember(data))" class="text-success"
+                                *ngIf="_permissionService.canEdit"></i>
+                            <nz-divider nzType="vertical"></nz-divider>
+                            <i nz-icon nzType="delete" nz-tooltip nzTooltipTitle="Delete Team Member" nzTheme="fill"
+                                (click)="$event.stopPropagation(deleteTeamMember(data.id))" class="text-danger"
+                                *ngIf="_permissionService.canDelete"></i>
+                        </td>
+                    </tr>
+                </tbody>
+            </nz-table>
+        </div>
+    </div>
+</div>
+
+<ng-template #noData>
+    <nz-empty class="m-5" [nzNotFoundImage]="'assets/images/no-data/no-team.svg'" [nzNotFoundContent]="noDataDescrp">
+    </nz-empty>
+</ng-template>
+
+<ng-template #noDataDescrp>
+    <div class="m-4">
+        No Data Available.
+        <a *ngIf="_permissionService.canCreate" (click)="showModal()" class="kit__utils__link">
+            Add New Team Member
+        </a>
+    </div>
+</ng-template>
+
+<!-- Add/Update Modal -->
+<div>
+    <nz-modal nzFooter="null" nzWidth="800" [(nzVisible)]="isVisible" [nzTitle]="modalTitle"
+        (nzOnCancel)="handleCancel()" nzMaskClosable="false">
+        <app-add-team-member [teamMemberDataSub]="teamMemberObserverSubject"></app-add-team-member>
+    </nz-modal>
+</div>
+
+<!-- View Modal -->
+
+
+<div>
+  <nz-modal nzFooter="null" nzWidth="900" [(nzVisible)]="showTeamMember" [nzTitle]="'Team Member Info'" nzMaskClosable="false"
+    (nzOnCancel)="showTeamMember = false">
+
+    <div  class="teamMemberViewModal">
+      <div class="row">
+        <!-- <div class="popup-action-btns">
+          <i nz-icon nzType="edit" nz-tooltip nzTooltipTitle="Edit Task"
+            (click)="$event.stopPropagation(EditTeamMember(teamData))" nzTheme="fill" class="text-success mr-3"></i>
+
+          <i nz-icon nzType="delete" nz-tooltip nzTooltipTitle="Delete Task"
+            (click)="$event.stopPropagation(deleteTeamMember(teamData))" nzTheme="fill" class="text-danger"></i>
+        </div> -->
+
+        <div class="col-xl-12 pl-4">
+          <div class="">
+            <div class="row mb-3">
+
+              <div class="col-xl-12 text-center">
+                <img [src]="teamData.blobURI" alt="Team Member Image" class="img">
+              </div>
+
+              <h6 class="fw-500 mY-3 col-xl-12 personalInfo">Personal Info</h6>
+              <div class="col-xl-4 mb-4">
+                <div class="t-10 text-gray-5">User name</div>
+                <div>{{ teamData.firstName }} {{teamData.lastName}}</div>
+              </div>
+
+              <div class="col-xl-4 mb-4">
+                <div class="t-10 text-gray-5">First name</div>
+                <div>{{ teamData.firstName }}</div>
+              </div>
+
+              <div class="col-xl-4 mb-4">
+                <div class="t-10 text-gray-5">Last name</div>
+                <div>{{teamData.lastName}}</div>
+              </div>
+ 
+              <div class="col-xl-4 mb-4">
+                <div class="t-10 text-gray-5">Email</div>
+                <div>{{ teamData.email }}</div>
+              </div>
+
+              <div class="col-xl-4 mb-4">
+                <div class="t-10 text-gray-5">TimeZone</div>
+                <div>{{ teamData.timeZone }}</div>
+              </div>
+            </div>
+            <!-- row 1 ends  -->
+
+            <div class="row mb-3">
+
+              <h6 class="fw-500 mY-3 col-xl-12 jobInfo">Job Info</h6>
+
+              <div class="col-xl-4 mb-4">
+                <div class="t-10 text-gray-5">Role</div>
+                <div>{{ teamData.role }}</div>
+              </div>
+
+              <div class="col-xl-4 mb-4">
+                <div class="t-10 text-gray-5">Job Title</div>
+                <div>Dumy Job Title</div>
+              </div>
+
+            </div>
+            <!-- row 2 ends  -->
+              
+            <div class="row mb-3">
+
+              <h6 class="fw-500 mY-3 col-xl-12 contactInfo">Contact Info</h6>
+
+              <div class="col-xl-4 mb-4">
+                <div class="t-10 text-gray-5">Address</div>
+                <div>{{teamData.address}}</div>
+              </div>
+
+              <div class="col-xl-4 mb-4">
+                <div class="t-10 text-gray-5">City</div>
+                <div>{{teamData.cityId}}</div>
+              </div>
+
+              <div class="col-xl-4 mb-4">
+                <div class="t-10 text-gray-5">Province</div>
+                <div>{{teamData.province}}</div>
+              </div>
+
+              <div class="col-xl-4 mb-4">
+                <div class="t-10 text-gray-5">Country</div>
+                <div>{{teamData.country}}</div>
+              </div>
+
+              <div class="col-xl-4 mb-4">
+                <div class="t-10 text-gray-5">Mobile Number</div>
+                <div>{{teamData.phoneNumber}}</div>
+              </div>
+
+              <div class="col-xl-4 mb-4">
+                <div class="t-10 text-gray-5">Secondary Number</div>
+                <div>{{teamData.secondaryPhoneNumber}}</div>
+              </div>
+
+              <!-- <div class="col-xl-5 mb-4">
+                <div class="t-10 text-gray-5">Due Date</div>
+                <div>{{ teamData?.role?.substring(0,  teamData?.role?.lastIndexOf('_') > 0 ?  teamData?.role?.lastIndexOf('_') :  teamData?.role?.length) }}</div>
+              </div>
+
+              <div class="col-xl-5 mb-4">
+                <div class="t-10 text-gray-5">Time</div>
+                <div>{{ teamData?.lastLoggedIn == null ? 'N/A' : teamData?.lastLoggedIn | amFromUtc | amLocal |
+                  amDateFormat: 'LLL'}}</div>
+              </div> -->
+
+            </div>
+            <!-- row 3 ends  -->
+
+            <div class="row mb-3">
+
+              <h6 class="fw-500 mY-3 col-xl-12 contactInfo">Compensation Settings</h6>
+
+
+              <div class="col-xl-4 mb-4">
+                <div class="t-10 text-gray-5">Compensation Type</div>
+                <div>{{teamData.compensationTypeId}}</div>
+              </div>
+
+              <div class="col-xl-4 mb-4">
+                <div class="t-10 text-gray-5">Curreny Type</div>
+                <div>{{teamData.currencyTypeId}}</div>
+              </div>
+
+              <div class="col-xl-4 mb-4">
+                <div class="t-10 text-gray-5">Compensation Amount</div>
+                <div>{{teamData.compensationAmountId}}</div>
+              </div>
+
+              </div>
+              <!-- row 4 ends  -->
+
+              <div class="row mb-3">
+
+                <h6 class="fw-500 mY-3 col-xl-12 contactInfo">Status</h6>
+
+                <div class="col-xl-4 mb-4">
+                  <div class="t-10 text-gray-5">Member Status</div>
+                  <div>{{teamData.memberStatus}}</div>
+                </div>
+
+          </div>
+          <!-- row 5 ends  --> 
+
+        </div>
+      </div>
+      <!-- col xl 12 ends  -->
+    </div>
+    </div >
+  </nz-modal>
+</div>
+  

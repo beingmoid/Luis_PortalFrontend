@@ -1,0 +1,23 @@
+<div class="breadcrumbs mb-4">
+    <strong>Team Members</strong>
+</div>
+<!-- Tabs -->
+<div class="row">
+    <div class="col-xl-12">
+        <nz-tabset class="" nzSize="large">
+            <nz-tab nzTitle="Team Member">
+                <ng-container *ngTemplateOutlet="team"></ng-container>
+            </nz-tab>
+            <nz-tab nzTitle="Role">
+                <ng-container *ngTemplateOutlet="role"></ng-container>
+            </nz-tab>
+        </nz-tabset>
+    </div>
+</div>
+
+<ng-template #team>
+    <app-view-team></app-view-team>
+</ng-template>
+<ng-template #role>
+    <app-view-roles></app-view-roles>
+</ng-template>

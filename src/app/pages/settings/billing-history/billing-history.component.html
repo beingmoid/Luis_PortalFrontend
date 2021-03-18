@@ -1,0 +1,200 @@
+<div class="breadcrumbs mb-3">
+    <strong>Billing History</strong>
+</div>
+<div>
+    <div class="row mb-4">
+        <div class="col-xl-10">
+            <div class="w-25">
+                <nz-input-group nzSize="large" [nzPrefix]="suffixIconSearch">
+                    <input type="text" nz-input [(ngModel)]="search" (ngModelChange)="filter()"
+                        placeholder="Search for Billing History" />
+                </nz-input-group>
+                <ng-template #suffixIconSearch>
+                    <i nz-icon nzType="search"></i>
+                </ng-template>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xl-12">
+            <nz-table #dataTable class="card" [nzData]="listData" [nzNoResult]="noData" nzShowSizeChanger
+                [nzPageSize]="pageSize">
+                <thead>
+                    <tr>
+                        <th class="ant-table-selection-column" [nzSortFn]="sortNumbersFn" (click)="sortOn('index')">#
+                        </th>
+                        <th [nzSortFn]="sortNamesFn" (click)="sortOn('subscriptionPlanName')">Subscription</th>
+                        <th [nzSortFn]="sortNamesFn" (click)="sortOn('subscriptionPlanBillingType')">Type</th>
+                        <th [nzSortFn]="sortNumbersFn" (click)="sortOn('payment')">Payment</th>
+                        <th [nzSortFn]="sortNumbersFn" (click)="sortOn('numberOfUsers')">Allowed Users</th>
+                        <th [nzSortFn]="sortNamesFn" (click)="sortOn('paymentDate')">Payment Date</th>
+                        <th [nzSortFn]="sortNamesFn" (click)="sortOn('endDate')">Subscription End Date</th>
+                        <th [nzSortFn]="sortNamesFn" (click)="sortOn('recurringDate')">Recurring Date</th>
+                        <!-- <th>Invoice</th> -->
+                        <th>Reciept</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr *ngFor="let data of dataTable.data; let i = index;" style="cursor: pointer;">
+                        <td> {{data.index}} </td>
+                        <td>{{ data.subscriptionPlanName }}</td>
+                        <td>{{ data.subscriptionPlanBillingType }}</td>
+                        <td>{{ data.payment | currency }} ({{data.currency | uppercase}})</td>
+                        <td>{{data.numberOfUsers}} users</td>
+                        <td>{{ data.paymentDate | appDateFormat: false}}</td>
+                        <td>{{ data.endDate | appDateFormat: false}}</td>
+                        <td>{{ data.recurringDate == null ? 'Not Recurring' : data.recurringDate | date: 'dd MMM,
+                            yyyy'}}</td>
+                        <!-- <td>
+                            <button class="ant-btn ant-btn-primary"
+                                (click)="showSingleInvoice(data.invoiceURL)">Invoice</button>
+                        </td> -->
+                        <td>
+                            <button (click)="openStripeReciept(data.stripeRecieptURL)"
+                                class="ant-btn ant-btn-primary">Receipt</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </nz-table>
+        </div>
+    </div>
+</div>
+
+<ng-template #noData>
+    <nz-empty class="m-5" [nzNotFoundImage]="'assets/images/no-data/no-contact.svg'" [nzNotFoundContent]="noDataDescrp">
+    </nz-empty>
+</ng-template>
+
+<!-- Add Invoice Modal  -->
+
+<div class="add-invoice-modal">
+    <nz-modal nzFooter="null" nzWidth="700" [(nzVisible)]="showInvoice" nzMaskClosable="false"
+        [nzTitle]="'Invoice Info'" (nzOnCancel)="handleCancel()">
+        <div class="">
+            <div class="invoice-top-section pl-3">
+                <div class="row">
+                    <div class="col-md-3 invoice-logo d-flex">
+                        <img src="assets/images/no-data/no-contact.svg" style="width: 100%" />
+                    </div>
+                    <!-- col-md-3  -->
+                    <div class="col-md-7">
+                        <div class="invoice-title">
+                            <h1 class="fw-700 text-primary">Invoice</h1>
+                        </div>
+                        <!-- invoice-title -->
+                        <div class="invoice-number">
+                            <div class="f-12 fw-600 mb-3">Invoice No. #{{invoice.subscriptionPlanId}}</div>
+                        </div>
+                        <!-- invoice-number -->
+                        <div class="invoice-detail-div">
+                            <div class="row f-12 fw-500">
+                                <div class="col-md-6 invoice-detail mb-2 tel-number"> <i
+                                        class="fe fe-phone text-primary"></i> <span> 674-444-1234 </span> </div>
+                                <div class="col-md-6 invoice-detail mb-2 address-title"> <i
+                                        class="fe fe-map-pin text-primary"></i> <span> Address </span> </div>
+                                <div class="col-md-6 invoice-detail mb-2 email"> <i class="fe fe-mail text-primary"></i>
+                                    <span> test@email.com </span>
+                                </div>
+                                <div class="col-md-6 invoice-detail mb-2 address"> <i></i> <span> City, State, Country
+                                    </span> </div>
+                                <div class="col-md-6 invoice-detail mb-2 website"> <i
+                                        class="fe fe-globe text-primary"></i> <span> www.testsite.com </span> </div>
+                                <div class="col-md-6 invoice-detail mb-2 zip-code"> <i></i> <span> Zip Code </span>
+                                </div>
+
+                            </div>
+                        </div>
+                        <!-- invoice-detail -->
+                    </div>
+                    <!-- col-md-7 -->
+                </div>
+            </div>
+            <!-- invoice-top-section -->
+            <div class="text-size-12 ">
+                <div class="row py-5">
+                    <div class="mb-4 col-md-3">
+                        <div class="t-10 text-gray-5">Subscription</div>
+                        <div class="f-13">{{invoice.subscriptionPlanName}}</div>
+                    </div>
+                    <!-- Subscription Name -->
+                    <div class="mb-4 col-md-3">
+                        <div class="t-10 text-gray-5">Type</div>
+                        <div class="f-13">{{invoice.subscriptionPlanBillingType}}</div>
+                    </div>
+                    <!-- Type -->
+                    <div class="mb-4 col-md-3">
+                        <div class="t-10 text-gray-5">Invoice Date</div>
+                        <div class="f-13">{{invoice.paymentDate | appDateFormat: false}}</div>
+                    </div>
+                    <!-- Invoice Date -->
+                    <div class="mb-4 col-md-3">
+                        <div class="t-10 text-gray-5">Due Date</div>
+                        <div class="f-13">{{invoice.endDate | appDateFormat: false}}</div>
+                    </div>
+                    <!-- Due Date -->
+                </div>
+                <div class="row">
+
+                    <!-- Subscription Type -->
+                    <!-- <div class="col-xl-8">
+                        <h5>Notes, Terms & Conditions</h5>
+                        <mat-form-field class="form-group w-75">
+                            <input matInput placeholder="Notes" >
+                        </mat-form-field>
+                        <mat-form-field class="form-group w-75">
+                            <input matInput placeholder="Terms & Conditions" formControlName="terms">
+                        </mat-form-field>
+                    </div> -->
+                    <div class="col-sm-7">
+                        <div class="title">
+                            <h5>Notes, Terms & Conditions</h5>
+                        </div>
+                        <div class="mb-4">
+                            <div class="t-10 text-gray-5">Notes</div>
+                            <div>{{'Static Note'}}</div>
+                        </div>
+                        <!-- Notes  -->
+                        <div class="mb-4">
+                            <div class="t-10 text-gray-5">Terms & Conditions</div>
+                            <div>{{'Static Terms & Conditions'}}</div>
+                        </div>
+                        <!-- Terms & Conditions -->
+                    </div>
+                    <div class="col-sm-5">
+                        <div class="d-flex justify-content-between pl-5">
+                            <span class="text-gray-5">Total(USD):</span>
+                            <span class="font-weight-bold">${{invoice.payment}}</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between pl-5">
+                            <span class="text-gray-5">Tax(13%):</span>
+                            <span class="font-weight-bold">${{invoice.payment}}</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between pl-5">
+                            <span class="text-gray-5">Paid to Date:</span>
+                            <span class="font-weight-bold">{{invoice.paymentDate | appDateFormat: false}}</span>
+                        </div>
+                        <div class="bg-primary d-flex justify-content-between p-2 mt-3 pl-5"
+                            style="border-radius: 5px;">
+                            <span class="text-white">Total:</span>
+                            <span class="font-weight-bold text-white">${{invoice.payment}}</span>
+                        </div>
+                    </div>
+                    <div class="download-btn mt-5  text-right w-100">
+                        <button class="ant-btn ant-btn-primary">Download</button>
+                    </div>
+                </div>
+                <!-- <div class="col-xl-12 mt-4">
+                    <div class="form-group text-center mt-5">
+                        <div class="float-right">
+                            <button type="button" nz-button nzType="default" class="mr-5">Preview</button>
+                            <button type="submit" nz-button nzType="primary">{{isEditMode ? 'Update' : 'Save'}}</button>
+                        </div>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </nz-modal>
+</div>

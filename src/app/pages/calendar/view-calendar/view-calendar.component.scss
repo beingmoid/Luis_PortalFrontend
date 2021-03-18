@@ -1,0 +1,56 @@
+
+.calendarView{
+.events .ant-badge-status {
+    overflow: hidden;
+    white-space: nowrap;
+    width: 100%;
+    text-overflow: ellipsis;
+    font-size: 12px;
+  }
+  ul.events{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    height: auto;
+    min-height: 100%;
+  }
+
+.customDateBlock{
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  margin-bottom: 6px;
+}
+
+.eventSelected{
+  background: var(--kit-color-primary);
+  color: #fff !important;
+}
+}
+
+.ant-picker-input {
+  display: none !important;
+  .ant-picker-calendar-full .ant-picker-panel .ant-picker-calendar-date-value {
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    background: var(--kit-color-primary);
+    color: #fff !important;
+    margin-left: auto;
+    margin-bottom: 6px;
+}
+.ant-picker-calendar-full .ant-picker-panel .ant-picker-calendar-date {
+    padding: 4px 6px 0;
+}
+}

@@ -1,0 +1,66 @@
+// Responsiveness variables starts
+
+$maxwidth-name: max-device-width;
+$minwidth-name: min-device-width;
+$breakpoint-laptop: 1024px;
+$breakpoint-laptop-medium: 992px;
+$breakpoint-tablet: 769px;
+$breakpoint-mobile: 479px;
+
+// Responsiveness variables starts
+
+.create-account-div {
+  background-image: url("../../../../assets/images/signup/signup-bg-img.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.create-account-div:before {
+  content: "";
+  background-color: #000;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  opacity: 0.3;
+}
+.create-account-box {
+  background: #fff;
+  border-radius: 6px;
+  margin: 0 auto;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 15px 50px;
+  width: 105%;
+  max-width: 500px;
+}
+.create-account {
+  h5.title {
+    letter-spacing: -0.5px;
+  }
+}
+
+input::placeholder {
+  font-size: 11px !important;
+  color: #d5dbe4 !important;
+  // font-family: sans-serif;
+}
+.f-13 {
+  font-size: 13px !important;
+}
+
+// Responsivenss
+
+@media only screen and ($maxwidth-name: $breakpoint-mobile) {
+  .create-account-box {
+    padding: 15px;
+    width: 100%;
+  }
+}

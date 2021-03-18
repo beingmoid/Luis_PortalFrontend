@@ -1,0 +1,507 @@
+<div class="user-settings-page m-2">
+    <div class="breadcrumbs pb-4">
+        <strong class="text-uppercase get-started">Get Started :</strong> <span class="text-primary f-18 fw-500">
+            {{profileCompletion}}% Completed
+        </span>
+    </div>
+    <div class="row">
+        <div class="col-xl-12">
+            <div class="card col-xl-12 user-tabs ribbon--alpha">
+                <nz-tabset [nzSize]="'large'">
+                    <nz-tab nzTitle="1. Security & Password">
+                        <div class="bg-white card-body rounded-0">
+                            <div class="update-password-form text-left">
+                                <form nz-form [nzLayout]="'vertical'" [formGroup]="passwordForm" (ngSubmit)="submitPasswordForm(formDirective)" role="form" novalidate #formDirective="ngForm">
+
+                                    <div class="update-password-title">
+                                        <h5 class="title f-18 fw-700 p-3">
+                                            Update Password
+                                        </h5>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <mat-form-field class="mb-4 w-100">
+                                            <input matInput type="password" placeholder="Current Password" formControlName="currentPassword" autocomplete="off">
+                                            <mat-error *ngIf="pf.currentPassword.hasError('required')">
+                                                Current Password is required
+                                            </mat-error>
+                                            <mat-error *ngIf="pf.currentPassword.hasError('whitespace')">
+                                                Current Password is required
+                                            </mat-error>
+
+                                        </mat-form-field>
+                                    </div>
+                                    <!-- Current Password -->
+                                    <div class="col-md-3">
+                                        <mat-form-field class="mb-4 w-100">
+                                            <input matInput type="password" placeholder="New Password" formControlName="newPassword" autocomplete="off">
+                                            <mat-error *ngIf="pf.newPassword.invalid">
+                                                New Password is required, Minimum 8 characters (use uppercase, lowercase, digits and special characters)
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                    <!-- New Password -->
+                                    <div class="col-md-3">
+                                        <mat-form-field class="mb-4 w-100">
+                                            <input matInput type="password" placeholder="Confirm Password" autocomplete="off" formControlName="confirmPassword">
+                                            <mat-error *ngIf="pf.confirmPassword.invalid">
+                                                Confirm Password is required, Must match with New Password Field
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                    <!-- Confirm Password -->
+                                    <!-- <div class="form-group mb-3 col-xl-12">
+                                        <mat-checkbox formControlName="enableTwoStepVerification" class="text-primary">Enable two step
+                                            verification
+                                        </mat-checkbox>
+                                    </div> -->
+                                    <div class="form-group col-xl-12 mb-4">
+                                        <button nz-button nzType="primary" type="submit">
+                                            <span>Save</span>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </nz-tab>
+
+
+                    <nz-tab nzTitle="2. Setup your Profile">
+                        <div class="bg-white card-body rounded-0">
+                            <div class="personal-settings text-left">
+                                <h5 class="title f-18 fw-700 p-3">
+                                    Personal Settings
+                                </h5>
+                            </div>
+                            <div class="col-md-12 text-left m-3">
+                                <form (ngSubmit)="submitPersonalSettings(form)" #form="ngForm" [formGroup]="profileForm" novalidate>
+
+                                    <div class="col-xl-12 m-3 text-center">
+                                        <nz-upload class="avatar-uploader d-flex justify-content-center" nzShowButton="true" nzName="avatar" nzListType="picture-card" [nzShowUploadList]="false" [nzBeforeUpload]="beforeUpload">
+                                            <div *ngIf="!avatarUrl">
+                                                <i class="upload-icon" nz-icon [nzType]="loading ? 'loading' : 'plus'"></i>
+                                                <div class="ant-upload-text">Upload</div>
+                                            </div>
+                                            <img *ngIf="avatarUrl" [src]="avatarUrl" style="width: 100%" />
+                                            <i class="fe fe-edit-2 pic-edit-icon position-absolute" *ngIf="avatarUrl"></i>
+
+                                        </nz-upload>
+                                    </div>
+
+                                    <div class="col-xl-12 fw-500">
+                                        <div class="col-xl-4 mb-3">
+                                            Personal Info
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xl-12">
+                                        <mat-form-field class="form-group mb-3 col-xl-3">
+                                            <input matInput placeholder="First Name" maxlength=20 formControlName="firstName" trim="blur">
+                                            <mat-error *ngIf="prof.firstName.hasError('whitespace')">
+                                                Empty whitespaces are not allowed
+                                            </mat-error>
+                                            <mat-error *ngIf="prof.firstName.hasError('required')">
+                                                First Name is required
+                                            </mat-error>
+                                        </mat-form-field>
+                                        <mat-form-field class="form-group mb-3 col-xl-3">
+                                            <input matInput placeholder="Last Name" maxlength=20 formControlName="lastName" trim="blur">
+                                            <mat-error *ngIf="prof.lastName.hasError('whitespace')">
+                                                Empty whitespaces are not allowed
+                                            </mat-error>
+                                            <mat-error *ngIf="prof.lastName.hasError('required')">
+                                                Last Name is required
+                                            </mat-error>
+                                        </mat-form-field>
+                                        <mat-form-field class="form-group mb-3 col-xl-3">
+                                            <mat-label>Job Title</mat-label>
+                                            <mat-select formControlName="jobTitleId">
+                                                <mat-option *ngFor="let item of jobTitles" [value]="item.key">
+                                                    {{item.value}}
+                                                </mat-option>
+                                                <mat-option *ngIf="jobTitles && jobTitles.length < 1" disabled>No Record Found
+                                                </mat-option>
+                                            </mat-select>
+
+                                        </mat-form-field>
+                                        <mat-form-field class="form-group mb-3 col-xl-3">
+                                            <input matInput placeholder="Email" formControlName="email" pattern=".+@.+\..+" trim="blur">
+                                            <mat-error *ngIf="prof.email.hasError('whitespace')">
+                                                Empty whitespaces are not allowed
+                                            </mat-error>
+                                            <mat-error *ngIf="prof.email.hasError('pattern')">
+                                                Email address is invalid
+                                            </mat-error>
+                                            <mat-error *ngIf="prof.email.hasError('found')">
+                                                Email address already exists
+                                            </mat-error>
+                                            <mat-error *ngIf="prof.email.hasError('required')">
+                                                Email is required
+                                            </mat-error>
+                                        </mat-form-field>
+
+                                        <mat-form-field class="form-group mb-3 col-xl-3">
+                                            <mat-label>Phone Number</mat-label>
+                                            <ngx-mat-intl-tel-input [preferredCountries]="['ca']" [enablePlaceholder]="true" [enableSearch]="true" name="phoneNo" inputPlaceholder="Phone Number" formControlName="phoneNo" #phone>
+                                            </ngx-mat-intl-tel-input>
+                                            <mat-error *ngIf="prof.phoneNo?.errors?.validatePhoneNumber">Invalid Phone Number
+                                            </mat-error>
+                                        </mat-form-field>
+                                        <!-- <mat-form-field class="form-group mb-3 col-xl-3">
+                                            <input matInput placeholder="Phone Number" formControlName="phoneNo"
+                                                phoneMask onlyNumbers trim="blur">
+                                            <mat-error *ngIf="prof.phoneNo.hasError('whitespace')">
+                                                Empty whitespaces are not allowed
+                                            </mat-error>
+                                        </mat-form-field> -->
+
+                                        <mat-form-field class="form-group col-xl-3 mb-3">
+                                            <mat-label>Time Zone</mat-label>
+                                            <mat-select [(value)]="selectedTimeZone">
+                                                <mat-option *ngFor="let item of tzNames" [value]="item">{{item}}
+                                                </mat-option>
+                                            </mat-select>
+                                            <!-- <input matInput formControlName="timeZone"> -->
+                                            <mat-error *ngIf="prof.timeZone.hasError('required')">
+                                                Time Zone is required
+                                            </mat-error>
+                                        </mat-form-field>
+                                        <div class="row m-1">
+                                            <!-- New Row -->
+                                            <div class="form-group mb-4 col-xl-3 fw-500 pr-0 f-12">
+                                                Receive product related emails?
+                                                <nz-switch formControlName="recieveProductEmails" class="ml-3">
+                                                </nz-switch>
+                                            </div>
+                                            <div class="form-group mb-4 col-xl-3 fw-500 f-12">
+                                                Receive Notifications
+                                                <nz-switch formControlName="recieveNotifications" class="ml-3">
+                                                </nz-switch>
+                                            </div>
+                                            <div class="form-group col-xl-12 text-center my-4">
+                                                <button nz-button nzType="primary" type="submit">
+                                                    <span>Save</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </form>
+                            </div>
+                        </div>
+                    </nz-tab>
+
+
+
+                    <nz-tab nzTitle="3. Company Settings" *ngIf="userRole === 'CompanyAdmin'">
+                        <div class="bg-white card-body rounded-0">
+                            <form class="row" [formGroup]="settingForm" (ngSubmit)="submitCompanySettings(form)" #form="ngForm" novalidate>
+                                <div class="col-xl-4">
+                                    <div class="company-settings text-left">
+                                        <h5 class="title f-18 fw-700 p-3">
+                                            Currency & Language
+                                            <br>
+                                        </h5>
+                                    </div>
+                                    <div class="col-xl-12">
+                                        <mat-form-field class="form-group mb-3 w-100">
+                                            <mat-label>Default Currency</mat-label>
+                                            <mat-select formControlName="currencyId">
+                                                <mat-option *ngFor="let item of currencyTypes" [value]="item.key">
+                                                    {{item.value}}
+                                                </mat-option>
+                                                <mat-option *ngIf="currencyTypes && currencyTypes.length < 1" disabled>
+                                                    No Record Found
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                        <mat-form-field class="form-group mb-3 w-100">
+                                            <mat-label>Default Language</mat-label>
+                                            <mat-select formControlName="languageId">
+                                                <mat-option *ngFor="let item of languages" [value]="item.key">
+                                                    {{item.value}}
+                                                </mat-option>
+                                                <mat-option *ngIf="languages && languages.length < 1" disabled>No Record Found
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                                <div class="col-xl-8">
+                                    <div class="company-settings text-left">
+                                        <h5 class="title f-18 fw-700 p-3">
+                                            Auto Numbering
+                                            <br>
+                                        </h5>
+                                    </div>
+                                    <div class="col-xl-12 text-left">
+                                        Contacts
+                                        <nz-switch formControlName="contactAutoNumbering" class="ml-3 mr-5"></nz-switch>
+
+                                        Cases
+                                        <nz-switch formControlName="caseAutoNumbering" class="ml-3 mr-5"></nz-switch>
+                                    </div>
+                                </div>
+                                <div class="col-xl-12 m-3 text-left mb-4">
+                                    <button nz-button nzType="primary" type="submit">
+                                        <span>Save</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </nz-tab>
+
+
+
+                    <nz-tab nzTitle="4. Company Info" *ngIf="userRole === 'CompanyAdmin'">
+                        <div class="bg-white card-body rounded-0">
+                            <div class="personal-settings text-left">
+                                <h5 class="title f-18 fw-700 p-3">
+                                    Company Information
+                                </h5>
+                            </div>
+                            <div class="col-md-12 text-left">
+                                <form (ngSubmit)="submitCompanyInfo(form)" #form="ngForm" [formGroup]="infoForm" novalidate>
+                                    <div class="col-xl-12 m-3 text-center">
+                                        <!-- <nz-upload class="avatar-uploader d-flex justify-content-center"
+                                            nzShowButton="true" nzName="avatar" nzListType="picture-card"
+                                            [nzShowUploadList]="false" [nzBeforeUpload]="beforeCompanyUpload">
+                                            <div *ngIf="!companyAvatarUrl">
+                                                <i class="upload-icon" nz-icon
+                                                    [nzType]="loading ? 'loading' : 'plus'"></i>
+                                                <div class="ant-upload-text">Upload</div>
+                                            </div>
+                                            <img *ngIf="companyAvatarUrl" [src]="companyAvatarUrl"
+                                                style="width: 100%" />
+                                            <i class="fe fe-edit-2 pic-edit-icon position-absolute"
+                                                *ngIf="companyAvatarUrl"></i>
+
+                                        </nz-upload> -->
+
+
+                                        <nz-upload class="avatar-uploader d-flex justify-content-center" nzShowButton="true" nzName="avatar" nzListType="picture-card" [nzShowUploadList]="false" [nzBeforeUpload]="beforeCompanyUpload">
+                                            <div *ngIf="!companyAvatarUrl">
+                                                <i class="upload-icon" nz-icon [nzType]="loading ? 'loading' : 'plus'"></i>
+                                                <div class="ant-upload-text">Upload</div>
+                                            </div>
+                                            <img *ngIf="companyAvatarUrl" [src]="companyAvatarUrl" style="width: 100%" />
+                                            <i class="fe fe-edit-2 pic-edit-icon position-absolute" *ngIf="companyAvatarUrl"></i>
+                                        </nz-upload>
+
+                                    </div>
+
+                                    <div class="col-xl-12 fw-500">
+                                        <div class="col-xl-4 mb-3">
+                                            Company Details
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xl-12">
+                                        <mat-form-field class="form-group mb-3 col-xl-3">
+                                            <input matInput placeholder="Company Owner" formControlName="companyOwner" trim="blur">
+                                            <mat-error *ngIf="info.companyOwner.hasError('whitespace')">
+                                                Empty whitespaces are not allowed
+                                            </mat-error>
+                                        </mat-form-field>
+                                        <mat-form-field class="form-group mb-3 col-xl-3">
+                                            <input matInput placeholder="Legal Business Name" formControlName="legalBusinessName" trim="blur">
+                                        </mat-form-field>
+                                        <mat-form-field class="form-group mb-3 col-xl-3">
+                                            <mat-label>Country</mat-label>
+                                            <mat-select formControlName="countryId" (selectionChange)="countryChange($event.value)">
+                                                <mat-option *ngFor="let item of countries" [value]="item.key">
+                                                    {{item.value}}
+                                                </mat-option>
+                                                <mat-option *ngIf="countries && countries.length < 1" disabled>No Record Found
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                        <mat-form-field class="form-group mb-3 col-xl-3">
+                                            <mat-label>Province</mat-label>
+                                            <mat-select formControlName="provinceId" (selectionChange)="provinceChange($event.value)">
+                                                <mat-option *ngFor="let item of states" [value]="item.key">
+                                                    {{item.value}}
+                                                </mat-option>
+                                                <mat-option *ngIf="states && states.length < 1" disabled>No Record Found
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                        <mat-form-field class="form-group mb-3 col-xl-3">
+                                            <mat-label>City</mat-label>
+                                            <mat-select formControlName="cityId">
+                                                <mat-option *ngFor="let item of cities" [value]="item.key">
+                                                    {{item.value}}
+                                                </mat-option>
+                                                <mat-option *ngIf="cities && cities.length < 1" disabled>No Record Found
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                        <mat-form-field class="form-group mb-3 col-xl-3">
+                                            <input matInput placeholder="Zip/Postal Code" formControlName="zipCode" onlyNumbers trim="blur">
+                                            <mat-error *ngIf="info.zipCode.hasError('maxlength')">
+                                                Maxmium 5 numbers allowed
+                                            </mat-error>
+                                        </mat-form-field>
+                                        <mat-form-field class="form-group mb-3 col-xl-3">
+                                            <mat-label>Phone Number</mat-label>
+                                            <ngx-mat-intl-tel-input [preferredCountries]="['ca']" [enablePlaceholder]="true" [enableSearch]="true" name="phoneNo" inputPlaceholder="Phone Number" formControlName="phoneNo" #phone>
+                                            </ngx-mat-intl-tel-input>
+                                            <mat-error *ngIf="info.phoneNo?.errors?.validatePhoneNumber">Invalid Phone Number
+                                            </mat-error>
+                                            <!-- <input matInput placeholder="Phone number" formControlName="phoneNo"
+                                                phoneMask onlyNumbers trim="blur"> -->
+                                        </mat-form-field>
+                                        <mat-form-field class="form-group mb-3 col-xl-3">
+                                            <input matInput placeholder="Company's email address" formControlName="companyEmail" pattern=".+@.+\..+" trim="blur">
+                                            <mat-error *ngIf="info.companyEmail.invalid">
+                                                Email Address is invalid
+                                            </mat-error>
+                                        </mat-form-field>
+                                        <mat-form-field class="form-group mb-3 col-xl-3">
+                                            <input matInput placeholder="Website" formControlName="website" trim="blur">
+                                            <mat-error *ngIf="info.website.hasError('pattern')">
+                                                Website URL is invalid
+                                            </mat-error>
+                                        </mat-form-field>
+                                        <mat-form-field class="form-group mb-3 col-xl-3">
+                                            <input matInput placeholder="License no./ Membership no" formControlName="licenseNo" trim="blur">
+                                        </mat-form-field>
+                                        <mat-form-field class="form-group mb-3 col-xl-3">
+                                            <input matInput placeholder="Tax Id / GST" formControlName="taxId" trim="blur">
+                                        </mat-form-field>
+
+
+                                    </div>
+                                    <div class="col-xl-12 fw-500">
+                                        <div class="col-xl-4">
+                                            Business owner Info
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-12">
+                                        <mat-form-field class="form-group mb-3 col-xl-3">
+                                            <input matInput placeholder="Name" formControlName="ownerName" trim="blur">
+                                        </mat-form-field>
+
+                                        <mat-form-field class="form-group mb-3 col-xl-3">
+                                            <mat-label>Country</mat-label>
+                                            <mat-select formControlName="ownerCountryId">
+                                                <mat-option *ngFor="let item of countries" [value]="item.key">
+                                                    {{item.value}}
+                                                </mat-option>
+                                                <mat-option *ngIf="countries && countries.length < 1" disabled>No Record Found
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+
+                                        <mat-form-field class="form-group mb-3 col-xl-3">
+                                            <mat-label>Phone Number</mat-label>
+                                            <ngx-mat-intl-tel-input [preferredCountries]="['ca']" [enablePlaceholder]="true" [enableSearch]="true" name="ownerPhoneNo" inputPlaceholder="Phone Number" formControlName="ownerPhoneNo" #phone>
+                                            </ngx-mat-intl-tel-input>
+                                            <mat-error *ngIf="info.ownerPhoneNo?.errors?.validatePhoneNumber">Invalid Phone Number</mat-error>
+                                            <!-- <input matInput placeholder="Phone Number" formControlName="ownerPhoneNo"
+                                                phoneMask onlyNumbers trim="blur"> -->
+                                        </mat-form-field>
+                                        <mat-form-field class="form-group mb-3 col-xl-3">
+                                            <input matInput placeholder="Primary owner email" formControlName="primaryOwnerEmail" pattern=".+@.+\..+" trim="blur">
+                                            <mat-error *ngIf="info.primaryOwnerEmail.invalid">
+                                                Email Address is invalid
+                                            </mat-error>
+                                        </mat-form-field>
+                                        <mat-form-field class="form-group mb-3 col-xl-3">
+                                            <mat-label>Membership type</mat-label>
+                                            <mat-select formControlName="ownerMembershipTypeId">
+                                                <mat-option *ngFor="let item of membershipTypes" [value]="item.key">
+                                                    {{item.value}}
+                                                </mat-option>
+                                                <mat-option *ngIf="membershipTypes && membershipTypes.length < 1" disabled>No Record Found
+                                                </mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+                                        <mat-form-field class="form-group mb-3 col-xl-3">
+                                            <mat-label>Business Structure</mat-label>
+                                            <mat-select formControlName="businessStructureId">
+                                                <mat-option *ngFor="let item of businessStructures" [value]="item.key">
+                                                    {{item.value}}
+                                                </mat-option>
+                                                <mat-option *ngIf="businessStructures && businessStructures.length < 1" disabled>No Record Found</mat-option>
+                                            </mat-select>
+                                        </mat-form-field>
+
+                                        <mat-form-field class="form-group mb-3 col-xl-3">
+                                            <input matInput placeholder="License/Membership Number" formControlName="ownerLicenseNo" trim="blur">
+                                        </mat-form-field>
+
+                                    </div>
+                                    <div class="form-group col-xl-12 text-center mt-4 mb-4">
+                                        <button nz-button nzType="primary" type="submit">
+                                            <span>Save</span>
+                                        </button>
+                                    </div>
+
+                                </form>
+                            </div>
+                        </div>
+                    </nz-tab>
+
+
+
+                    <nz-tab nzTitle="5. Accounting" *ngIf="userRole === 'CompanyAdmin'">
+                        <div class="bg-white card-body rounded-0">
+                            <form class="row" [formGroup]="accountingForm" (ngSubmit)="submitAccounting(form)" #form="ngForm" novalidate>
+                                <div class="company-settings col-xl-12">
+                                    <h5 class="title f-18 fw-700 p-3">
+                                        Accounting Setup
+                                        <br>
+                                    </h5>
+                                </div>
+                                <div class="col-xl-12 text-left  mb-2">
+                                    <mat-form-field class="form-group mb-4 col-xl-4">
+                                        <mat-label>Do you charge sales/Service Tax</mat-label>
+                                        <mat-select formControlName="chargeSalesTax">
+                                            <mat-option [value]="false">No</mat-option>
+                                            <mat-option [value]="true">Yes</mat-option>
+                                        </mat-select>
+                                        <mat-hint class="f-11">Note<span class="text-primary">*</span> Province of default Tax Jurisdiction
+                                        </mat-hint>
+                                    </mat-form-field>
+                                    <mat-form-field class="form-group mb-4 col-xl-4">
+                                        <mat-label>Tax Jurisdiction</mat-label>
+                                        <mat-select formControlName="taxJurisdictionId">
+                                            <mat-option *ngFor="let item of taxJurisdictions" [value]="item.key">
+                                                {{item.value}}
+                                            </mat-option>
+                                            <mat-option *ngIf="taxJurisdictions && taxJurisdictions.length < 1" disabled>No Record Found
+                                            </mat-option>
+                                        </mat-select>
+                                        <mat-hint class="f-11">Note<span class="text-primary">*</span> Default Tax Code (E.G. HST for Ontario, GST & PST for BC/Quebec, Alberta GST only</mat-hint>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-xl-12 text-left mb-2">
+                                    <mat-form-field class="form-group mb-4 col-xl-4">
+                                        <input matInput placeholder="Default Tax Code" formControlName="defaultTaxCode" trim="blur">
+                                    </mat-form-field>
+                                    <mat-form-field class="form-group mb-4 col-xl-4">
+                                        <input matInput type="text" placeholder="Percentage" trim="blur" formControlName="percentage" maxlength="5">
+                                        <mat-error *ngIf="acc.percentage.hasError('max')">
+                                            Maxmium percentage can be 100%
+                                        </mat-error>
+                                        <mat-error *ngIf="acc.percentage.hasError('pattern')">
+                                            Percentage should be numberic with two decimal place.
+                                        </mat-error>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-xl-12 m-3 text-left mb-4">
+                                    <button nz-button nzType="primary" type="submit">
+                                        <span>Save</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </nz-tab>
+
+
+                </nz-tabset>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- user-settings-page -->

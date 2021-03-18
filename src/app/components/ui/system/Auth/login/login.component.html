@@ -1,0 +1,57 @@
+<div class="boxContainer login-page">
+  <div class="col-xl-8 m-auto">
+  <div class="text-dark font-size-24 mb-5 mx-auto text-center w-75">
+    <h1 class="font-weight-bold" style="color: #192A3E;">Stacket Logo</h1>
+    
+  </div>
+
+  <form nz-form [nzLayout]="'vertical'" [formGroup]="form" (ngSubmit)="submitForm()" role="form">
+    <nz-form-item class="mb-4">
+      <label>Email <span class="text-danger">*</span></label>
+      <nz-form-control>
+        <input class="input-lg-height" type="text" nz-input formControlName="email" nzSize="large"
+          placeholder="Enter your Email" [ngClass]="{ 'is-invalid': submitted && email.errors }"/>
+        <div class="text-danger f-12">
+          <ng-container *ngIf="submitted && email.hasError('required')">Email is Required</ng-container>
+          <ng-container *ngIf="submitted && email.hasError('pattern') && !email.hasError('required')">Email is Invalid
+          </ng-container>
+        </div>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item class="mb-4">
+      <label>Password <span class="text-danger">*</span></label>
+      <nz-form-control>
+        <input class="input-lg-height" type="password" nz-input nzSize="large" formControlName="password"
+          placeholder="Enter your Password" [ngClass]="{ 'is-invalid': submitted && password.errors }"/>
+        <div class="text-danger f-12">
+          <ng-container *ngIf="submitted && password.hasError('required')">Password is Required</ng-container>
+          <ng-container *ngIf="submitted && password.hasError('minlength') && !password.hasError('required')">Password is Invalid
+          </ng-container>
+        </div>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item class="mb-3">
+      <nz-form-control>
+        <label class="d-none"  style="font-size: 16px;" nz-checkbox formControlName="rememberMe">Remember Me</label>
+        <a routerLink="/auth/forgot-password" class="kit__utils__link f-12 fw-500 float-right">
+          Forgot password?
+        </a>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item class="mb-3">
+      <nz-form-control>
+        <button nz-button [nzSize]="'large'" [nzLoading]="loading" class="custom text-center w-100">
+          <span class="f-14 fw-500">LOGIN</span>
+        </button>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+
+  <!-- <div class="text-center pt-2 mb-auto">
+    <span class="mr-2 f-12 fw-500" style="color: #3a4759;" >Don't have an account?</span>
+    <a  class="kit__utils__link f-12 fw-500">
+      Create an Account
+    </a>
+  </div> -->
+</div>
+</div>

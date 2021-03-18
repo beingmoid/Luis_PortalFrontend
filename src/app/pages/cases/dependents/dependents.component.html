@@ -1,0 +1,12 @@
+<div [formGroup]="caseDependents">
+    <mat-form-field class="col-xl-3 mb-2" title="Do you have any dependents/children?">
+        <mat-select formControlName="isHavingDependents"
+                placeholder="Do you have any dependents/children?">
+            <mat-option [value]="false">No</mat-option>
+            <mat-option [value]="true">Yes</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field class="col-xl-3 mb-2">
+        <input onlyNumbers matInput placeholder="How many dependents" appCopypasteBlock formControlName="howManyDependents" trim="blur"  maxlength="3">
+    </mat-form-field>
+</div>

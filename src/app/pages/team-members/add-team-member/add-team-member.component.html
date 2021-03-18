@@ -1,0 +1,206 @@
+<div class="row">
+    <div class="col-xl-12">
+        <form (ngSubmit)="onSubmit(formDirective)" [formGroup]="form" novalidate #formDirective="ngForm">
+
+            <div class="col-xl-12 m-3 text-center">
+                <nz-upload class="avatar-uploader d-flex justify-content-center" nzShowButton="true" nzName="avatar"
+                    nzListType="picture-card" [nzShowUploadList]="false" [nzBeforeUpload]="beforeUpload">
+                    <ng-container *ngIf="!avatarUrl">
+                        <div>
+                        <i class="upload-icon" nz-icon [nzType]="loading ? 'loading' : 'plus'"></i>
+                        <div class="ant-upload-text">Upload</div>
+                    </div>
+                    </ng-container>
+                    <img *ngIf="avatarUrl" [src]="avatarUrl" style="width: 100%" />
+                    <i class="fe fe-edit-2 pic-edit-icon position-absolute" *ngIf="avatarUrl"></i>
+                </nz-upload>
+            </div>
+
+
+            <h6 class="fw-500 mt-3 col-xl-12">Personal Info</h6>
+            <!-- <mat-form-field class="col-xl-4 mb-2">
+                <mat-label>User Name</mat-label>
+                <input matInput formControlName="userName">
+                <mat-error *ngIf="f.userName.hasError('required')">
+                    User Name is required
+                </mat-error>
+            </mat-form-field> -->
+            <mat-form-field class="col-xl-4 mb-2">
+                <mat-label>First Name</mat-label>
+                <input matInput formControlName="firstName" trim="blur">
+                <mat-error *ngIf="f.firstName.hasError('required')">
+                    First Name is required
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="col-xl-4 mb-2">
+                <mat-label>Last Name</mat-label>
+                <input matInput formControlName="lastName" trim="blur">
+                <mat-error *ngIf="f.lastName.hasError('required')">
+                    Last Name is required
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="col-xl-4 mb-2">
+                <mat-label>Email</mat-label>
+                <input matInput formControlName="email" pattern=".+@.+\..+" trim="blur" (blur)="checkEmail()">
+                <mat-error
+                    *ngIf="f.email.invalid && !(f.email.hasError('required')) && !(emailControl.hasError('found'))">
+                    Email is invalid
+                </mat-error>
+                <mat-error *ngIf="f.email.hasError('required')">
+                    Email is required
+                </mat-error>
+                <mat-error *ngIf="emailControl.errors">{{emailControl?.errors.found}}</mat-error>
+            </mat-form-field>
+            <mat-form-field class="col-xl-4 mb-2">
+                <mat-label>Time Zone</mat-label>
+                <mat-select [(value)]="selectedTimeZone">
+                    <mat-option *ngFor="let item of tzNames" [value]="item">{{item}}</mat-option>
+                </mat-select>
+                <!-- <input matInput formControlName="timeZone"> -->
+                <mat-error *ngIf="f.timeZone.hasError('required')">
+                    Time Zone is required
+                </mat-error>
+            </mat-form-field>
+
+            <h6 class="fw-500 mt-3 col-xl-12">Job Info</h6>
+            <mat-form-field class="col-xl-4 mb-2">
+                <mat-label>Role</mat-label>
+                <mat-select formControlName="role">
+                    <mat-option *ngFor="let item of roles" [value]="item.roleName">{{ item.roleName.substring(0,  item.roleName.lastIndexOf('_') > 0 ?  item.roleName.lastIndexOf('_') :  item.roleName.length) }}</mat-option>
+                    <mat-option *ngIf="roles && roles.length < 1" disabled>No Record Found</mat-option>
+                </mat-select>
+                <mat-error *ngIf="f.role.hasError('required')">
+                    Role is required
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="col-xl-4 mb-2">
+                <mat-label>Job Title</mat-label>
+                <mat-select formControlName="jobTitleId">
+                    <mat-option *ngFor="let item of jobTitles" [value]="item.key">{{item.value}}</mat-option>
+                    <mat-option *ngIf="jobTitles && jobTitles.length < 1" disabled>No Record Found</mat-option>
+                </mat-select>
+                <mat-error *ngIf="f.jobTitleId.hasError('required')">
+                    Job Title is required
+                </mat-error>
+            </mat-form-field>
+
+            <h6 class="fw-500 mt-3 col-xl-12">Contact Info</h6>
+            <mat-form-field class="col-xl-4 mb-2">
+                <mat-label>Address</mat-label>
+                <input matInput formControlName="address" trim="blur">
+                <mat-error *ngIf="f.address.hasError('required')">
+                    Address is required
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="col-xl-4 mb-2">
+                <mat-label>Country</mat-label>
+                <mat-select formControlName="countryId" (selectionChange)="countryChange()">
+                    <mat-option *ngFor="let item of countries" [value]="item.key">{{item.value}}</mat-option>
+                    <mat-option *ngIf="countries && countries.length < 1" disabled>No Record Found</mat-option>
+                </mat-select>
+                <mat-error *ngIf="f.countryId.hasError('required')">
+                    Country is required
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="col-xl-4 mb-2">
+                <mat-label>Province</mat-label>
+                <mat-select formControlName="stateId" (selectionChange)="stateChange()">
+                    <mat-option *ngFor="let item of states" [value]="item.key">{{item.value}}</mat-option>
+                    <mat-option *ngIf="states && states.length < 1" disabled>No Record Found</mat-option>
+                </mat-select>
+                <mat-error *ngIf="f.stateId.hasError('required')">
+                    Province is required
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="col-xl-4 mb-2">
+                <mat-label>City</mat-label>
+                <mat-select formControlName="cityId">
+                    <mat-option *ngFor="let item of cities" [value]="item.key">{{item.value}}</mat-option>
+                    <mat-option *ngIf="cities && cities.length < 1" disabled>No Record Found</mat-option>
+                </mat-select>
+                <mat-error *ngIf="f.cityId.hasError('required')">
+                    City is required
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="col-xl-4 mb-2">
+                <mat-label>Mobile Number</mat-label>
+                <ngx-mat-intl-tel-input [preferredCountries]="['ca']" [enablePlaceholder]="true" [enableSearch]="true"
+                    name="phoneNumber" inputPlaceholder="Mobile Number" formControlName="phoneNumber" #phone
+                    trim="blur">
+                </ngx-mat-intl-tel-input>
+                <mat-error *ngIf="f.phoneNumber?.errors?.validatePhoneNumber">Invalid Phone Number</mat-error>
+                <!-- <input matInput formControlName="phoneNumber" trim="blur" phoneMask>
+                <mat-error *ngIf="f.phoneNumber.hasError('required')">
+                    Mobile Number is required
+                </mat-error> -->
+            </mat-form-field>
+            <mat-form-field class="col-xl-4 mb-2">
+                <mat-label>Secondary Number</mat-label>
+                <ngx-mat-intl-tel-input [preferredCountries]="['ca']" [enablePlaceholder]="true" [enableSearch]="true"
+                    name="secondaryPhoneNumber" inputPlaceholder="Secondary Number" formControlName="secondaryPhoneNumber" #phone
+                    trim="blur">
+                </ngx-mat-intl-tel-input>
+                <mat-error *ngIf="f.secondaryPhoneNumber?.errors?.validatePhoneNumber">Invalid Phone Number</mat-error>
+                <!-- <input matInput formControlName="secondaryPhoneNumber" trim="blur" phoneMask>
+                <mat-error *ngIf="f.secondaryPhoneNumber.hasError('required')">
+                    Secondary Number is required
+                </mat-error> -->
+            </mat-form-field>
+
+            <h6 class="fw-500 mt-3 col-xl-12">Compensation Settings</h6>
+            <mat-form-field class="col-xl-4 mb-2">
+                <mat-label>Compensation Type</mat-label>
+                <mat-select formControlName="compensationTypeId">
+                    <mat-option *ngFor="let item of compensationTypes" [value]="item.key">{{item.value}}</mat-option>
+                    <mat-option *ngIf="compensationTypes && compensationTypes.length < 1" disabled>No Record Found
+                    </mat-option>
+                </mat-select>
+                <mat-error *ngIf="f.compensationTypeId.hasError('required')">
+                    Compensation Type is required
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="col-xl-4 mb-2">
+                <mat-label>Currency Type</mat-label>
+                <mat-select formControlName="currencyTypeId">
+                    <mat-option *ngFor="let item of currencyTypes" [value]="item.key">{{item.value}}</mat-option>
+                    <mat-option *ngIf="currencyTypes && currencyTypes.length < 1" disabled>No Record Found</mat-option>
+                </mat-select>
+                <mat-error *ngIf="f.currencyTypeId.hasError('required')">
+                    Currency Type is required
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="col-xl-4 mb-2">
+                <mat-label>Compensation Amount</mat-label>
+                <mat-select formControlName="compensationAmountId">
+                    <mat-option *ngFor="let item of compensationAmounts" [value]="item.key">{{item.value}}</mat-option>
+                    <mat-option *ngIf="compensationAmounts && compensationAmounts.length < 1" disabled>No Record Found
+                    </mat-option>
+                </mat-select>
+                <mat-error *ngIf="f.compensationAmountId.hasError('required')">
+                    Compensation Amount is required
+                </mat-error>
+            </mat-form-field>
+
+            <div [ngClass]="isEditMode ? 'd-block' : 'd-none'">
+                <h6 class="fw-500 mt-3 col-xl-12">Status</h6>
+                <mat-form-field class="col-xl-4 mb-2">
+                    <mat-label>Member Status</mat-label>
+                    <mat-select formControlName="memberStatus">
+                        <mat-option [value]=true>Active</mat-option>
+                        <mat-option [value]=false>Inactive</mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="f.memberStatus.hasError('required')">
+                        Member Status is required
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+
+            <div class="form-group text-center mt-4">
+                <button type="submit" nz-button nzType="primary" [nzLoading]="buttonLoading">
+                    {{isEditMode ? 'Update Contact' : 'Add Contact'}}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,74 @@
+@import "src/app/components/mixins.scss";
+
+//////////////////////////////////////////////////////////////////////////////////////////
+/* LOGIN */
+
+
+.boxContainer {
+  padding: rem(50) rem(70);
+
+ @media only screen and ($maxwidth-name : $breakpoint-laptop )  and ( $minwidth-name : $breakpoint-tablet){
+   padding: 1rem;
+ }
+
+@media only screen and ($maxwidth-name : $breakpoint-mobile) {
+  padding: .5rem;
+}
+
+}
+
+a {
+  color: #192A3E;
+}
+
+.t-p {
+  color: #192A3E;
+}
+
+.custom {
+  background-color: #192A3E !important;
+  color: #ffffff !important;
+}
+
+// .login-page starts 
+.login-page {
+  .label {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 0.2rem;
+  }
+  .input-lg-height{
+    padding: 7px 12px;
+  }
+  .term-of-services a strong{
+    border-bottom: 1.5px solid #192A3E;
+  }
+  .ant-btn.custom {
+    height: 50px;
+
+    &:hover {
+      background-color: #192A3E !important;
+      border-color: transparent !important;
+          color: #eee !important;
+    }
+  
+  }
+
+  .ant-form-item-control-input-content .ant-input.ant-input-lg {
+    padding: 8px 12px;
+  }
+
+  input::placeholder {
+    letter-spacing: -0.5px;
+    font-size: 12px !important;
+  }
+
+}
+
+// login-page ends 
+
+
+::ng-deep .ant-form-item-explain {
+  max-width: 100% !important;
+  word-break: break-word !important;
+}

@@ -1,0 +1,164 @@
+<div class="row">
+    <div class="col-xl-12">
+        <form (ngSubmit)="handleSubmit(formDirective)" [formGroup]="form" novalidate #formDirective="ngForm">
+
+            <mat-form-field class="col-xl-6 mb-2">
+                <mat-label>Contact (Organizer)</mat-label>
+                <mat-select matNativeControl formControlName="contactId" (selectionChange)="changeOrganizer($event.value)">
+                    <mat-option *ngFor="let item of contacts" [value]="item.id">{{item.firstName + " "+ item.lastName}}
+                    </mat-option>
+                </mat-select>
+                <mat-error *ngIf="f.contactId.hasError('required')">
+                    Contact is required
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="col-xl-6 mb-2">
+                <mat-label>Cases</mat-label>
+                <mat-select matNativeControl formControlName="caseId">
+                    <mat-option *ngFor="let item of cases" [value]="item.id">{{item.caseNumber}}
+                    </mat-option>
+                </mat-select>
+                <mat-error *ngIf="f.caseId.hasError('required')">
+                    Case is required
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field class="col-xl-6 mb-2">
+                <mat-label>Subject</mat-label>
+                <input matInput formControlName="subject">
+                <mat-error *ngIf="f.subject.hasError('required')">
+                    Subject is required
+                </mat-error>
+            </mat-form-field>
+
+            <!-- <mat-form-field class="col-xl-6 mb-2">
+                <mat-label>Start Date</mat-label>
+                <input matInput formControlName="startDate" autocomplete="off"
+                    (focus)="startDate.open()" [matDatepicker]="startDate">
+                <mat-datepicker-toggle matSuffix [for]="startDate"></mat-datepicker-toggle>
+                <mat-datepicker #startDate></mat-datepicker>
+                <mat-error *ngIf="f.startDate.hasError('required')">
+                    Start Date is required
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field class="col-xl-6 mb-2">
+                <mat-label>End Date</mat-label>
+                <input matInput formControlName="endDate" autocomplete="off"
+                    (focus)="endDate.open()" [matDatepicker]="endDate">
+                <mat-datepicker-toggle matSuffix [for]="endDate"></mat-datepicker-toggle>
+                <mat-datepicker #endDate></mat-datepicker>
+                <mat-error *ngIf="f.endDate.hasError('required')">
+                    End Date is required
+                </mat-error>
+            </mat-form-field> -->
+
+            <mat-form-field class="col-xl-6 mb-2">
+                <mat-label>Enter a date range</mat-label>
+                <mat-date-range-input [rangePicker]="picker" [min]="minDate">
+                    <input matStartDate formControlName="startDate" autocomplete="off" placeholder="Start date" (focus)="picker.open()">
+                    <input matEndDate formControlName="endDate" autocomplete="off" placeholder="End date" (focus)="picker.open()" (keydown)="$event.preventDefault();">
+                </mat-date-range-input>
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-date-range-picker #picker></mat-date-range-picker>
+                <mat-error *ngIf="(f.startDate.hasError('required')) || (f.endDate.hasError('required'))">
+                    Event date is required
+                </mat-error>
+            </mat-form-field>
+
+            <div class="row px-3">
+                <div class="ngx-timepicker-field form-group col-xl-6 pb-3 d-inline-flex">
+                    <ngx-timepicker-field [controlOnly]="true" [defaultTime]="time" formControlName="time"></ngx-timepicker-field>
+                </div>
+
+                <div class="form-group col-xl-6 d-flex align-items-center">
+                    <mat-checkbox formControlName="allDay" class="text-primary">All Day
+                    </mat-checkbox>
+                </div>
+            </div>
+            <!-- <mat-form-field class="col-xl-6 mb-2"> -->
+
+               
+            <div class="row px-3">
+                <mat-form-field class="col-xl-6 mb-2 multiSelectDropDown">
+                    <mat-select matNativeControl formControlName="attandees" placeholder="Attandees" [multiple]="true">
+                        <mat-option *ngFor="let item of attandeesList" [value]="item.id" >
+                        {{item.name}}
+                    </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="f.attandees.hasError('required')">
+                        Attendees are required
+                    </mat-error>
+                </mat-form-field>
+                <div class="form-group col-xl-6 d-flex align-items-center pt-3">
+                    <mat-checkbox formControlName="emailAttandees" class="text-primary pr-3">Email Attandees
+                    </mat-checkbox>
+                    <mat-checkbox formControlName="reminders" class="text-primary d-none">Reminders
+                    </mat-checkbox>
+                </div>
+            </div>
+            <!-- <nz-select
+                [nzMaxTagCount]="1"
+                [nzMaxTagPlaceholder]="tagPlaceHolder"
+                nzMode="multiple"
+                nzPlaceHolder="Please select"
+                formControlName="attandees"
+                class="col-xl-6 mb-2">
+                <nz-option *ngFor="let item of attandeesList" [nzLabel]="item.firstName" [nzValue]="item.id"></nz-option>
+              </nz-select>
+              <ng-template #tagPlaceHolder let-selectedList> and {{ selectedList.length }} more selected </ng-template> -->
+
+            <!-- <mat-label>Attandees</mat-label>
+                <input matInput formControlName="attandees">
+                <mat-error *ngIf="f.attandees.hasError('required')">
+                    Attandees are required
+                </mat-error> -->
+            <!-- </mat-form-field> -->
+
+            <!-- <mat-form-field class="col-xl-6 mb-2">
+                <mat-label>Tags</mat-label>
+                <input matInput formControlName="tags">
+                <mat-error *ngIf="f.tags.hasError('required')">
+                    Tags are required
+                </mat-error>
+            </mat-form-field> -->
+
+            <mat-form-field class="col-xl-12 mb-2">
+                <mat-label>Tags</mat-label>
+                <mat-chip-list #chipList aria-label="Tag selection" formControlName="tags">
+                    <mat-chip *ngFor="let tag of inputtage" [selectable]="selectable" [removable]="removable" (removed)="remove(tag)">
+                        {{tag}}
+                        <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+                    </mat-chip>
+                    <input placeholder="Enter tag" [matChipInputFor]="chipList" [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="addOnBlur" (matChipInputTokenEnd)="add($event)">
+                </mat-chip-list>
+            </mat-form-field>
+
+
+
+            <mat-form-field class="col-xl-12 mb-2">
+                <mat-label>Notes</mat-label>
+                <input matInput formControlName="notes">
+                <mat-error *ngIf="f.notes.hasError('required')">
+                    Notes is required
+                </mat-error>
+            </mat-form-field>
+
+            <div class="form-group col-xl-12">
+                <nz-upload [nzFileType]="'image/png,image/jpeg,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, text/csv'"
+                    [nzAccept]="'image/png,image/jpeg,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv'"
+                    nzType="drag" [(nzFileList)]="fileList" [nzMultiple]="false" [nzBeforeUpload]="beforeUpload">
+                    <p class="ant-upload-drag-icon">
+                        <i nz-icon nzType="upload" nzTheme="outline"></i>
+                    </p>
+                    <p class="ant-upload-text">Drag and Drop your file here, or <span class="text-primary">Browse</span></p>
+                </nz-upload>
+            </div>
+
+            <div class="form-group text-center mt-4">
+                <button type="submit" nz-button nzType="primary" [nzLoading]="buttonLoading" *ngIf="!isEditMode">Add Event</button>
+                <button type="submit" nz-button nzType="primary" [nzLoading]="buttonLoading" *ngIf="isEditMode">Update Event</button>
+            </div>
+        </form>
+    </div>
+</div>

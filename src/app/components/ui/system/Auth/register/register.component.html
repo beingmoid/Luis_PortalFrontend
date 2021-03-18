@@ -1,0 +1,64 @@
+<div>
+  <div class="login-page register-page boxContainer">
+    <div class="text-dark text-center font-size-22 mb-4">
+      <strong class="color-dark-blue f-18 font-weight-bold">
+        Try
+        <span>"{{subscriptionName}}"</span>
+        For Free!
+        <span class="t-p f-14">(for {{noOfDays}} days)</span>
+      </strong>
+    </div>
+    <div class="mb-5 text-center">
+      <p class="f-12">
+        No Credit card required, Cancel anytime.
+      </p>
+    </div>
+    <div class="col-xl-8 m-auto">
+      <form nz-form [nzLayout]="'vertical'" [formGroup]="form" (ngSubmit)="submitForm()" role="form">
+        <nz-form-item class="mb-4">
+          <label class="fw-500 f-13">Email <span class="text-danger">*</span></label>
+          <nz-form-control>
+            <input class="input-lg-height" (focusout)="checkEmail()" type="text" nz-input formControlName="email"
+              nzSize="large" placeholder="Enter your Email" [ngClass]="{ 'is-invalid': submitted && email.errors }"/>
+              <div class="text-danger f-12">
+                <ng-container *ngIf="submitted && email.hasError('required')">Email is Required</ng-container>
+                <ng-container *ngIf="email.hasError('found')">Email already Exists</ng-container>
+                <ng-container *ngIf="submitted && email.hasError('pattern') && !email.hasError('required')">Email is Invalid
+                </ng-container>
+              </div>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item class="mb-4">
+          <nz-form-control>
+            <button nz-button [nzSize]="'large'" [nzLoading]="loading" class="custom text-center w-100">
+              <span class="f-14 fw-500">Create Account</span>
+            </button>
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+      <div class="text-center term-of-services f-12 mb-4">
+        By continuing, You agree with our
+        <a href="javascript: void(0);" class="kit__utils__link" (click) = "showModal()">
+          <strong> "Terms Of Services" </strong>
+        </a>
+      </div>
+    </div>
+    <div class="text-center pt-2 mb-auto f-12 fw-500">
+      <span class="mr-2">Already have an account?</span>
+      <a routerLink="/auth/login" class="kit__utils__link f-12">
+        Log In
+      </a>
+    </div>
+  </div>
+</div> 
+
+
+<!-- Terms of Condition Modal -->
+<div>
+  <nz-modal  class="termsModal"  nzWidth="700" [(nzVisible)]="isVisible" nzTitle="Terms of Condition"  (nzOnCancel)="handleCancel()" nzMaskClosable="false" nzClosable="false">
+<app-terms-of-conditions></app-terms-of-conditions>
+<div class="agree-btn text-right" (click)="handleCancel()">
+  <button nz-button="" ng-reflect-nz-type="primary" ng-reflect-nz-loading="false" ng-reflect-disabled="false" class="ant-btn ant-btn-primary">Agree </button>
+</div>
+  </nz-modal>
+</div>

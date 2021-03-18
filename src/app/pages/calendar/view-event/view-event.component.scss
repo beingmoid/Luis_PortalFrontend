@@ -1,0 +1,18 @@
+.client-appointment-view-div {
+  i.fe {
+    font-size: 16px;
+    color: #2b3b4d;
+  }
+  .appointment-title {
+    .appointment-title-span {
+      background: var(--kit-color-primary);
+      height: 14px;
+      width: 16px;
+      display: inline-block;
+      border-radius: 2px;
+    }
+    // appointment-title-span ends
+  }
+  // appointment-title ends
+}
+// client-appointment-view-div ends 

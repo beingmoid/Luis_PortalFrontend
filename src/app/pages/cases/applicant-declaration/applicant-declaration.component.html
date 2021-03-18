@@ -1,0 +1,81 @@
+<div [formGroup]="caseApplicantDeclaration">
+    <div class="text-center">
+        <p class="font-weight-bold">
+            Have you or any of your family members listed in your application, ever:
+        </p>
+    </div>
+    <mat-form-field class="col-xl-6 mb-2" title="Been convicted of, or are you currently charged with, on trial for, or party to a crime or offense, or subject of any criminal proceedings in any country?">
+        <mat-select formControlName="isCriminalProceeding"
+            placeholder="Been convicted of, or are you currently charged with, on trial for, or party to a crime or offense, or subject of any criminal proceedings in any country?">
+            <mat-option [value]="false">No</mat-option>
+            <mat-option [value]="true">Yes</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field class="col-xl-6 mb-2" title="Used, planned or advocated the use of armed struggle or violence to reach political, religious or social objectives?">
+        <mat-select formControlName="isUsedArmedStruggle"
+            placeholder="Used, planned or advocated the use of armed struggle or violence to reach political, religious or social objectives?">
+            <mat-option [value]="false">No</mat-option>
+            <mat-option [value]="true">Yes</mat-option>
+        </mat-select>
+    </mat-form-field>
+    
+    <mat-form-field class="col-xl-6 mb-2" title="Previously sought refugee status in Canada or applied for a Canadian immigrant or permanent resident visa or visitor or temporary resident visa?">
+        <mat-select formControlName="isPreviouslyApplied"
+            placeholder="Previously sought refugee status in Canada or applied for a Canadian immigrant or permanent resident visa or visitor or temporary resident visa?">
+            <mat-option [value]="false">No</mat-option>
+            <mat-option [value]="true">Yes</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field class="col-xl-6 mb-2" title="Been associated with a group that used, uses, advocated or advocates the use of armed struggle or violence to reach political, religious or social objectives?">
+        <mat-select formControlName="isAssociatedWithGroup"
+            placeholder="Been associated with a group that used, uses, advocated or advocates the use of armed struggle or violence to reach political, religious or social objectives?">
+            <mat-option [value]="false">No</mat-option>
+            <mat-option [value]="true">Yes</mat-option>
+        </mat-select>
+    </mat-form-field>
+    
+    <mat-form-field class="col-xl-6 mb-2" title="Been refued refugee status in, or an immigrant or permanent resident rvisa or temporary resident visa to Canada or any other country, or have been refused a Certificat de selection du Quebec (CSQ) to Quebec?">
+        <mat-select formControlName="isBeenRefused"
+            placeholder="Been refued refugee status in, or an immigrant or permanent resident rvisa or temporary resident visa to Canada or any other country, or have been refused a Certificat de selection du Quebec (CSQ) to Quebec?">
+            <mat-option [value]="false">No</mat-option>
+            <mat-option [value]="true">Yes</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field class="col-xl-6 mb-2" title="Been member of an organization that is or was engaged in an activity that is part of a pattern of criminal activity?">
+        <mat-select formControlName="isMemberOfCriminalOrg"
+            placeholder="Been member of an organization that is or was engaged in an activity that is part of a pattern of criminal activity?">
+            <mat-option [value]="false">No</mat-option>
+            <mat-option [value]="true">Yes</mat-option>
+        </mat-select>
+    </mat-form-field>
+    
+    <mat-form-field class="col-xl-6 mb-2" title="Been refused admission to, or ordered to leaved Canada or any other Country?">
+        <mat-select formControlName="isRefusedAdmission"
+            placeholder="Been refused admission to, or ordered to leaved Canada or any other Country?">
+            <mat-option [value]="false">No</mat-option>
+            <mat-option [value]="true">Yes</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field class="col-xl-6 mb-2" title="Been detained or put in jail?">
+        <mat-select formControlName="isDetained"
+            placeholder="Been detained or put in jail?">
+            <mat-option [value]="false">No</mat-option>
+            <mat-option [value]="true">Yes</mat-option>
+        </mat-select>
+    </mat-form-field>
+    
+    <mat-form-field class="col-xl-6 mb-2" title="Been involved in an act of genocide, a war crime or in the comission of a crime against humanity?">
+        <mat-select formControlName="isInvolvedInWarCrime"
+            placeholder="Been involved in an act of genocide, a war crime or in the comission of a crime against humanity?">
+            <mat-option [value]="false">No</mat-option>
+            <mat-option [value]="true">Yes</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field class="col-xl-6 mb-2" title="Had any serious disease or physical mental disorder?">
+        <mat-select formControlName="isMental"
+            placeholder="Had any serious disease or physical mental disorder?">
+            <mat-option [value]="false">No</mat-option>
+            <mat-option [value]="true">Yes</mat-option>
+        </mat-select>
+    </mat-form-field>
+</div>

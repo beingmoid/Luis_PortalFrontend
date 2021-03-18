@@ -1,0 +1,60 @@
+<div [formGroup]="additionalInfo">
+    <mat-form-field class="col-xl-3 mb-2">
+        <input matInput formControlName="contactInfo" placeholder="Contact Info" trim="blur">
+    </mat-form-field>
+
+    <mat-form-field class="col-xl-3 mb-2" title="Country of Residence">
+        <mat-select placeholder="Country of Residence" formControlName="countryOfResidenceId"
+            (selectionChange)="countryChange()">
+            <mat-option *ngFor="let item of countries" [value]="item.key">{{item.value}}</mat-option>
+            <mat-option *ngIf="countries && countries.length < 1" disabled>No record found</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field class="col-xl-3 mb-2" title="Province/State">
+        <mat-select placeholder="Province/State" (selectionChange)="stateChange()" formControlName="provinceId">
+            <mat-option *ngFor="let item of states" [value]="item.key">{{item.value}}</mat-option>
+            <mat-option *ngIf="states && states.length < 1" disabled>No record found</mat-option>
+
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field class="col-xl-3 mb-2" title="Location">
+        <mat-select placeholder="Location" formControlName="cityLocationId">
+            <mat-option *ngFor="let item of cities" [value]="item.key">{{item.value}}</mat-option>
+            <mat-option *ngIf="cities && cities.length < 1" disabled>No record found</mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="col-xl-3 mb-2" title="Date of Birth">
+        <input [max]="mixDate" matInput formControlName="dateOfBirth" autocomplete="off" (focus)="dateOfBirth.open()"
+            placeholder="Date of Birth" (keydown)="$event.preventDefault();" [matDatepicker]="dateOfBirth">
+        <mat-datepicker-toggle matSuffix [for]="dateOfBirth"></mat-datepicker-toggle>
+        <mat-datepicker #dateOfBirth></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field class="col-xl-3 mb-2" title="Country of Citizenship">
+        <mat-select placeholder="Country of Citizenship" formControlName="countryOfCitizenshipId">
+            <mat-option *ngFor="let item of countries" [value]="item.key">{{item.value}}</mat-option>
+            <mat-option *ngIf="countries && countries.length < 1" disabled>No record found</mat-option>
+
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field class="col-xl-3 mb-2" title="Martial Status">
+        <mat-select placeholder="Martial Status" formControlName="maritalStatusId">
+            <mat-option *ngFor="let item of maritalStatuses" [value]="item.key">{{item.value}}</mat-option>
+            <mat-option *ngIf="maritalStatuses && maritalStatuses.length < 1" disabled>No record found</mat-option>
+
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field class="col-xl-3 mb-2" title="Spouse/Common-Law Accompanying Canada?">
+        <mat-select placeholder="Spouse/Common-Law Accompanying Canada?" formControlName="isSpouseAccompanyingCanada">
+            <mat-option [value]="false">No</mat-option>
+            <mat-option [value]="true">Yes</mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="col-xl-3 mb-2" title="Spouse/Common-Law Canadian PR/Citizen?">
+        <mat-select placeholder="Spouse/Common-Law Canadian PR/Citizen?" formControlName="isSpouseCanadianPR">
+            <mat-option [value]="false">No</mat-option>
+            <mat-option [value]="true">Yes</mat-option>
+        </mat-select>
+    </mat-form-field>
+</div>

@@ -1,0 +1,74 @@
+<div class="breadcrumbs mb-3">
+    <strong>Analytics</strong>
+</div>
+
+<div class="analyticsPage">
+<div class="row mb-4">
+    <div class="col-xl-8">
+        <div class="bg-white card-body topRow">
+            <strong class="mr-2">Cases Per Day</strong>
+
+            <nz-date-picker nzMode="week" nzAllowClear="false" [(ngModel)]="casesPerDayDate"
+                (ngModelChange)="getWeeklyCasesChartData()">
+            </nz-date-picker>
+
+            <label class="ml-2 casePerDayMsg">
+                {{casesPerDayMessage}}
+            </label>
+            <div class="my-3">
+                <div id="casePerDay"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4 col-lg-6 caseStatusDiv">
+        <div class="bg-white card-body">
+            <div class="topRow d-flex align-items-center justify-content-between">
+                <strong>Case Status</strong>
+                <nz-date-picker nzMode="month" nzAllowClear="false" [(ngModel)]="casesStatusDate"
+                    (ngModelChange)="getCaseStatuses()">
+                </nz-date-picker>
+            </div>
+            <div class="my-3">
+                <div id="caseStatus"></div>
+            </div>
+        </div>
+    </div>
+<!-- </div>
+
+<div class="row row-2"> -->
+    <div class="col-xl-4 col-lg-6 pt-4">
+        <div class="bg-white card-body">
+            <div class="topRow d-flex align-items-center justify-content-between">
+                <strong>Applied Cases Vs Approved Cases</strong>
+                <nz-date-picker nzMode="month" nzAllowClear="false" [(ngModel)]="appliedCasesDate"
+                    (ngModelChange)="getCaseApplied()">
+                </nz-date-picker>
+            </div>
+            <div id="applied"></div>
+        </div>
+    </div>
+    <div class="col-xl-4 col-lg-6 pt-4">
+        <div class="bg-white card-body">
+            <div class="topRow d-flex align-items-center justify-content-between">
+                <strong>Revenue Per Month</strong>
+                <nz-date-picker nzMode="year" nzAllowClear="false" [(ngModel)]="caseRevenuePerMonthDate"
+                    (ngModelChange)="getCaseRevenuePerMonthData()">
+                </nz-date-picker>
+            </div>
+            <div id="revenue"></div>
+        </div>
+    </div>
+    <div class="col-xl-4 col-lg-6  pt-4 accountsReceivables">
+        <div class="bg-white card-body">
+            <div class="topRow d-flex align-items-center justify-content-between">
+                <strong>Accounts Receivables vs Payables</strong>
+                <nz-date-picker nzMode="year" nzAllowClear="false" [(ngModel)]="recievablePayablesDataDate"
+                    (ngModelChange)="getRecievablePayablesData()">
+                </nz-date-picker>
+            </div>
+            <div id="accounts"></div>
+        </div>
+    </div>
+</div>
+</div>

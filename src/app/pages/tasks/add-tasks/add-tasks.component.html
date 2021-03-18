@@ -1,0 +1,88 @@
+<div class="row">
+    <form [formGroup]="taskForm" (ngSubmit)="onSubmit(formDirective)"  #formDirective="ngForm" novalidate>
+        <mat-form-field class="form-group col-xl-6">
+            <mat-label>Task Name</mat-label>
+            <input matInput placeholder="Task Name" formControlName="taskName">
+            <mat-error *ngIf="f.taskName.hasError('required')">
+                Task Name is required
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field class="form-group col-xl-6">
+            <mat-label>Assigned To</mat-label>
+
+            <mat-select formControlName="assignedToId">
+                <mat-option *ngFor="let item of assignedToList" [value]="item.id">{{item.name}}</mat-option>
+                <mat-option *ngIf="assignedToList && assignedToList.length < 1" disabled>No record found</mat-option>
+            </mat-select>
+            <mat-error *ngIf="f.assignedToId.hasError('required')">
+                Assigned to is required
+            </mat-error>
+
+        </mat-form-field>
+        <mat-form-field class="form-group col-xl-6">
+            <mat-label>Assigned By</mat-label>
+            <mat-select formControlName="assignedById">
+                <mat-option *ngFor="let item of assignedByList" [value]="item.id">{{item.name}}</mat-option>
+                <mat-option *ngIf="assignedByList && assignedByList.length < 1" disabled>No record found</mat-option>
+            </mat-select>
+                
+            <mat-error *ngIf="f.assignedById.hasError('required')">
+                Assigned by is required
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field class="form-group col-xl-6">
+            <mat-label>Due Date</mat-label>
+            <input [min]="minDate" matInput formControlName="dueDate" autocomplete="off" (focus)="dueDate.open()"
+                [matDatepicker]="dueDate" (keydown)="$event.preventDefault();">
+            <mat-datepicker-toggle matSuffix [for]="dueDate"></mat-datepicker-toggle>
+            <mat-datepicker #dueDate></mat-datepicker>
+            <mat-error *ngIf="f.dueDate.hasError('required')">
+                Due Date is required
+            </mat-error>
+        </mat-form-field>
+
+        <div class="ngx-timepicker-field form-group col-xl-6 pb-3 d-inline-flex">
+            <ngx-timepicker-field [controlOnly]="true" [defaultTime]="time" formControlName="time"></ngx-timepicker-field>  
+            <mat-hint *ngIf="f.time.hasError('required')">Time is required</mat-hint>     
+        </div>
+
+        <!-- <mat-form-field class="form-group col-xl-6">
+            <input matInput placeholder="Time" formControlName="time">
+        </mat-form-field> -->
+
+
+        <mat-form-field class="form-group col-xl-6">
+            <mat-label>Priority</mat-label>
+            <mat-select formControlName="priorityId">
+                <mat-option *ngFor="let item of priorities" [value]="item.key">{{item.value}}</mat-option>
+                <mat-option *ngIf="priorities && priorities.length < 1" disabled>No record found</mat-option>
+            </mat-select>
+            <mat-error *ngIf="f.priorityId.hasError('required')">
+                Priority is required
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field class="form-group col-xl-6">
+            <mat-label>Status</mat-label>
+            <mat-select formControlName="statusId">
+                <mat-option *ngFor="let item of statuses" [value]="item.key">{{item.value}}</mat-option>
+                <mat-option *ngIf="statuses && statuses.length < 1" disabled>No record found</mat-option>
+            </mat-select>
+            <mat-error *ngIf="f.statusId.hasError('required')">
+                Status is required
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field class="form-group col-xl-6">
+            <input matInput placeholder="Notes" formControlName="notes">
+            <mat-error *ngIf="f.notes.hasError('required')">
+                Note is required
+            </mat-error>
+        </mat-form-field>
+        <div class="form-group col-xl-12 d-none">
+            <mat-checkbox formControlName="sendUpdate" class="text-primary">Send Update to customer
+            </mat-checkbox>
+        </div>
+        <div class="form-group text-center mt-5">
+            <button type="submit" nz-button nzType="primary">{{isEditMode ? 'Update Task' : 'Add Task'}}</button>
+        </div>
+    </form>
+</div>

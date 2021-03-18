@@ -1,0 +1,101 @@
+<div [ngClass]="{
+  'cui__layout__grayBackground': isGrayBackground
+}">
+  <nz-layout [ngClass]="{
+  'cui__layout__contentMaxWidth': isContentMaxWidth,
+  'cui__layout__appMaxWidth': isAppMaxWidth,
+  'cui__layout__grayBackground': isGrayBackground,
+  'cui__layout__squaredBorders': isSquaredBorders,
+  'cui__layout__cardsShadow': isCardShadow,
+  'cui__layout__borderless': isBorderless
+}">
+
+    <!-- <cui-sidebar></cui-sidebar> -->
+    <!-- <cui-support-chat></cui-support-chat> -->
+    <nz-spin nzSimple *ngIf="isLoading" [nzSize]="'large'" class="site-laoder"></nz-spin>
+    <!-- left menu -->
+    <!-- FIX: nz-sider wrapper fix layout behaviour in case when cui-menu-left root tag breaks layout transformation -->
+    <nz-sider *ngIf="menuLayoutType === 'left' && !isMobileView" [nzWidth]="isMenuCollapsed ? 80 : leftMenuWidth"
+      style="transition: none !important">
+      <cui-menu-left></cui-menu-left>
+    </nz-sider>
+
+    <!-- mobile menu with drawer -->
+    <div *ngIf="isMobileView">
+      <div class="handler" (click)="toggleMobileMenu()">
+        <div class="handlerIcon"></div>
+      </div>
+      <nz-drawer [nzClosable]="false" [nzWrapClassName]="'mobileMenu'" [nzVisible]="isMobileMenuOpen" nzPlacement="left"
+        (nzOnClose)="toggleMobileMenu()">
+        <cui-menu-left></cui-menu-left>
+      </nz-drawer>
+    </div>
+
+    <!-- top menu -->
+    <div *ngIf="menuLayoutType === 'top' && !isMobileView">
+      <cui-menu-top></cui-menu-top>
+    </div>
+
+    <nz-layout>
+      <nz-header [ngClass]="{
+        'cui__layout__header': true,
+        'cui__layout__fixedHeader': isTopbarFixed,
+        'cui__layout__headerGray': isGrayTopbar
+      }">
+        <cui-topbar></cui-topbar>
+      </nz-header>
+      <nz-content style="height: 100%; position: relative;">
+        <!-- <cui-breadcrumbs></cui-breadcrumbs> -->
+        <div class="cui__utils__content">
+          <div [@slideFadeinUp]="routeAnimation(outlet, 'slideFadeinUp')"
+            [@slideFadeinRight]="routeAnimation(outlet, 'slideFadeinRight')"
+            [@zoomFadein]="routeAnimation(outlet, 'zoomFadein')" [@fadein]="routeAnimation(outlet, 'fadein')">
+            <ng-container *ngIf="userRole === 'CompanyAdmin'">
+
+              <p *ngIf="userDetail?.isFreePlan &&  userDetail?.daysLeft > 0 && alertMessage$ | async">
+                <ngb-alert [dismissible]="false" class="trial-expiry-info f-13 mb-4">
+                  <span class="d-block trial-expiry-info-span">
+                  <i nz-icon nzType="warning" nzTheme="outline" class="font-weight-bold f-18 mr-2"></i> Your free
+                  trial will expire in <strong>{{userDetail?.daysLeft}} days</strong>. Please upgrade to a paid plan
+                  to continue managing your business.
+                </span>
+                  <a class="btn btn-sm f-12 btn-success pull-right upgrade-plan-btn" [routerLink]="['/settings/plan']"
+                    style="margin-top: -3px;">Upgrade Now</a>
+                </ngb-alert>
+              </p>
+
+              <p
+                *ngIf="userDetail?.isPaidPlan && userDetail?.daysLeft <= 7 && userDetail?.daysLeft > 0 && alertMessage$ | async">
+                <ngb-alert [dismissible]="false" class="trial-expiry-info f-13 mb-4">
+                  <i nz-icon nzType="warning" nzTheme="outline" class="font-weight-bold f-18 mr-2"></i> Your plan
+                  will expire in <strong>{{userDetail?.daysLeft}} days</strong>. Please upgrade plan
+                  to continue managing your business.
+                  <a class="btn btn-sm f-12 btn-success pull-right upgrade-plan-btn" [routerLink]="['/settings/plan']"
+                    style="margin-top: -3px;">Resubscribe Now</a>
+                </ngb-alert>
+              </p>
+
+              <p
+                *ngIf="(userDetail?.isPaidPlan || userDetail?.isFreePlan) && userDetail?.daysLeft == 0 && alertMessage$ | async">
+                <ngb-alert [dismissible]="false" class="trial-expiry-info f-13 mb-4">
+                  <i nz-icon nzType="warning" nzTheme="outline" class="font-weight-bold f-18 mr-2"></i> Your plan is
+                  expired. Please upgrade plan
+                  to continue managing your business.
+                  <a class="btn btn-sm f-12 btn-success pull-right upgrade-plan-btn" [routerLink]="['/settings/plan']">
+                    <span *ngIf="userDetail?.isPaidPlan">Resubscribe Now</span>
+                    <span *ngIf="userDetail?.isFreePlan">Subscribe Now</span>
+                  </a>
+                </ngb-alert>
+              </p>
+            </ng-container>
+
+            <router-outlet #outlet="outlet"></router-outlet>
+          </div>
+        </div>
+      </nz-content>
+      <!-- <nz-footer>
+        <cui-footer></cui-footer>
+      </nz-footer> -->
+    </nz-layout>
+  </nz-layout>
+</div>

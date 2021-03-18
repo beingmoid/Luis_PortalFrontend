@@ -1,0 +1,117 @@
+<div class="breadcrumbs mb-3">
+    <strong>Forms</strong>
+</div>
+<div class="card-body bg-white">
+    <div class="row mb-4">
+        <div class="col-xl-4">
+            <div class="">
+                <form [formGroup]="FormsForm" (ngSubmit)="onSubmit()" novalidate>
+                    <mat-form-field class="form-group d-block w-75">
+                        <mat-label>Form Language</mat-label>
+                        <mat-select formControlName="languageId">
+                            <mat-option *ngFor="let item of languages" [value]="item.key">{{item.value}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field class="form-group d-block w-75">
+                        <mat-label>Search by Category</mat-label>
+                        <mat-select formControlName="categoryId" (selectionChange)="changeCategory()">
+                            <mat-option *ngFor="let item of categories" [value]="item.key">{{item.value}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field class="form-group d-block w-75">
+                        <input matInput placeholder="Search by Form Name" formControlName="searchCodeName">
+                    </mat-form-field>
+                    <div class="form-group mt-3">
+                        <button type="submit" nz-button nzType="primary" class="min-w-170">Fetch</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-xl-4">
+            <div class="transfer-data-to-forms">
+                <div class="text-dark font-weight-bold mb-2"> Transfer case data to forms </div>
+                <a nz-button class="min-w-170 btn-green" nzType="primary" nzSuccess (click)="isVisible = true">Transfer
+                    Data</a>
+            </div>
+            <div class="representative-form pt-5">
+                <div class="text-dark font-weight-bold mb-3"> Use of a Representative form </div>
+                <a nz-button class="min-w-170" nzType="primary" (click)="isVisible = true">Downlaod IMM5476E</a>
+            </div>
+
+        </div>
+    </div>
+    <!-- row ends  -->
+    <div class="row mb-4">
+        <div class="col-xl-6">
+            <div *ngIf="categoryForms.length == 0" class="text-center  no-data">
+
+                <h5 *ngIf="categoryForms.length == 0">
+                    {{selectedCategoryName}}
+                </h5>
+
+                <img class="no-data-img mb-3" src="assets/images/no-data/no-case.svg" alt="No Cases">
+                <div class="mt-2 f-13">
+                    No Data Available.
+
+                </div>
+            </div>
+
+            <div class="check-box-title pb-4">
+
+                <h5 *ngIf="categoryForms.length != 0">
+                    {{selectedCategoryName}} ({{categoryForms.length}})
+                </h5>
+            </div>
+            <div class="checkbox-div">
+                <nz-checkbox-wrapper>
+                    <div nz-row *ngFor="let item of categoryForms">
+                        <div nz-col><label nz-checkbox nzValue="e" class="d-flex align-items-center mb-3" [(ngModel)]="item.isSelected">
+                                <p class="mb-0 f-12">1) {{item.formName}} [{{item.formCode}}] (PDF 2.04 MB)
+                                    ({{item.createdDate | appDateFormat: false}})</p>
+                            </label></div>
+                    </div>
+                </nz-checkbox-wrapper>
+            </div>
+        </div>
+        <!-- col 6 ends  -->
+        <div class="col-xl-6">
+            <div class="check-box-title pb-4">
+
+                <div *ngIf="forms.length == 0" class="text-center  no-data">
+                    <h5 *ngIf="forms.length == 0">
+                        Search Results
+                    </h5>
+                    <img class="no-data-img mb-3" src="assets/images/no-data/no-case.svg" alt="No Cases">
+                    <div class="mt-2 f-13">
+                        No Data Available.
+                    </div>
+                </div>
+            </div>
+            <div class="check-box-title pb-4">
+
+                <h5 *ngIf="forms.length != 0">
+                    Search Results ({{forms.length}})
+                </h5>
+            </div>
+            <div class="checkbox-div">
+                <nz-checkbox-wrapper>
+                    <div nz-row *ngFor="let item of forms">
+                        <div nz-col><label nz-checkbox nzValue="e" class="d-flex align-items-center mb-3" [(ngModel)]="item.isSelected">
+                                <p class="mb-0 f-12">1) {{item.formName}} [{{item.formCode}}] (PDF 2.04 MB)
+                                    ({{item.createdDate | appDateFormat: false}})</p>
+                            </label></div>
+                    </div>
+                </nz-checkbox-wrapper>
+            </div>
+        </div>
+        <!-- col 6 ends  -->
+        <div class="form-group m-3">
+            <button type="button" nz-button nzType="primary" class="min-w-170" (click)="downlaod()">Download
+                Forms</button>
+        </div>
+    </div>
+    <!-- row ends  -->
+</div>
+<!-- card-body ends  -->

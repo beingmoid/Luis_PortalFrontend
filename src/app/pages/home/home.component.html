@@ -1,0 +1,351 @@
+<div class="breadcrumbs">
+    <strong>Home</strong>
+</div>
+<div>
+    <div class="row mb-4">
+        <div class="col-xl-12">
+            <div class="float-right" [hidden]="_permissionService.getRole() == 'Client'">
+                <div ngbDropdown placement="bottom-right" class="d-inline-block">
+                    <button class="btn btn-primary btn-lg ant-btn-primary" id="addNew" ngbDropdownToggle>
+                        <span class="pl-4 pr-4">Add New</span>
+                    </button>
+                    <div ngbDropdownMenu aria-labelledby="addNew">
+                        <button [hidden]="!canViewContact || !canCreateContact" ngbDropdownItem (click)="showAddContact()">Add New Contact</button>
+                        <button [hidden]="!canViewCase || !canCreateCase" ngbDropdownItem (click)="showAddCase()">Add
+                            New Case</button>
+                        <button [hidden]="!canViewEvent || !canCreateEvent" ngbDropdownItem (click)="showAddEvent()">Add
+                            New Event</button>
+                        <button [hidden]="!canViewTask || !canCreateTask" ngbDropdownItem (click)="showAddTask()">Add
+                            New Task</button>
+                        <button [hidden]="!canViewTeam || !canCreateTeam" ngbDropdownItem (click)="showAddTeamMember()">Add New Team Member</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row home-top-cards">
+        <div class="col-xl-3">
+            <div class="card">
+                <div class="card-body d-flex flex-wrap justify-content-between align-items-start bg-alice-blue">
+                    <div class="">
+                        <div class="text-dark f-13 font-weight-bold">Upcoming Events</div>
+                        <div class="text-dark font-weight-bold font-size-24">{{upcomingEventCount}}</div>
+                        <div class="font-size-12 text-default">Analytics for this month</div>
+                    </div>
+                    <div class="">
+                        <img src="assets/images/home/event-icon.svg" width="50px" alt="Icon" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3">
+            <div class="card">
+                <div class="card-body d-flex flex-wrap justify-content-between align-items-start bg-alice-blue">
+                    <div class="">
+                        <div class="text-dark f-13 font-weight-bold">New Added Cases</div>
+                        <div class="text-dark font-weight-bold font-size-24">{{newAddedCasesCount}}</div>
+                        <div class="font-size-12 text-default">Analytics for this month</div>
+                    </div>
+                    <div class="">
+                        <img src="assets/images/home/case-icon.svg" width="50px" alt="Icon" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3">
+            <div class="card">
+                <div class="card-body d-flex flex-wrap justify-content-between align-items-start bg-alice-blue">
+                    <div class="">
+                        <div class="text-dark f-13 font-weight-bold">Cases Approc. Deadline</div>
+                        <div class="text-dark font-weight-bold font-size-24">{{casesApprocDeadlineCount}}</div>
+                        <div class="font-size-12 text-default">Analytics for this month</div>
+                    </div>
+                    <div class="">
+                        <img src="assets/images/home/deadline-icon.svg" width="50px" alt="Icon" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3">
+            <div class="card">
+                <div class="card-body d-flex flex-wrap justify-content-between align-items-start bg-alice-blue">
+                    <div class="">
+                        <div class="text-dark f-13 font-weight-bold">Cases to be invoiced</div>
+                        <div class="text-dark font-weight-bold font-size-24">{{casesToBeInvoicedCount}}</div>
+                        <div class="font-size-12 text-default">Analytics for this month</div>
+                    </div>
+                    <div class="">
+                        <img src="assets/images/home/invoice-icon.svg" width="50px" alt="Icon" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <p *ngIf="showProfileBanner">
+        <ngb-alert [dismissible]="false" class="trial-expiry-info f-13 mb-4 profile-complition-info" style="color: #354f6f;">
+            <!-- <i nz-icon nzType="info" nzTheme="outline" class="font-weight-bold f-18 mr-2"></i> -->
+            <strong> Getting Started:</strong> <span class="f-12"> you have
+                completed </span> <span style="color:#43ce5a;"> {{profileCompletion}}% profile </span>
+            <a class="btn btn-sm f-12 btn-success pull-right" [routerLink]="['/settings/user']">Complete Setup</a>
+            <nz-progress [nzPercent]="profileCompletion" [nzStrokeWidth]="6" nzStatus="active" [nzShowInfo]="false">
+            </nz-progress>
+        </ngb-alert>
+    </p>
+
+    <div class="row home-page-cards">
+        <div class="col-xl-4">
+            <div class="card bg-white rounded-0 max-h-310 min-h-250 mb-3">
+                <div class="card-header p-3 mb-3">
+                    <h6 class="mb-0 d-flex align-items-center justify-content-between">
+                        <span class="fw-500 f-13">Recently Modified/Added Contacts</span>
+                        <span [hidden]="_permissionService.getRole() == 'Client'"><a href="#/contacts"
+                                class="f-12 float-right kit__utils__link">View All</a></span>
+                    </h6>
+                </div>
+                <div class="card-body py-0 px-3 overflow-auto">
+                    <nz-list>
+                        <nz-list-item *ngFor="let data of mostRecentContact" class="fw-500 f-13 db-card">
+                            <span class="firstLastName">{{ data.firstName}} {{ data.lastName}} </span>
+                            <span class="f-12 added-by"> Added by
+                                <a href="javascript:void(0)" class="kit__utils__link">
+                                    {{ data.createdByName}}
+                                </a> </span>
+                        </nz-list-item>
+                        <nz-list-empty *ngIf="mostRecentContact && mostRecentContact.length === 0" [nzNoResult]="noRecentContacts"></nz-list-empty>
+                    </nz-list>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4">
+            <div class="card bg-white rounded-0 max-h-310 min-h-250 mb-3">
+                <div class="card-header p-3 mb-3">
+                    <h6 class="mb-0 d-flex align-items-center justify-content-between">
+                        <span class="fw-500 f-13">Recently Modified/Added Cases</span>
+                        <span><a href="#/cases" class="f-12 float-right kit__utils__link">View All</a></span>
+                    </h6>
+                </div>
+                <div class="card-body py-0 px-3 overflow-auto">
+                    <nz-list>
+                        <nz-list-item *ngFor="let data of mostRecentCases" class="fw-500 f-13">
+                            <span class="firstLastName">{{ data.caseNumber }} </span>
+                            <span class="f-12 added-by"> Added by
+                                <a href="javascript:void(0)" class="kit__utils__link">
+                                    {{ data.createdByName}}
+                                </a> </span>
+                        </nz-list-item>
+                        <nz-list-empty *ngIf="mostRecentCases && mostRecentCases.length === 0" [nzNoResult]="noRecentCases"></nz-list-empty>
+                    </nz-list>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4">
+            <div class="card bg-white rounded-0 max-h-310 min-h-250 mb-3">
+                <div class="card-header p-3 mb-3">
+                    <h6 class="mb-0 d-flex align-items-center justify-content-between">
+                        <span class="fw-500 f-14">Upcoming Events</span>
+                        <span [hidden]="_permissionService.getRole() == 'Client'"><a href="#/calendar"
+                                class="f-12 float-right kit__utils__link">View All</a></span>
+                    </h6>
+                </div>
+                <div class="card-body py-0 px-3 overflow-auto">
+                    <nz-list>
+                        <nz-list-item *ngFor="let data of upcomingEvents" class="fw-500 f-13">
+                            <span class="firstLastName">{{ data.subject }} </span>
+                            <span class="f-12 added-by"> Added by
+                                <a href="javascript:void(0)" class="kit__utils__link">
+                                     {{ data.createdByName}} 
+                                </a> </span>
+                        </nz-list-item>
+                        <nz-list-empty *ngIf="upcomingEvents && upcomingEvents.length === 0" [nzNoResult]="noUpcomingEvents"></nz-list-empty>
+                    </nz-list>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row home-page-cards">
+        <div class="col-xl-4">
+            <div class="card bg-white rounded-0 max-h-310 min-h-250 mb-3">
+                <div class="card-header p-3 mb-3">
+                    <h6 class="mb-0 d-flex align-items-center justify-content-between">
+                        <span class="fw-500 f-14">Cases Approaching Deadlines</span>
+                        <span><a href="#/cases" class="f-12 float-right kit__utils__link">View All</a></span>
+                    </h6>
+                </div>
+                <div class="card-body py-0 px-3 overflow-auto">
+                    <nz-list>
+                        <nz-list-item *ngFor="let data of casesApprocDeadlines" class="fw-500 f-13">
+                            <span class="firstLastName">{{ data.caseNumber }} </span>
+                            <span class="f-12 added-by"> Added by
+                                <a href="javascript:void(0)" class="kit__utils__link">
+                                    {{ data.createdByName}}
+                                </a> </span>
+                        </nz-list-item>
+                        <nz-list-empty *ngIf="casesApprocDeadlines && casesApprocDeadlines.length === 0" [nzNoResult]="noCasesApprocDeadlines"></nz-list-empty>
+                    </nz-list>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4">
+            <div class="card bg-white rounded-0 max-h-310 min-h-250 mb-3">
+                <div class="card-header p-3 mb-3">
+                    <h6 class="mb-0 d-flex align-items-center justify-content-between">
+                        <span class="fw-500 f-14">Case to be Invoiced</span>
+                        <span><a href="#/cases" class="f-12 float-right kit__utils__link">View All</a></span>
+                    </h6>
+                </div>
+                <div class="card-body py-0 px-3 overflow-auto">
+                    <nz-list>
+                        <nz-list-item *ngFor="let data of casesToBeInvoiced" class="fw-500 f-13">
+                            <span class="firstLastName">{{ data.caseNumber }} </span>
+                            <span class="f-12 added-by"> Added by
+                                <a href="javascript:void(0)" class="kit__utils__link">
+                                    {{ data.createdByName}}
+                                </a> </span>
+                        </nz-list-item>
+                        <nz-list-empty *ngIf="casesToBeInvoiced && casesToBeInvoiced.length === 0" [nzNoResult]="noCasesToBeInvoiced"></nz-list-empty>
+                    </nz-list>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4">
+            <div class="card bg-white rounded-0 max-h-310 min-h-250 mb-3">
+                <div class="card-header p-3 mb-3">
+                    <h6 class="mb-0 d-flex align-items-center justify-content-between d-flex align-items-center justify-content-between">
+                        <span class="fw-500 f-14">Immigration News</span>
+                        <!-- <span><a class="f-12 float-right kit__utils__link">View All</a></span> -->
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <ng-container *ngIf="news && news.length > 0; else noNews">
+                        <ng-container *ngFor="let item of news">
+                            <div class="title mb-2 text-dark">
+                                {{item.title}}
+                            </div>
+                            <div class="desc mb-3">
+                                {{item.description}}
+                            </div>
+                        </ng-container>
+                    </ng-container>
+                    <ng-template #noNews>     
+                        <div class="text-center  no-data">
+                            <img class="no-data-img mb-3" src="assets/images/no-data/no-news.svg" alt="No News">
+                            <div class="mt-2 f-13">
+                                No Data Available.
+                                <!-- <a href="#" class="kit__utils__link">
+                                    Create New Post
+                                </a> -->
+                            </div>
+                        </div>
+                    </ng-template>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Contact   -->
+
+<div>
+    <nz-modal nzFooter="null" nzWidth="700" [(nzVisible)]="isVisibleContact" [nzTitle]="modalTitle" (nzOnCancel)="handleCancelPopUp()" nzMaskClosable="false">
+        <app-add-contacts></app-add-contacts>
+    </nz-modal>
+</div>
+
+<!-- Task   -->
+
+<div>
+    <nz-modal nzFooter="null" nzWidth="700" [(nzVisible)]="isVisibleTask" [nzTitle]="modalTitle" (nzOnCancel)="handleCancelPopUp()" nzMaskClosable="false">
+        <app-add-tasks></app-add-tasks>
+    </nz-modal>
+</div>
+
+<!-- Team Members   -->
+
+<div>
+    <nz-modal nzFooter="null" nzWidth="700" [(nzVisible)]="isVisibleTeamMember" [nzTitle]="modalTitle" (nzOnCancel)="handleCancelPopUp()" nzMaskClosable="false">
+        <app-add-team-member></app-add-team-member>
+    </nz-modal>
+</div>
+
+<!-- Cases   -->
+
+<div>
+    <nz-modal nzFooter="null" nzWidth="1100" [(nzVisible)]="isVisibleCase" (nzOnCancel)="handleCancelPopUp()" nzMaskClosable="false" [nzTitle]="'Add New Case'">
+        <app-add-cases></app-add-cases>
+    </nz-modal>
+</div>
+
+
+<!-- Events -->
+<div>
+    <nz-modal nzFooter="null" nzWidth="700" [(nzVisible)]="isVisibleEvent" (nzOnCancel)="handleCancelPopUp()" nzMaskClosable="false" [nzTitle]="modalTitle">
+        <app-add-event></app-add-event>
+    </nz-modal>
+</div>
+
+
+<!--
+  [contactDataSub]="contactObserverSubject"  -->
+
+<ng-template #noRecentContacts>
+    <div class="text-center  no-data" *ngIf="mostRecentContact">
+        <img class="no-data-img mb-3" src="assets/images/no-data/no-contact.svg" alt="No Contacts">
+        <div class="mt-2 f-13">
+            No Data Available.
+            <a [hidden]="_permissionService.getRole() == 'Client' || (!canViewContact || !canCreateContact)" href="javascript:void(0)" (click)="showAddContact()" class="kit__utils__link">
+                Create New Contact
+            </a>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #noRecentCases>
+    <div class="text-center  no-data" *ngIf="mostRecentCases">
+        <img class="no-data-img mb-3" src="assets/images/no-data/no-case.svg" alt="No Cases">
+        <div class="mt-2 f-13">
+            No Data Available.
+            <a [hidden]="_permissionService.getRole() == 'Client'  || (!canViewCase || !canCreateCase)" href="
+                javascript:void(0)" (click)="showAddCase()" class="kit__utils__link">
+                Create New Case
+            </a>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #noUpcomingEvents>
+    <div class="text-center  no-data" *ngIf="upcomingEvents">
+        <img class="no-data-img mb-3" src="assets/images/no-data/no-event.svg" alt="No Events">
+        <div class="mt-2 f-13">
+            No Data Available.
+            <a [hidden]="_permissionService.getRole() == 'Client'  || (!canViewEvent || !canCreateEvent)" href="javascript:void(0)" (click)="showAddEvent()" class="kit__utils__link">
+                Create New Event
+            </a>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #noCasesApprocDeadlines>
+    <div class="text-center  no-data">
+        <img class="no-data-img mb-3" src="assets/images/no-data/no-case.svg" alt="No Cases">
+        <div class="mt-2 f-13">
+            No Data Available.
+            <a [hidden]="_permissionService.getRole() == 'Client' || (!canViewCase || !canCreateCase)" href="javascript:void(0)" (click)="showAddCase()" class="kit__utils__link">
+                Create New Case
+            </a>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #noCasesToBeInvoiced>
+    <div class="text-center  no-data">
+        <img class="no-data-img mb-3" src="assets/images/no-data/no-case.svg" alt="No Cases">
+        <div class="mt-2 f-13">
+            No Data Available.
+            <a [hidden]="_permissionService.getRole() == 'Client'  || (!canViewCase || !canCreateCase)" href=" javascript:void(0)" (click)="showAddCase()" class="kit__utils__link">
+                Create New Case
+            </a>
+        </div>
+    </div>
+</ng-template>

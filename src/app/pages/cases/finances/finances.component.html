@@ -1,0 +1,9 @@
+<div [formGroup]="caseFinances">
+    <mat-form-field class="col-xl-6 mb-2" title="Amount of unencumbered transferable and available funds you have, in Canadian dollars:">
+        <input matInput placeholder="Amount of unencumbered transferable and available funds you have, in Canadian dollars:" 
+            formControlName="amountAvailable" trim="blur" onlyNumbers>
+            <mat-error *ngIf="caseFormControl.amountAvailable.hasError('pattern')">
+                Ammount can only be number
+            </mat-error>
+    </mat-form-field>
+</div>
